@@ -29,13 +29,13 @@ textarea {
     border-color: transparent;
 }
 .header{
-    background-image: url('Images/headerBackgroundSlice.png');
+    background-image: url('Images/headerBackgroundSlice71px.png');
     height: 120px;
     background-repeat: repeat-x;
 }
 
 .logo {
-    background: url('Images/AKA Logo75.png');
+    background: url('Images/AKA Logo70px.png');
     width: 100px;
     text-indent: -9999px;
 }
