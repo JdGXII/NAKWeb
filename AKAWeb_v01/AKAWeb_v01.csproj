@@ -153,10 +153,13 @@
     <Content Include="Content\Images\AKA Logo1.png" />
     <Content Include="Content\Images\AKA Logo70px.png" />
     <Content Include="Content\Images\AKA Logo75.png" />
+    <Content Include="Content\Images\aka-career-center-dev.jpg" />
+    <Content Include="Content\Images\AKA_2017Workshop.jpg" />
     <Content Include="Content\Images\AME Logo 20170426_50px.png" />
     <Content Include="Content\Images\feature_Events_and_Services.jpg" />
     <Content Include="Content\Images\headerBackgroundSlice.png" />
     <Content Include="Content\Images\headerBackgroundSlice71px.png" />
+    <Content Include="Content\Images\Kinesiology-Today-Graphic.jpg" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
