@@ -234,6 +234,8 @@
     <Content Include="Views\Subpages\InformationCenter\InstitutionDataBase.cshtml" />
     <Content Include="Views\Subpages\InformationCenter\FitnessIndex.cshtml" />
     <Content Include="Views\Subpages\InformationCenter\ActivityPlanReport.cshtml" />
+    <Content Include="Views\Home\TermsConditions.cshtml" />
+    <Content Include="Views\Home\Privacy.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

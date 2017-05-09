@@ -26,5 +26,17 @@ namespace AKAWeb_v01.Controllers
 
             return View();
         }
+
+        public ActionResult Privacy()
+        {
+            ViewBag.Message = "Privacy Page";
+            return View();
+        }
+
+        public ActionResult TermsConditions()
+        {
+            ViewBag.Message = "Terms and Conditions Page";
+            return View();
+        }
     }
 }
