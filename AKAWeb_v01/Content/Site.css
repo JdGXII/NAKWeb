@@ -40,3 +40,7 @@ textarea {
     text-indent: -9999px;
 }
 
+.resizeimg {
+
+    max-width: 100%;
+}
