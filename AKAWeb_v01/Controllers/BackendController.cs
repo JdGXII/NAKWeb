@@ -17,15 +17,18 @@ namespace AKAWeb_v01.Controllers
             try
             {
                 if((username == this.username) && (password == this.password))
-                { 
-
-                return RedirectToAction("EditCarousel");
+                {
+                    System.Web.HttpContext.Current.Session["userpermission"] = "3";
+                    
+                    ViewData["sessionString"] = System.Web.HttpContext.Current.Session["userpermission"];
+                    
+                    return RedirectToAction("EditCarousel");
 
                 }
                 else
                 {
                     ViewBag.Message = "Wrong Credentials";
-                    return View("~/Views/Backend/Index.cshtml");
+                    return RedirectToAction("Index");
                 }
                 
             }
@@ -38,7 +41,18 @@ namespace AKAWeb_v01.Controllers
         }
         public ActionResult EditCarousel()
         {
-            return View();
+            String userpermission = ""; 
+            if (System.Web.HttpContext.Current.Session["userpermission"] != null)
+            {
+                userpermission = System.Web.HttpContext.Current.Session["userpermission"] as String;
+            }
+            if (userpermission.Equals("3"))
+            {
+           
+                return View();
+            }
+            else
+                return RedirectToAction("Index");
         }
         // GET: Backend
         public ActionResult Index()
