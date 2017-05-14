@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -60,76 +61,59 @@ namespace AKAWeb_v01.Controllers
             return View();
         }
 
-        // GET: Backend/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
-
-        // GET: Backend/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Backend/Create
         [HttpPost]
-        public ActionResult Create(FormCollection collection)
+        public ActionResult Upload()
         {
-            try
-            {
-                // TODO: Add insert logic here
 
-                return RedirectToAction("Index");
-            }
-            catch
+
+            if (Request.Files.Count > 0)
             {
-                return View();
+                var file = Request.Files[0];
+
+                if (file != null && file.ContentLength > 0)
+                try
+                {
+                    var fileName = Path.GetFileName(file.FileName);
+                    var path = Path.Combine(Server.MapPath("~/Content/Images/CarouselUploads"), fileName);
+                    file.SaveAs(path);
+                    ViewBag.Message = "File uploaded successfully";
+                }
+                catch(Exception ex)
+                {
+                    ViewBag.Message = "ERROR:" + ex.Message.ToString();
+                }
             }
+
+            return RedirectToAction("EditCarousel");
         }
 
-        // GET: Backend/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: Backend/Edit/5
-        [HttpPost]
-        public ActionResult Edit(int id, FormCollection collection)
-        {
-            try
-            {
-                // TODO: Add update logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: Backend/Delete/5
-        public ActionResult Delete(int id)
+        public ActionResult Test()
         {
             return View();
         }
 
-        // POST: Backend/Delete/5
         [HttpPost]
-        public ActionResult Delete(int id, FormCollection collection)
+        public ActionResult Test(HttpPostedFileBase file)
         {
-            try
-            {
-                // TODO: Add delete logic here
 
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
+
+
+            if (file != null && file.ContentLength > 0)
+                try
+                {
+                    var fileName = Path.GetFileName(file.FileName);
+                    var path = Path.Combine(Server.MapPath("~/Content/Images/CarouselUploads"), fileName);
+                    file.SaveAs(path);
+                    ViewBag.Message = "File uploaded successfully";
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Message = "ERROR:" + ex.Message.ToString();
+                }
+
+
+            return View();
         }
+
     }
 }

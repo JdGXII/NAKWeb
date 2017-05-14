@@ -243,9 +243,11 @@
     <Content Include="Views\Home\Privacy.cshtml" />
     <Content Include="Views\Backend\Index.cshtml" />
     <Content Include="Views\Backend\EditCarousel.cshtml" />
+    <Content Include="Views\Backend\Test.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Content\Images\CarouselUploads\" />
     <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>

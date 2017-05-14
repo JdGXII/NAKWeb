@@ -6,3 +6,10 @@
 
 <h2>EditCarousel</h2>
 Session: @Session["userpermission"]
+
+
+@using (Html.BeginForm("Upload", "Backend", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <input type="file" name="file" />
+    <input type="submit" name="Submit" id="Submit" value="Upload" />
+}
