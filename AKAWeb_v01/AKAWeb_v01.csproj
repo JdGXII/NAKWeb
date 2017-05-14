@@ -141,6 +141,7 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\BackendController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\SubPagesController.cs" />
     <Compile Include="Global.asax.cs">
@@ -240,6 +241,8 @@
     <Content Include="Views\Subpages\InformationCenter\ActivityPlanReport.cshtml" />
     <Content Include="Views\Home\TermsConditions.cshtml" />
     <Content Include="Views\Home\Privacy.cshtml" />
+    <Content Include="Views\Backend\Index.cshtml" />
+    <Content Include="Views\Backend\EditCarousel.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
