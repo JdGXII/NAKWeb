@@ -18,5 +18,17 @@ namespace AKAWeb_v01.Controllers
         {
             return View("~/Views/SubPages/EventsServices/WorkshopRegistration.cshtml");
         }
+        public ActionResult About()
+        {
+            return View("~/Views/SubPages/About/About.cshtml");
+        }
+        public ActionResult AboutServices()
+        {
+            return View("~/Views/SubPages/EventsServices/AboutServices.cshtml");
+        }
+        public ActionResult AKABooks()
+        {
+            return View("~/Views/SubPages/Publications/AKABooks.cshtml");
+        }
     }
 }
