@@ -1,0 +1,17 @@
+﻿
+@{
+    ViewBag.Title = "Login";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Login</h2>
+<form action="Backend/Login" method="post">
+    
+    @Html.Label("Username");
+    <input name="username" type="text" placeholder="username" />
+    <br />
+    @Html.Label("Passeword");
+    <input name="password" type="text" placeholder="password" />
+    <input type="submit" value="Submit" />
+</form>
+

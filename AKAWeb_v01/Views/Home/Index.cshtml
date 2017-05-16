@@ -1,11 +1,62 @@
 ﻿@{
     ViewBag.Title = "Home Page";
+    
 }
 
 <div class="jumbotron" style="border:1px ridge black; align-content:center;">
-    <h1></h1>
-    <p class="lead"><img class="resizeimg" src="~/Content/Images/feature_Events_and_Services.jpg" /></p>
-   
+    
+    <div id="myCarousel" class="carousel slide resizeimg" data-ride="carousel">
+        <!-- Indicators -->
+        <ol class="carousel-indicators">
+            @for (var i = 0; i < ViewBag.CarouselImg; i++)
+            {
+                
+                if (i == 0)
+                {
+                    <li data-target="#myCarousel" data-slide-to="@i" class="active"></li>
+                }
+                else
+                {
+                    <li data-target="#myCarousel" data-slide-to="@i"></li>
+                }
+
+            }
+            
+        </ol>
+
+        <!-- Wrapper for slides -->
+        <div class="carousel-inner">
+            @{ String picturename = "";}
+            @for (var i = 1; i - 1 < ViewBag.CarouselImg; i++)
+            {
+                picturename = "carouselpicture" + i.ToString() + ".jpg"; 
+                    if (i-1 == 0)
+                    {
+                    <div class="item active">
+                        <img src="~/Content/Images/CarouselUploads/@picturename" alt="Los Angeles">
+                    </div>
+                }
+                else
+                {
+                        <div class="item">
+                            <img src="~/Content/Images/CarouselUploads/@picturename">
+                        </div>
+                 }
+
+              }
+
+        </div>
+
+        <!-- Left and right controls -->
+        <a class="left carousel-control" href="#myCarousel" data-slide="prev">
+            <span class="glyphicon glyphicon-chevron-left"></span>
+            <span class="sr-only">Previous</span>
+        </a>
+        <a class="right carousel-control" href="#myCarousel" data-slide="next">
+            <span class="glyphicon glyphicon-chevron-right"></span>
+            <span class="sr-only">Next</span>
+        </a>
+    </div>
 </div>
 
 <div class="container">
