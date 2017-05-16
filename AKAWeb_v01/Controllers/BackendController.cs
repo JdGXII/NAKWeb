@@ -62,7 +62,7 @@ namespace AKAWeb_v01.Controllers
         }
 
         [HttpPost]
-        public ActionResult Upload()
+        public ActionResult Upload(int picnum)
         {
 
 
@@ -73,7 +73,7 @@ namespace AKAWeb_v01.Controllers
                 if (file != null && file.ContentLength > 0)
                 try
                 {
-                    var fileName = Path.GetFileName(file.FileName);
+                    var fileName = PictureName(picnum);
                     var path = Path.Combine(Server.MapPath("~/Content/Images/CarouselUploads"), fileName);
                     file.SaveAs(path);
                     ViewBag.Message = "File uploaded successfully";
@@ -85,6 +85,11 @@ namespace AKAWeb_v01.Controllers
             }
 
             return RedirectToAction("EditCarousel");
+        }
+
+        private String PictureName (int picnum)
+        {
+            return "carouselpicture" + picnum.ToString()+ ".jpg";
         }
 
         public ActionResult Test()

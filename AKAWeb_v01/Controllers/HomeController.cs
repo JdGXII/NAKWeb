@@ -10,6 +10,7 @@ namespace AKAWeb_v01.Controllers
     {
         public ActionResult Index()
         {
+            ViewBag.CarouselImg = 3;
             return View();
         }
 

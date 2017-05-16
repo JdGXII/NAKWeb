@@ -7,9 +7,29 @@
 <h2>EditCarousel</h2>
 Session: @Session["userpermission"]
 
+@Html.Label("Carousel Picture 1")
 
 @using (Html.BeginForm("Upload", "Backend", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     <input type="file" name="file" />
     <input type="submit" name="Submit" id="Submit" value="Upload" />
+    <input type="hidden" value="1" name="picnum"/>
+}
+
+@Html.Label("Carousel Picture 2")
+
+@using (Html.BeginForm("Upload", "Backend", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <input type="file" name="file" />
+    <input type="submit" name="Submit" id="Submit" value="Upload" />
+    <input type="hidden" name="picnum" value="2" />
+}
+
+@Html.Label("Carousel Picture 3")
+
+@using (Html.BeginForm("Upload", "Backend", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <input type="file" name="file" />
+    <input type="submit" name="Submit" id="Submit" value="Upload" />
+    <input type="hidden" value="3" name="picnum"/>
 }
