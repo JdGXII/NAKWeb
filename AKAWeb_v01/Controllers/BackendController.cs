@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Web;
+using System.Web.Configuration;
 using System.Web.Mvc;
 
 namespace AKAWeb_v01.Controllers
@@ -40,6 +41,22 @@ namespace AKAWeb_v01.Controllers
             }
             
         }
+
+        private List<SelectListItem> GenerateViewBagList()
+        {
+            List<SelectListItem> list = new List<SelectListItem>();
+            int carouselnum = int.Parse(WebConfigurationManager.AppSettings["CarouselImageNumber"]);
+            for (int i = carouselnum; i < 7; i++)
+            {
+                SelectListItem item = new SelectListItem();
+                item.Value = i.ToString();
+                item.Text = i.ToString();
+
+                list.Add(item);
+                
+            }
+            return list;
+        }
         public ActionResult EditCarousel()
         {
             String userpermission = ""; 
@@ -49,7 +66,9 @@ namespace AKAWeb_v01.Controllers
             }
             if (userpermission.Equals("3"))
             {
-           
+                ViewBag.CarouselImageNumber = WebConfigurationManager.AppSettings["CarouselImageNumber"];
+                ViewBag.CarouselDropdown = this.GenerateViewBagList();
+        
                 return View();
             }
             else
