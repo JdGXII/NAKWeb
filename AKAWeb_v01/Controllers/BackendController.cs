@@ -22,21 +22,23 @@ namespace AKAWeb_v01.Controllers
             SqlConnection cnn;
             SqlCommand command;
             cnn = new SqlConnection(cnnString);
-            string query = "Select email, password, access from [tb].Users Where email ="+username+"AND password ="+password;
+            string query = "Select name, email, password, access from Users Where email ='"+username+"' AND password ='"+password+"'";
             SqlDataReader dataReader;
 
             try
             {
                 cnn.Open();
                 command = new SqlCommand(query, cnn);
-                dataReader = command.ExecuteReader();
+                dataReader = command.ExecuteReader();            
                 dataReader.Read();
-                dataReader.GetValue(0);
-                if (dataReader.GetValue(0) != null)  //(username == this.username) && (password == this.password))
+                
+
+                if (dataReader.GetValue(1) != null)  //(username == this.username) && (password == this.password))
                 {
-                    System.Web.HttpContext.Current.Session["userpermission"] = dataReader.GetValue(2);
-                    
-                    ViewData["sessionString"] = System.Web.HttpContext.Current.Session["userpermission"];
+                    System.Web.HttpContext.Current.Session["userpermission"] = dataReader.GetValue(3).ToString();
+                    System.Web.HttpContext.Current.Session["username"] = dataReader.GetValue(0).ToString();
+
+                    //ViewData["sessionString"] = System.Web.HttpContext.Current.Session["userpermission"];
                     
                     return RedirectToAction("EditCarousel");
 
@@ -46,11 +48,11 @@ namespace AKAWeb_v01.Controllers
                     ViewBag.Message = "Wrong Credentials";
                     return RedirectToAction("Index");
                 }
-                
+
             }
-            catch
+            catch (Exception e)
             {
-                ViewBag.Message = "Something went wrong while validating";
+                //System.Web.HttpContext.Current.Session["exception"] = e.ToString();
                 return RedirectToAction("Index");
             }
             
