@@ -48,9 +48,9 @@ Images: @ViewBag.CarouselImageNumber;
 
             @using (Html.BeginForm("Upload", "Backend", FormMethod.Post, new { enctype = "multipart/form-data" }))
             {
-                <input type="file" name="file" />Submit" id="Submit" value="Upload" />
-< input type = "hidden" name = "picnum
-< input type="submit" name="" value="2" />
+                <input type="file" name="file" />
+                <input type="submit" name="Submit" id="Submit" value="Upload" />
+                <input type="hidden" name="picnum" value="2" />
             }
 
             @Html.Label("Carousel Picture 3")

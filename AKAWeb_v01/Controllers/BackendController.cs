@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Web;
@@ -16,11 +18,23 @@ namespace AKAWeb_v01.Controllers
         [HttpPost]
         public ActionResult Login(string username, string password)
         {
+            string cnnString = WebConfigurationManager.ConnectionStrings["Test"].ToString();
+            SqlConnection cnn;
+            SqlCommand command;
+            cnn = new SqlConnection(cnnString);
+            string query = "Select email, password, access from [tb].Users Where email ="+username+"AND password ="+password;
+            SqlDataReader dataReader;
+
             try
             {
-                if((username == this.username) && (password == this.password))
+                cnn.Open();
+                command = new SqlCommand(query, cnn);
+                dataReader = command.ExecuteReader();
+                dataReader.Read();
+                dataReader.GetValue(0);
+                if (dataReader.GetValue(0) != null)  //(username == this.username) && (password == this.password))
                 {
-                    System.Web.HttpContext.Current.Session["userpermission"] = "3";
+                    System.Web.HttpContext.Current.Session["userpermission"] = dataReader.GetValue(2);
                     
                     ViewData["sessionString"] = System.Web.HttpContext.Current.Session["userpermission"];
                     
@@ -37,7 +51,7 @@ namespace AKAWeb_v01.Controllers
             catch
             {
                 ViewBag.Message = "Something went wrong while validating";
-                return View("~/Views/Backend/Index.cshtml");
+                return RedirectToAction("Index");
             }
             
         }
@@ -56,6 +70,14 @@ namespace AKAWeb_v01.Controllers
                 
             }
             return list;
+        }
+
+        [HttpPost]
+        public ActionResult ChangeCarouselNumber(String number)
+        {
+            ConfigurationManager.AppSettings["CarouselImageNumber"] = number;
+            var d = ConfigurationManager.AppSettings["CarouselImageNumber"];
+            return RedirectToAction("EditCarousel");
         }
         public ActionResult EditCarousel()
         {
