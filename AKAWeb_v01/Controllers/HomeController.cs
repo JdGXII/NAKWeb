@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using AKAWeb_v01.Classes;
 
 namespace AKAWeb_v01.Controllers
 {
@@ -10,7 +12,14 @@ namespace AKAWeb_v01.Controllers
     {
         public ActionResult Index()
         {
-            ViewBag.CarouselImg = 3;
+            DBConnection testconn = new DBConnection();
+            string query = "select image_number from carousel where id = 1";
+            SqlDataReader dataReader;
+            dataReader = testconn.ReadFromTest(query);
+            dataReader.Read();
+            ViewBag.CarouselImg = dataReader.GetValue(0);
+            testconn.CloseDataReader();
+            testconn.CloseDataReader();
             return View();
         }
 
