@@ -162,28 +162,23 @@ namespace AKAWeb_v01.Controllers
             return RedirectToAction("EditCarousel");
         }
 
-        [HttpPost]
-        public ActionResult Test(HttpPostedFileBase file)
+        public ActionResult EditMenu()
         {
-
-
-
-            if (file != null && file.ContentLength > 0)
-                try
-                {
-                    var fileName = Path.GetFileName(file.FileName);
-                    var path = Path.Combine(Server.MapPath("~/Content/Images/CarouselUploads"), fileName);
-                    file.SaveAs(path);
-                    ViewBag.Message = "File uploaded successfully";
-                }
-                catch (Exception ex)
-                {
-                    ViewBag.Message = "ERROR:" + ex.Message.ToString();
-                }
-
-
             return View();
         }
+
+        [HttpPost]
+        public ActionResult AddMainMenuItem(string menu_name)
+        {
+            DBConnection testconn = new DBConnection();
+            string query = "INSERT INTO main_menu (item_name, islive) VALUES ('" + menu_name + "', 1)";
+            testconn.WriteToTest(query);
+            testconn.CloseConnection();
+
+
+            return RedirectToAction("EditMenu");
+        }
+
 
     }
 }

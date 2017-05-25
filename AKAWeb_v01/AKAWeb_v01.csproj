@@ -262,6 +262,7 @@
     <Content Include="Views\Backend\EditCarousel.cshtml" />
     <Content Include="Views\Backend\Test.cshtml" />
     <Content Include="appSettings.config" />
+    <Content Include="Views\Backend\EditMenu.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
