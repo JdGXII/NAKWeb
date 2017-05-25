@@ -4,11 +4,62 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+@model List<AKAWeb_v01.Models.MainMenuItem>
+
 <h2>EditMenu</h2>
-<h3>Add New Item to Main Menu</h3>
-@using (Html.BeginForm("AddMainMenuItem", "Backend", FormMethod.Post))
-{
-    <input type="text" name="menu_name" />
-    <input type="submit" value="Submit" />
-}
+
+
+<div class="container">
+
+    <ul class="nav nav-tabs">
+        <li class="active"><a data-toggle="tab" href="#home">Add New Item</a></li>
+        <li><a data-toggle="tab" href="#menu1">Current Menu Items</a></li>
+        
+
+    </ul>
+
+    <div class="tab-content">
+        <div id="home" class="tab-pane fade in active">
+            <h3>Add New Item to Main Menu</h3>
+            @using (Html.BeginForm("AddMainMenuItem", "Backend", FormMethod.Post))
+            {
+                <input type="text" name="menu_name" />
+                <input type="submit" value="Submit" />
+            }
+
+        </div>
+        <div id="menu1" class="tab-pane fade">
+            <h3>Current Menu Items</h3>
+            <table style="text-align:center">
+                <tr>
+                    <th>ID</th>
+                    <th>Text</th>
+                    <th>Is Live</th>
+                    <th><a href="#submenu" data-toggle="collapse">Submenu</a></th>
+                </tr>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.id</td>
+                        <td>@item.item_name</td>
+                        <td>@item.islive</td>
+                        
+                    </tr>
+                    <table id="submenu" class="collapse">
+                        <tr>
+                            @if (item.submenu_item == null)
+                            {
+                                <td>Success</td>
+                            }
+                        </tr>
+                    </table>
+        
+                }
+            </table>
+
+        </div>
+        
+
+    </div>
+</div>
 

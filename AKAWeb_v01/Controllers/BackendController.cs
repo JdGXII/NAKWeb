@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.Configuration;
 using System.Web.Mvc;
 using AKAWeb_v01.Classes;
+using AKAWeb_v01.Models;
 
 namespace AKAWeb_v01.Controllers
 {
@@ -164,7 +165,24 @@ namespace AKAWeb_v01.Controllers
 
         public ActionResult EditMenu()
         {
-            return View();
+             
+            var model = new List<MainMenuItem>();
+            DBConnection testconn = new DBConnection();
+            string query = "SELECT * FROM main_menu";            
+            SqlDataReader dataReader = testconn.ReadFromTest(query);
+            while (dataReader.Read())
+            {
+                var item = new MainMenuItem();
+                item.id = Convert.ToInt32(dataReader.GetValue(0));
+                item.item_name = dataReader.GetValue(1).ToString();
+                item.islive = (bool)dataReader.GetValue(2);
+                item.submenu_item = dataReader.GetValue(3) as MainMenuItem;
+
+                model.Add(item);
+            }
+            testconn.CloseDataReader();
+            testconn.CloseConnection();
+            return View(model);
         }
 
         [HttpPost]
@@ -174,6 +192,7 @@ namespace AKAWeb_v01.Controllers
             string query = "INSERT INTO main_menu (item_name, islive) VALUES ('" + menu_name + "', 1)";
             testconn.WriteToTest(query);
             testconn.CloseConnection();
+
 
 
             return RedirectToAction("EditMenu");
