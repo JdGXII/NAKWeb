@@ -7,6 +7,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Configuration;
 using System.Web.Mvc;
+using AKAWeb_v01.Classes;
 
 namespace AKAWeb_v01.Controllers
 {
@@ -18,18 +19,15 @@ namespace AKAWeb_v01.Controllers
         [HttpPost]
         public ActionResult Login(string username, string password)
         {
-            string cnnString = WebConfigurationManager.ConnectionStrings["Test"].ToString();
-            SqlConnection cnn;
-            SqlCommand command;
-            cnn = new SqlConnection(cnnString);
+            DBConnection testconn = new DBConnection();
+
             string query = "Select name, email, password, access from Users Where email ='"+username+"' AND password ='"+password+"'";
-            SqlDataReader dataReader;
+            
 
             try
             {
-                cnn.Open();
-                command = new SqlCommand(query, cnn);
-                dataReader = command.ExecuteReader();            
+                SqlDataReader dataReader;
+                dataReader = testconn.ReadFromTest(query);           
                 dataReader.Read();
                 
 
@@ -39,20 +37,23 @@ namespace AKAWeb_v01.Controllers
                     System.Web.HttpContext.Current.Session["username"] = dataReader.GetValue(0).ToString();
 
                     //ViewData["sessionString"] = System.Web.HttpContext.Current.Session["userpermission"];
-                    
+                    testconn.CloseDataReader();
+                    testconn.CloseConnection();
                     return RedirectToAction("EditCarousel");
 
                 }
                 else
                 {
                     ViewBag.Message = "Wrong Credentials";
+                    testconn.CloseDataReader();
+                    testconn.CloseConnection();
                     return RedirectToAction("Index");
                 }
 
             }
             catch (Exception e)
             {
-                //System.Web.HttpContext.Current.Session["exception"] = e.ToString();
+                System.Web.HttpContext.Current.Session["exception"] = e.ToString();
                 return RedirectToAction("Index");
             }
             
@@ -74,13 +75,16 @@ namespace AKAWeb_v01.Controllers
             return list;
         }
 
+
         [HttpPost]
         public ActionResult ChangeCarouselNumber(String number)
         {
-            ConfigurationManager.AppSettings["CarouselImageNumber"] = number;
-            var d = ConfigurationManager.AppSettings["CarouselImageNumber"];
+            DBConnection dbconnect = new DBConnection();
+            string query = "Update Carousel set image_number = "+4+"where id = 1";
+            dbconnect.WriteToTest(query);
             return RedirectToAction("EditCarousel");
         }
+
         public ActionResult EditCarousel()
         {
             String userpermission = ""; 
