@@ -1,10 +1,12 @@
 ﻿
 @{
     ViewBag.Title = "Login";
+
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <h2>Login</h2>
+@Session["exception"]
 <form action="Backend/Login" method="post">
     
     @Html.Label("Username");

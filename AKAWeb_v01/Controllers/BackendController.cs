@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Web;
+using System.Web.Configuration;
 using System.Web.Mvc;
+using AKAWeb_v01.Classes;
 
 namespace AKAWeb_v01.Controllers
 {
@@ -15,31 +19,74 @@ namespace AKAWeb_v01.Controllers
         [HttpPost]
         public ActionResult Login(string username, string password)
         {
+            DBConnection testconn = new DBConnection();
+
+            string query = "Select name, email, password, access from Users Where email ='"+username+"' AND password ='"+password+"'";
+            
+
             try
             {
-                if((username == this.username) && (password == this.password))
+                SqlDataReader dataReader;
+                dataReader = testconn.ReadFromTest(query);           
+                dataReader.Read();
+                
+
+                if (dataReader.GetValue(1) != null)  //(username == this.username) && (password == this.password))
                 {
-                    System.Web.HttpContext.Current.Session["userpermission"] = "3";
-                    
-                    ViewData["sessionString"] = System.Web.HttpContext.Current.Session["userpermission"];
-                    
+                    System.Web.HttpContext.Current.Session["userpermission"] = dataReader.GetValue(3).ToString();
+                    System.Web.HttpContext.Current.Session["username"] = dataReader.GetValue(0).ToString();
+
+                    //ViewData["sessionString"] = System.Web.HttpContext.Current.Session["userpermission"];
+                    testconn.CloseDataReader();
+                    testconn.CloseConnection();
                     return RedirectToAction("EditCarousel");
 
                 }
                 else
                 {
                     ViewBag.Message = "Wrong Credentials";
+                    testconn.CloseDataReader();
+                    testconn.CloseConnection();
                     return RedirectToAction("Index");
                 }
-                
+
             }
-            catch
+            catch (Exception e)
             {
-                ViewBag.Message = "Something went wrong while validating";
-                return View("~/Views/Backend/Index.cshtml");
+                System.Web.HttpContext.Current.Session["exception"] = e.ToString();
+                return RedirectToAction("Index");
             }
             
         }
+
+        private List<SelectListItem> GenerateViewBagList()
+        {
+            List<SelectListItem> list = new List<SelectListItem>();
+            int carouselnum = int.Parse(WebConfigurationManager.AppSettings["CarouselImageNumber"]);
+            for (int i = carouselnum; i < 7; i++)
+            {
+                SelectListItem item = new SelectListItem();
+                item.Value = i.ToString();
+                item.Text = i.ToString();
+
+                list.Add(item);
+                
+            }
+            return list;
+        }
+
+
+        [HttpPost]
+        public ActionResult ChangeCarouselNumber(FormCollection form)
+        {
+            string number = form["CarouselDropdown"];
+            DBConnection dbconnect = new DBConnection();
+            string query = "Update Carousel set image_number = "+number+" where id = 1";
+            dbconnect.WriteToTest(query);
+            dbconnect.CloseConnection();
+            return RedirectToAction("EditCarousel");
+        }
+
         public ActionResult EditCarousel()
         {
             String userpermission = ""; 
@@ -49,7 +96,17 @@ namespace AKAWeb_v01.Controllers
             }
             if (userpermission.Equals("3"))
             {
-           
+                DBConnection testconn = new DBConnection();
+                string query = "select image_number from carousel where id = 1";
+                SqlDataReader dataReader;
+                dataReader = testconn.ReadFromTest(query);
+                dataReader.Read();
+                ViewBag.CarouselImageNumber = dataReader.GetValue(0);
+                testconn.CloseDataReader();
+                testconn.CloseDataReader();
+
+                ViewData["CarouselDropdown"] = this.GenerateViewBagList();
+        
                 return View();
             }
             else
@@ -95,6 +152,14 @@ namespace AKAWeb_v01.Controllers
         public ActionResult Test()
         {
             return View();
+        }
+
+        public ActionResult UpdateLinks(string url, int picnum)
+        {
+            DBConnection testconn = new DBConnection();
+            string query = "Update carousel_links set link" + picnum.ToString() + " = '"+url+"' where id = 1";
+            testconn.WriteToTest(query);
+            return RedirectToAction("EditCarousel");
         }
 
         [HttpPost]
