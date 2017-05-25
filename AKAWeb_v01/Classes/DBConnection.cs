@@ -26,6 +26,7 @@ namespace AKAWeb_v01.Classes
                 command = cnn.CreateCommand();
                 command.CommandText = query;
                 command.ExecuteNonQuery();
+                command.Dispose();
 
 
 

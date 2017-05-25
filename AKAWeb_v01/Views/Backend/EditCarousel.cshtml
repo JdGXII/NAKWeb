@@ -23,11 +23,13 @@ Images: @ViewBag.CarouselImageNumber;
         <div id="home" class="tab-pane fade in active">
             <h3>Number of images</h3>
             <p>Please set the number of images that will rotate in the carousel</p>
+           
             @using (Html.BeginForm("ChangeCarouselNumber", "Backend", FormMethod.Post))
             {
-                <fieldset>
+                <fieldset name="number">
 
-                    @Html.DropDownList("CarouselDropdown")<br />
+                    
+                    @Html.DropDownList("CarouselDropdown", ViewData["CarouselDropdown"] as SelectList)<br />
                     <input type="submit" value="Save" />
                 </fieldset>
             }
@@ -35,36 +37,32 @@ Images: @ViewBag.CarouselImageNumber;
         </div>
         <div id="menu1" class="tab-pane fade">
             <h3>Carousel Pictures</h3>
-            @Html.Label("Carousel Picture 1")
-
-            @using (Html.BeginForm("Upload", "Backend", FormMethod.Post, new { enctype = "multipart/form-data" }))
+            @for (var i = 1; i - 1 < ViewBag.CarouselImageNumber; i++)
             {
-                <input type="file" name="file" />
-                <input type="submit" name="Submit" id="Submit" value="Upload" />
-                <input type="hidden" value="1" name="picnum" />
+                @Html.Label("Carousel Picture" + i.ToString())
+                using (Html.BeginForm("Upload", "Backend", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                {
+                    <input type="file" name="file" />
+                    <input type="submit" name="Submit" id="Submit" value="Upload" />
+                    <input type="hidden" value="@i" name="picnum" />
+                }
             }
 
-            @Html.Label("Carousel Picture 2")
-
-            @using (Html.BeginForm("Upload", "Backend", FormMethod.Post, new { enctype = "multipart/form-data" }))
-            {
-                <input type="file" name="file" />
-                <input type="submit" name="Submit" id="Submit" value="Upload" />
-                <input type="hidden" name="picnum" value="2" />
-            }
-
-            @Html.Label("Carousel Picture 3")
-
-            @using (Html.BeginForm("Upload", "Backend", FormMethod.Post, new { enctype = "multipart/form-data" }))
-            {
-                <input type="file" name="file" />
-                <input type="submit" name="Submit" id="Submit" value="Upload" />
-                <input type="hidden" value="3" name="picnum" />
-            }
         </div>
         <div id="menu2" class="tab-pane fade">
             <h3>Image links</h3>
             <p>Set URLs of carousel pictures</p>
+            @for (var i = 1; i - 1 < ViewBag.CarouselImageNumber; i++)
+            {
+                @Html.Label("Picture " + i.ToString()+" URL" )
+                using (Html.BeginForm("UpdateLinks", "Backend", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                {
+                    <input type="text" name="url" />
+                    <input type="submit" name="Submit" id="Submit" value="Save" />
+                    <input type="hidden" value="@i" name="picnum" />
+
+                }
+            }
         </div>
   
     </div>

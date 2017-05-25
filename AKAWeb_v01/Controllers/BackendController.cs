@@ -77,11 +77,13 @@ namespace AKAWeb_v01.Controllers
 
 
         [HttpPost]
-        public ActionResult ChangeCarouselNumber(String number)
+        public ActionResult ChangeCarouselNumber(FormCollection form)
         {
+            string number = form["CarouselDropdown"];
             DBConnection dbconnect = new DBConnection();
-            string query = "Update Carousel set image_number = "+4+"where id = 1";
+            string query = "Update Carousel set image_number = "+number+" where id = 1";
             dbconnect.WriteToTest(query);
+            dbconnect.CloseConnection();
             return RedirectToAction("EditCarousel");
         }
 
@@ -94,8 +96,16 @@ namespace AKAWeb_v01.Controllers
             }
             if (userpermission.Equals("3"))
             {
-                ViewBag.CarouselImageNumber = WebConfigurationManager.AppSettings["CarouselImageNumber"];
-                ViewBag.CarouselDropdown = this.GenerateViewBagList();
+                DBConnection testconn = new DBConnection();
+                string query = "select image_number from carousel where id = 1";
+                SqlDataReader dataReader;
+                dataReader = testconn.ReadFromTest(query);
+                dataReader.Read();
+                ViewBag.CarouselImageNumber = dataReader.GetValue(0);
+                testconn.CloseDataReader();
+                testconn.CloseDataReader();
+
+                ViewData["CarouselDropdown"] = this.GenerateViewBagList();
         
                 return View();
             }
@@ -142,6 +152,14 @@ namespace AKAWeb_v01.Controllers
         public ActionResult Test()
         {
             return View();
+        }
+
+        public ActionResult UpdateLinks(string url, int picnum)
+        {
+            DBConnection testconn = new DBConnection();
+            string query = "Update carousel_links set link" + picnum.ToString() + " = '"+url+"' where id = 1";
+            testconn.WriteToTest(query);
+            return RedirectToAction("EditCarousel");
         }
 
         [HttpPost]

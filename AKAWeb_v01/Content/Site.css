@@ -50,3 +50,13 @@ textarea {
     max-height:100%;
     padding-top: 50px;
 }
+
+.carousel-control.left .glyphicon {
+    left: 0;
+    margin-left: 0;
+}
+
+.carousel-control.right .glyphicon {
+    right: 0;
+    margin-right: 0;
+}
