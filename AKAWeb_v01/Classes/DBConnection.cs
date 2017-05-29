@@ -11,7 +11,7 @@ namespace AKAWeb_v01.Classes
     {
         private SqlDataReader dataReader = null;
         private SqlConnection cnn;
-        private string testString = WebConfigurationManager.ConnectionStrings["Test"].ToString();
+        private string testString = WebConfigurationManager.ConnectionStrings["AzureTest"].ToString();
 
         public bool WriteToTest(string query)
         {
