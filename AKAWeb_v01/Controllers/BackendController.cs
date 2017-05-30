@@ -198,6 +198,11 @@ namespace AKAWeb_v01.Controllers
             return RedirectToAction("EditMenu");
         }
 
+        public ActionResult Register()
+        {
+            return View();
+        }
+
 
     }
 }

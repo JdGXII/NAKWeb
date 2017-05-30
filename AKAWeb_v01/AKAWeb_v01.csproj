@@ -149,6 +149,7 @@
     <Compile Include="Classes\DBConnection.cs" />
     <Compile Include="Controllers\BackendController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\ShoppingCartController.cs" />
     <Compile Include="Controllers\SubPagesController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -265,6 +266,8 @@
     <Content Include="Views\Backend\Test.cshtml" />
     <Content Include="appSettings.config" />
     <Content Include="Views\Backend\EditMenu.cshtml" />
+    <Content Include="Views\Backend\Register.cshtml" />
+    <Content Include="Views\ShoppingCart\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
