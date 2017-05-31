@@ -15,51 +15,57 @@ Images: @ViewBag.CarouselImageNumber;
     @{ int picturecount = 0;}
     @foreach (var image in Model)
     {
-        picturecount++;
-        <div class="row">
-            <div class="col-md-3">
-                <img class="thumbnail" src="@Url.Content(image.url)" />
-            </div>
-            <div class="col-md-6">
-                @Html.Label("Carousel Picture " + picturecount.ToString())
-                @using (Html.BeginForm("Upload", "Backend", FormMethod.Post, new { enctype = "multipart/form-data" }))
-                {
-                    <input type="file" name="file" />
-                    <input type="text" name="link" placeholder="@image.externalLink" />
-                    <input type="submit" name="Submit" id="Submit" value="Upload" />
-                    <input type="hidden" value="@picturecount" name="picnum" />
-                }
-            </div>
-            @if (picturecount > 3)
-            {
+        if (picturecount < ViewBag.CarouselImageNumber)
+        {
+            picturecount++;
+            <div class="row">
                 <div class="col-md-3">
-                    @using (Html.BeginForm("DeleteImage", "Backend", FormMethod.Post))
+                    <img class="thumbnail" src="@Url.Content(image.url)" />
+                </div>
+                <div class="col-md-6">
+                    @Html.Label("Carousel Picture " + picturecount.ToString())
+                    @using (Html.BeginForm("Upload", "Backend", FormMethod.Post, new { enctype = "multipart/form-data" }))
                     {
-
-                        <input type="submit" name="delete" value="Delete" />
-                        
+                        <input type="file" name="file" />
+                        <input type="text" name="link" placeholder="@image.externalLink" />
+                        <input type="submit" name="Submit" id="Submit" value="Upload" />
                         <input type="hidden" value="@picturecount" name="picnum" />
                     }
                 </div>
-            }
+                @if (picturecount > 3)
+                {
+                    <div class="col-md-3">
+                        @using (Html.BeginForm("DeleteImage", "Backend", FormMethod.Post))
+                        {
 
-        </div>
+                            <input type="submit" name="delete" value="Delete" />
+
+                            <input type="hidden" value="@picturecount" name="picnum" />
+                        }
+                    </div>
+                }
+
+            </div>
+
+        }
+
 
     }
-    @if (picturecount < 6)
+    @if (ViewBag.CarouselImageNumber >= 3)
     {
         <div class="row">
             <div class="md-3">
                 @using (Html.BeginForm("ChangeCarouselNumber", "Backend", FormMethod.Post))
                 {
                     <input type="submit" value="Add" />
-                    <input type="hidden" value="@picturecount"/>
+                       
 
                 }
 
             </div>
         </div>
     }
+
 
 
 

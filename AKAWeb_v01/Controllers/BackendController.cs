@@ -78,11 +78,11 @@ namespace AKAWeb_v01.Controllers
 
 
         [HttpPost]
-        public ActionResult ChangeCarouselNumber(FormCollection form)
+        public ActionResult ChangeCarouselNumber()
         {
-            string number = form["CarouselDropdown"];
+            
             DBConnection dbconnect = new DBConnection();
-            string query = "Update Carousel set image_number = "+number+" where id = 1";
+            string query = "Update Carousel set image_number = (select image_number from Carousel where id =1) +1 where id = 1";
             dbconnect.WriteToTest(query);
             dbconnect.CloseConnection();
             return RedirectToAction("EditCarousel");
@@ -116,6 +116,11 @@ namespace AKAWeb_v01.Controllers
                     image.url = dataReader2.GetValue(2).ToString();
                     model.Add(image);
                 }
+                string query3 = "select image_number from carousel where id = 1";
+                
+                dataReader = testconn.ReadFromTest(query3);
+                dataReader.Read();
+                ViewBag.CarouselImageNumber = dataReader.GetValue(0);
                 return View(model);
             }
             else
