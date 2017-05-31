@@ -1,7 +1,7 @@
 ﻿
 @{
     ViewBag.Title = "EditCarousel";
-    
+
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -9,63 +9,59 @@
 Session: @Session["userpermission"]
 Images: @ViewBag.CarouselImageNumber;
 
-
+@model List<AKAWeb_v01.Models.CarouselImage>
 <div class="container">
 
-    <ul class="nav nav-tabs">
-        <li class="active"><a data-toggle="tab" href="#home">Number of Images</a></li>
-        <li><a data-toggle="tab" href="#menu1">Carousel Images</a></li>
-        <li><a data-toggle="tab" href="#menu2">Links for Images</a></li>
-        
-    </ul>
-
-    <div class="tab-content">
-        <div id="home" class="tab-pane fade in active">
-            <h3>Number of images</h3>
-            <p>Please set the number of images that will rotate in the carousel</p>
-           
-            @using (Html.BeginForm("ChangeCarouselNumber", "Backend", FormMethod.Post))
-            {
-                <fieldset name="number">
-
-                    
-                    @Html.DropDownList("CarouselDropdown", ViewData["CarouselDropdown"] as SelectList)<br />
-                    <input type="submit" value="Save" />
-                </fieldset>
-            }
-
-        </div>
-        <div id="menu1" class="tab-pane fade">
-            <h3>Carousel Pictures</h3>
-            @for (var i = 1; i - 1 < ViewBag.CarouselImageNumber; i++)
-            {
-                @Html.Label("Carousel Picture" + i.ToString())
-                using (Html.BeginForm("Upload", "Backend", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    @{ int picturecount = 0;}
+    @foreach (var image in Model)
+    {
+        picturecount++;
+        <div class="row">
+            <div class="col-md-3">
+                <img class="thumbnail" src="@Url.Content(image.url)" />
+            </div>
+            <div class="col-md-6">
+                @Html.Label("Carousel Picture " + picturecount.ToString())
+                @using (Html.BeginForm("Upload", "Backend", FormMethod.Post, new { enctype = "multipart/form-data" }))
                 {
                     <input type="file" name="file" />
+                    <input type="text" name="link" placeholder="@image.externalLink" />
                     <input type="submit" name="Submit" id="Submit" value="Upload" />
-                    <input type="hidden" value="@i" name="picnum" />
+                    <input type="hidden" value="@picturecount" name="picnum" />
                 }
-            }
-
-        </div>
-        <div id="menu2" class="tab-pane fade">
-            <h3>Image links</h3>
-            <p>Set URLs of carousel pictures</p>
-            @for (var i = 1; i - 1 < ViewBag.CarouselImageNumber; i++)
+            </div>
+            @if (picturecount > 3)
             {
-                @Html.Label("Picture " + i.ToString()+" URL" )
-                using (Html.BeginForm("UpdateLinks", "Backend", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                <div class="col-md-3">
+                    @using (Html.BeginForm("DeleteImage", "Backend", FormMethod.Post))
+                    {
+
+                        <input type="submit" name="delete" value="Delete" />
+                        
+                        <input type="hidden" value="@picturecount" name="picnum" />
+                    }
+                </div>
+            }
+
+        </div>
+
+    }
+    @if (picturecount < 6)
+    {
+        <div class="row">
+            <div class="md-3">
+                @using (Html.BeginForm("ChangeCarouselNumber", "Backend", FormMethod.Post))
                 {
-                    <input type="text" name="url" />
-                    <input type="submit" name="Submit" id="Submit" value="Save" />
-                    <input type="hidden" value="@i" name="picnum" />
+                    <input type="submit" value="Add" />
+                    <input type="hidden" value="@picturecount"/>
 
                 }
-            }
+
+            </div>
         </div>
-  
-    </div>
+    }
+
+
+
+
 </div>
-
-

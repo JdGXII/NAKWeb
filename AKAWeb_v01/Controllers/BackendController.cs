@@ -90,7 +90,9 @@ namespace AKAWeb_v01.Controllers
 
         public ActionResult EditCarousel()
         {
-            String userpermission = ""; 
+
+
+            String userpermission = "";
             if (System.Web.HttpContext.Current.Session["userpermission"] != null)
             {
                 userpermission = System.Web.HttpContext.Current.Session["userpermission"] as String;
@@ -98,17 +100,23 @@ namespace AKAWeb_v01.Controllers
             if (userpermission.Equals("3"))
             {
                 DBConnection testconn = new DBConnection();
-                string query = "select image_number from carousel where id = 1";
+                string query = "select * from pivoted_car_link"; //queries view with unpivoted external links
+                string query2 = "select * from pivoted_car_image"; //queries view with unpivoted image urls
                 SqlDataReader dataReader;
+                SqlDataReader dataReader2;
                 dataReader = testconn.ReadFromTest(query);
-                dataReader.Read();
-                ViewBag.CarouselImageNumber = dataReader.GetValue(0);
-                testconn.CloseDataReader();
-                testconn.CloseDataReader();
+                dataReader2 = testconn.ReadFromTest(query2);
+                var model = new List<CarouselImage>();
 
-                ViewData["CarouselDropdown"] = this.GenerateViewBagList();
-        
-                return View();
+                while (dataReader.Read())
+                {
+                    dataReader2.Read();
+                    CarouselImage image = new CarouselImage();
+                    image.externalLink = dataReader.GetValue(2).ToString();
+                    image.url = dataReader2.GetValue(2).ToString();
+                    model.Add(image);
+                }
+                return View(model);
             }
             else
                 return RedirectToAction("Index");
