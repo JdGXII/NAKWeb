@@ -10,6 +10,8 @@ Session: @Session["userpermission"]
 Images: @ViewBag.CarouselImageNumber;
 
 @model List<AKAWeb_v01.Models.CarouselImage>
+
+ 
 <div class="container">
 
     @{ int picturecount = 0;}
@@ -18,29 +20,32 @@ Images: @ViewBag.CarouselImageNumber;
         if (picturecount < ViewBag.CarouselImageNumber)
         {
             picturecount++;
-            <div class="row">
+            <div class="row" style="border-bottom:solid; margin-bottom:7px;">
                 <div class="col-md-3">
-                    <img class="thumbnail" src="@Url.Content(image.url)" />
+                    <img id="user_mg" class="thumbnail" src="@Url.Content(image.url)" />
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-6 form-group">
                     @Html.Label("Carousel Picture " + picturecount.ToString())
                     @using (Html.BeginForm("Upload", "Backend", FormMethod.Post, new { enctype = "multipart/form-data" }))
                     {
+                        
                         <input type="file" name="file" />
-                        <input type="text" name="link" placeholder="@image.externalLink" />
-                        <input type="submit" name="Submit" id="Submit" value="Upload" />
+                        @Html.Label("Image " + picturecount.ToString()+" URL")
+                        <input class="form-control" type="text" name="link"  value="@image.externalLink" /><br />
+                        <button type="submit" name="Submit" id="Submit"  >Submit</button>
                         <input type="hidden" value="@picturecount" name="picnum" />
                     }
                 </div>
                 @if (picturecount > 3)
                 {
-                    <div class="col-md-3">
+                    <div class="col-md-3 form-group">
                         @using (Html.BeginForm("DeleteImage", "Backend", FormMethod.Post))
                         {
 
-                            <input type="submit" name="delete" value="Delete" />
+                            <button type="submit" name="delete"  >Delete</button>
 
                             <input type="hidden" value="@picturecount" name="picnum" />
+                            
                         }
                     </div>
                 }
@@ -51,7 +56,7 @@ Images: @ViewBag.CarouselImageNumber;
 
 
     }
-    @if (ViewBag.CarouselImageNumber >= 3)
+    @if (ViewBag.CarouselImageNumber >= 3 && picturecount < 6)
     {
         <div class="row">
             <div class="md-3">

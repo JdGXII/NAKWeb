@@ -22,15 +22,15 @@ namespace AKAWeb_v01.Controllers
         {
             DBConnection testconn = new DBConnection();
 
-            string query = "Select name, email, password, access from Users Where email ='"+username+"' AND password ='"+password+"'";
-            
+            string query = "Select name, email, password, access from Users Where email ='" + username + "' AND password ='" + password + "'";
+
 
             try
             {
                 SqlDataReader dataReader;
-                dataReader = testconn.ReadFromTest(query);           
+                dataReader = testconn.ReadFromTest(query);
                 dataReader.Read();
-                
+
 
                 if (dataReader.GetValue(1) != null)  //(username == this.username) && (password == this.password))
                 {
@@ -57,7 +57,7 @@ namespace AKAWeb_v01.Controllers
                 System.Web.HttpContext.Current.Session["exception"] = e.ToString();
                 return RedirectToAction("Index");
             }
-            
+
         }
 
         private List<SelectListItem> GenerateViewBagList()
@@ -71,16 +71,52 @@ namespace AKAWeb_v01.Controllers
                 item.Text = i.ToString();
 
                 list.Add(item);
-                
+
             }
             return list;
+        }
+
+        [HttpPost]
+        public ActionResult DeleteImage(int picnum)
+        {
+            DBConnection dbconnect = new DBConnection();
+            string query = "Update Carousel set image_number = (select image_number from Carousel where id =1) -1 where id = 1";
+            int carousel_number = getCurrentCarouselNumber();
+            string path = Server.MapPath("~/Content/Images/CarouselUploads/carouselpicture" + picnum.ToString() + ".jpg");
+            UpdateLinks("", picnum);
+
+            if (System.IO.File.Exists(path))
+            {
+                System.IO.File.Delete(path);
+            }
+            dbconnect.WriteToTest(query);
+            dbconnect.CloseDataReader();
+            dbconnect.CloseConnection();
+            while (carousel_number - picnum >= 0)
+            {
+                path = Server.MapPath("~/Content/Images/CarouselUploads/carouselpicture" + picnum.ToString() + ".jpg");
+                string newpath = Server.MapPath("~/Content/Images/CarouselUploads/carouselpicture" + (picnum + 1).ToString() + ".jpg");
+                if (System.IO.File.Exists(newpath))
+                {
+                    System.IO.File.Move(newpath, path);
+                }
+
+
+                picnum++;
+            }
+            //}
+
+
+
+            return RedirectToAction("EditCarousel");
+
         }
 
 
         [HttpPost]
         public ActionResult ChangeCarouselNumber()
         {
-            
+
             DBConnection dbconnect = new DBConnection();
             string query = "Update Carousel set image_number = (select image_number from Carousel where id =1) +1 where id = 1";
             dbconnect.WriteToTest(query);
@@ -117,7 +153,7 @@ namespace AKAWeb_v01.Controllers
                     model.Add(image);
                 }
                 string query3 = "select image_number from carousel where id = 1";
-                
+
                 dataReader = testconn.ReadFromTest(query3);
                 dataReader.Read();
                 ViewBag.CarouselImageNumber = dataReader.GetValue(0);
@@ -126,6 +162,19 @@ namespace AKAWeb_v01.Controllers
             else
                 return RedirectToAction("Index");
         }
+
+        private int getCurrentCarouselNumber()
+        {
+            DBConnection testconn = new DBConnection();
+            string query3 = "select image_number from carousel where id = 1";
+            SqlDataReader dataReader;
+            dataReader = testconn.ReadFromTest(query3);
+            dataReader.Read();
+            int number = Int32.Parse(dataReader.GetValue(0).ToString());
+            testconn.CloseDataReader();
+            testconn.CloseConnection();
+            return number;
+        }
         // GET: Backend
         public ActionResult Index()
         {
@@ -133,7 +182,7 @@ namespace AKAWeb_v01.Controllers
         }
 
         [HttpPost]
-        public ActionResult Upload(int picnum)
+        public ActionResult Upload(int picnum, string link)
         {
 
 
@@ -142,25 +191,28 @@ namespace AKAWeb_v01.Controllers
                 var file = Request.Files[0];
 
                 if (file != null && file.ContentLength > 0)
-                try
-                {
-                    var fileName = PictureName(picnum);
-                    var path = Path.Combine(Server.MapPath("~/Content/Images/CarouselUploads"), fileName);
-                    file.SaveAs(path);
-                    ViewBag.Message = "File uploaded successfully";
-                }
-                catch(Exception ex)
-                {
-                    ViewBag.Message = "ERROR:" + ex.Message.ToString();
-                }
+                    try
+                    {
+                        var fileName = PictureName(picnum);
+                        var path = Path.Combine(Server.MapPath("~/Content/Images/CarouselUploads"), fileName);
+                        file.SaveAs(path);
+                        ViewBag.Message = "File uploaded successfully";
+                        UpdateLinks(link, picnum);
+
+                    }
+                    catch (Exception ex)
+                    {
+                        ViewBag.Message = "ERROR:" + ex.Message.ToString();
+                    }
+
             }
 
             return RedirectToAction("EditCarousel");
         }
 
-        private String PictureName (int picnum)
+        private String PictureName(int picnum)
         {
-            return "carouselpicture" + picnum.ToString()+ ".jpg";
+            return "carouselpicture" + picnum.ToString() + ".jpg";
         }
 
         public ActionResult Test()
@@ -168,20 +220,20 @@ namespace AKAWeb_v01.Controllers
             return View();
         }
 
-        public ActionResult UpdateLinks(string url, int picnum)
+        private void UpdateLinks(string url, int picnum)
         {
             DBConnection testconn = new DBConnection();
-            string query = "Update carousel_links set link" + picnum.ToString() + " = '"+url+"' where id = 1";
+            string query = "Update carousel_links set link" + picnum.ToString() + " = '" + url + "' where id = 1";
             testconn.WriteToTest(query);
-            return RedirectToAction("EditCarousel");
+            
         }
 
         public ActionResult EditMenu()
         {
-             
+
             var model = new List<MainMenuItem>();
             DBConnection testconn = new DBConnection();
-            string query = "SELECT * FROM main_menu";            
+            string query = "SELECT * FROM main_menu";
             SqlDataReader dataReader = testconn.ReadFromTest(query);
             while (dataReader.Read())
             {
