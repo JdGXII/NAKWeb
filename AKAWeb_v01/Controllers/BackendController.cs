@@ -40,7 +40,7 @@ namespace AKAWeb_v01.Controllers
                     //ViewData["sessionString"] = System.Web.HttpContext.Current.Session["userpermission"];
                     testconn.CloseDataReader();
                     testconn.CloseConnection();
-                    return RedirectToAction("EditCarousel");
+                    return RedirectToAction("Index", "Home");
 
                 }
                 else
@@ -55,7 +55,7 @@ namespace AKAWeb_v01.Controllers
             catch (Exception e)
             {
                 System.Web.HttpContext.Current.Session["exception"] = e.ToString();
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", "Home");
             }
 
         }
@@ -181,6 +181,7 @@ namespace AKAWeb_v01.Controllers
             return View();
         }
 
+
         [HttpPost]
         public ActionResult Upload(int picnum, string link)
         {
@@ -215,10 +216,7 @@ namespace AKAWeb_v01.Controllers
             return "carouselpicture" + picnum.ToString() + ".jpg";
         }
 
-        public ActionResult Test()
-        {
-            return View();
-        }
+
 
         private void UpdateLinks(string url, int picnum)
         {
@@ -266,6 +264,18 @@ namespace AKAWeb_v01.Controllers
         public ActionResult Register()
         {
             return View();
+        }
+
+        public ActionResult RegisterUser(string name, string email, string password)
+        {
+            DBConnection testconn = new DBConnection();
+            string query = "INSERT INTO Users (name, email, password, access) VALUES ('" + name + "', '" + email + "', '" + password + "',  1)";
+            testconn.WriteToTest(query);
+            testconn.CloseConnection();
+            System.Web.HttpContext.Current.Session["userpermission"] = "1";
+            System.Web.HttpContext.Current.Session["username"] = name;
+
+            return RedirectToAction("Index", "Home");
         }
 
 
