@@ -278,6 +278,23 @@ namespace AKAWeb_v01.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        public ActionResult MyProfile()
+        {
+            return View();
+        }
+
+        public ActionResult Main()
+        {
+            return View();
+        }
+
+        public ActionResult Logout()
+        {
+            Session.Clear();
+            Session.Abandon();
+            return RedirectToAction("Index", "Home");
+        }
+
 
     }
 }

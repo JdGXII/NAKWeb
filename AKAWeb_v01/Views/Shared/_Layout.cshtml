@@ -30,10 +30,18 @@
                     <li>@Html.ActionLink("About", "About", "SubPages")</li>
                     <li>@Html.ActionLink("Services", "AboutServices", "SubPages")</li>
                     <li>@Html.ActionLink("Resources", "AKABooks", "SubPages")</li>
-                    <li>@Html.ActionLink("Sign In", "Index", "Backend")</li>
-                    <li>@Html.ActionLink("Register", "Register", "Backend")</li>
+                   @if (Session["username"] != null)
+                   {
+                    <li>@Html.ActionLink("Hi "+Session["username"].ToString(), "MyProfile", "Backend")</li>
+                    <li>@Html.ActionLink("Sign Out", "Logout", "Backend")</li>
+                   }
+                   else
+                   {
+                       <li>@Html.ActionLink("Sign In/Register", "Index", "Backend")</li>
+                   }
 
-                    
+
+
                 </ul>
                 <div class="col-sm-3 col-md-3" style="float:left; padding-right:0px;">
                     <form class="navbar-form" role="search">
@@ -46,8 +54,8 @@
                     </form>
                 </div>
                 <div style="padding-top:15px;"><a href="@Url.Action("Index", "ShoppingCart")"><span class="glyphicon glyphicon-shopping-cart"></span></a></div>
-                
  
+
             </div>
         </div>
     </div>

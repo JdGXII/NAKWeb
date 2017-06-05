@@ -269,6 +269,8 @@
     <Content Include="Views\Backend\EditMenu.cshtml" />
     <Content Include="Views\Backend\Register.cshtml" />
     <Content Include="Views\ShoppingCart\Index.cshtml" />
+    <Content Include="Views\Backend\MyProfile.cshtml" />
+    <Content Include="Views\Backend\Main.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
