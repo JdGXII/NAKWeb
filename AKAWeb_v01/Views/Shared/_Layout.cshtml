@@ -65,7 +65,25 @@
 
     </div>
     <div class="container body-content">
-        @RenderBody()
+        <div class="row">
+            @if (IsSectionDefined("LeftMenu"))
+            {
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+                    @RenderSection("LeftMenu", false)
+                </div>
+                <div class="col-md-9">
+                    @RenderBody()
+                </div>
+            }
+            else
+            {
+                <div class="col-md-12">
+                    @RenderBody()
+                </div>
+            }
+
+        </div>
         <footer>
             <div style="border-top: 2px solid maroon; margin-top: 5px;">
 
