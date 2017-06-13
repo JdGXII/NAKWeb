@@ -183,6 +183,9 @@
     <Content Include="Content\Images\headerBackgroundSlice.png" />
     <Content Include="Content\Images\headerBackgroundSlice71px.png" />
     <Content Include="Content\Images\Kinesiology-Today-Graphic.jpg" />
+    <Content Include="Content\Images\Subheaders\banner_about.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
