@@ -1,9 +1,28 @@
 ﻿@model AKAWeb_v01.Models.PageModel
 
 @{
-    ViewBag.Title = "Pages";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Pages</h2>
+@section Subheader{
+
+    <div class="row ">
+        <div class="col-md-1"></div>
+        <div class="col-md-10">
+            <div class="row">
+                <div class="col-md-9">
+                    <img class="subheader-image resizeimg" src="@Model.subheaderImage" />
+                </div>
+                <div class="col-md-2 subheader-span-div resizeimg">
+                    <p style="text-align: center;">
+                        <span class="subheader-span"> @Model.title </span>
+                    </p>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-1"></div>
+
+    </div>
 
