@@ -60,3 +60,44 @@ textarea {
     right: 0;
     margin-right: 0;
 }
+
+.subheader-span {
+    font-family: trebuchet ms,geneva;
+    font-size: 24pt;
+    color: #ffffff;
+}
+
+.subheader-span-div {
+    background-color: #019392;
+    margin-top: 23px;
+    height: 150px;
+    padding-top: 50px;
+}
+
+.subheader-image {
+    padding-top: 23px;
+}
+
+.pad-right {
+    padding-right: 164px;
+}
+
+.left-menu {
+
+    
+    background-color: #E9F1F3;
+    padding-bottom: 15px;
+    padding-top: 15px
+}
+
+.left-menu-title {
+    margin-top: 29px;
+    background-color: #106D6A;
+    padding: 10px;
+    color: white;
+    font-size: 12pt;
+}
+
+.bold-font {
+    font-weight: bold
+}

@@ -28,24 +28,22 @@
     }
 
 @section LeftMenu{
+    <div class="left-menu-title">@Model.title</div>
+    <div class="left-menu">
+
+
     <ul>
-        @if(Model.leftMenu == null)
-        {
-            <li>Hi</li>
+        <li>About</li>
+        <li>About</li>
+        <li>About</li>
+        <li>About</li>
 
-        }
-        else
-        {
-            foreach (AKAWeb_v01.Models.MainMenuItem menuitem in Model.leftMenu)
-            {
-
-                <li> @Url.Action("Pages", "SubPages", new { id = menuitem.item_name.ToString() })</li>
-            }
-        }
 
 
     </ul>
+</div>
 
   }
-
-@Html.Raw(Model.pageContent);
+<div class="pad-right">
+    @Html.Raw(Model.pageContent);
+</div>
