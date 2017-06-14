@@ -29,14 +29,23 @@
 
 @section LeftMenu{
     <ul>
-        @foreach (AKAWeb_v01.Models.MainMenuItem menuitem in Model.leftMenu)
+        @if(Model.leftMenu == null)
         {
-            
-            <li> @Url.Action("Pages", "SubPages", new { id = menuitem.item_name.ToString() })</li>
+            <li>Hi</li>
+
         }
+        else
+        {
+            foreach (AKAWeb_v01.Models.MainMenuItem menuitem in Model.leftMenu)
+            {
+
+                <li> @Url.Action("Pages", "SubPages", new { id = menuitem.item_name.ToString() })</li>
+            }
+        }
+
 
     </ul>
 
   }
 
-@Model.pageContent
+@Html.Raw(Model.pageContent);

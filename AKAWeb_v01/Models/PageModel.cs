@@ -12,8 +12,8 @@ namespace AKAWeb_v01.Models
         public string subheaderImage { get; set; }
         public List<MainMenuItem> leftMenu { get; set; }
         public string pageContent { get; set; }
-        public DateTime createdAt { get; set; }
-        public DateTime modifiedAt { get; set; }
+        //public DateTime createdAt { get; set; }
+        //public DateTime modifiedAt { get; set; }
 
     }
 }
