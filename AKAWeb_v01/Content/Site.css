@@ -83,11 +83,8 @@ textarea {
 }
 
 .left-menu {
-
-    
     background-color: #E9F1F3;
-    padding-bottom: 15px;
-    padding-top: 15px
+    padding: 15px
 }
 
 .left-menu-title {
@@ -106,4 +103,9 @@ textarea {
     .mobile-hide {
         display: none;
     }
+}
+
+.left-menu-link {
+    color: #106D94;
+    
 }

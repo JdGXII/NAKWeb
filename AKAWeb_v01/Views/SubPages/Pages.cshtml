@@ -13,7 +13,7 @@
                 <div class="col-md-9">
                     <img class="subheader-image resizeimg" src="@Url.Content(Model.subheaderImage)" />
                 </div>
-                <div class="col-md-2 subheader-span-div resizeimg reziseheigt">
+                <div class="col-md-3 subheader-span-div resizeimg reziseheigt">
                     <p style="text-align: center;">
                         <span class="subheader-span"> @Model.title </span>
                     </p>
@@ -22,25 +22,19 @@
             </div>
         </div>
 
-        <div class="col-md-1"></div>
 
     </div>
     }
 
 @section LeftMenu{
-    <div class="left-menu-title">@Model.title</div>
+    <div class="left-menu-title">@Model.leftMenuTitle </div>
     <div class="left-menu">
+    
+        @foreach(string menuitem in Model.leftMenu)
+        {
+            <div>@Html.ActionLink(menuitem, "Pages", "SubPages", new { id = menuitem }, new { @class = "left-menu-link" })</div>
+        }
 
-
-    <ul>
-        <li>About</li>
-        <li>About</li>
-        <li>About</li>
-        <li>About</li>
-
-
-
-    </ul>
 </div>
 
   }

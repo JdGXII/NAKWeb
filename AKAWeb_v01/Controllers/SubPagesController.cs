@@ -31,26 +31,34 @@ namespace AKAWeb_v01.Controllers
             title = HttpUtility.UrlDecode(title);
             DBConnection testconn = new DBConnection();
             SqlDataReader datareader;
-            string query = "select id, title, subheader_image, content from Pages where title ='" + title+"'"; 
-            //submenu_id is actually the id of the parent menu. So read it as "parent id" in your head
-            //the following query basically returns the submenus of a page given the title of the page
-            string query2 = "select id, item_name, islive, submenu_id from main_menu where submenu_id = (select id from main_menu where title ='" + title + "')";
+            //this query selects the page to load by title, if it exists i.e. title matches the functions parameters
+            string query = "select id, title, subheader_image, content, section from Pages where title ='" + title+"'";
 
-            if (testconn.ReadFromTest(query).Read())
+            //assign data reader to first query
+            datareader = testconn.ReadFromTest(query);
+            //check if there are matching pages
+            if (datareader.Read())
             {
-                List<MainMenuItem> menu = new List<MainMenuItem>();
+                //this gets the section of the page and stores it in a string to be used multiple times
+                string section = datareader.GetValue(4).ToString();
+                //this query gets all page titles that belong to the same section as the requested page
+                string query2 = "select title from pages where section = " + section;
+                List<string> menu = new List<string>();
+                //read from query2
                 datareader = testconn.ReadFromTest(query2);
                 while (datareader.Read())
                 {
-                    MainMenuItem menuitem = new MainMenuItem();
-                    menuitem.id = Int32.Parse(datareader.GetValue(0).ToString());
-                    menuitem.item_name = datareader.GetValue(1).ToString();
-                    menuitem.islive = (bool)datareader.GetValue(2);
-                    menuitem.submenu_id = Int32.Parse(datareader.GetValue(3).ToString());
-                    menu.Add(menuitem);
+                    string menutitle = datareader.GetValue(0).ToString();
+                    menu.Add(menutitle);
 
                 }
-
+                //this query gets the title of the section to which the page(s) belong
+                string query3 = "select name from sections where id = " + section;
+                //use datareader to read from query3
+                datareader = testconn.ReadFromTest(query);
+                datareader.Read();
+                string leftMenuTitle = datareader.GetValue(1).ToString();
+                //read from first query again
                 datareader = testconn.ReadFromTest(query);
                 datareader.Read();
                 PageModel page = new PageModel();
@@ -59,6 +67,7 @@ namespace AKAWeb_v01.Controllers
                 page.subheaderImage = datareader.GetValue(2).ToString();
                 page.pageContent = datareader.GetValue(3).ToString();
                 page.leftMenu = menu;
+                page.leftMenuTitle = leftMenuTitle;
 
                 return page;
             }
