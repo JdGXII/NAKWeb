@@ -101,3 +101,9 @@ textarea {
 .bold-font {
     font-weight: bold
 }
+
+@media (max-width: 64em) {
+    .mobile-hide {
+        display: none;
+    }
+}
