@@ -1,0 +1,48 @@
+﻿@model IEnumerable<AKAWeb_v01.Models.PageModel>
+
+@{
+    ViewBag.Title = "EditPages";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>EditPages</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            ID
+        </th>
+        <th>
+            Title
+        </th>
+        <th>
+            Section
+        </th>
+
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.id)
+        </td>
+
+        <td>
+            @Html.DisplayFor(modelItem => item.title)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.section)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "EditPage", new { id=item.id }) |
+            @Html.ActionLink("Details", "Details", new { id=item.id }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.id })
+        </td>
+    </tr>
+}
+
+</table>

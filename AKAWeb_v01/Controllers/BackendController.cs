@@ -295,6 +295,73 @@ namespace AKAWeb_v01.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        //controller action that manages the edit pages page. Lists all the pages
+        public ActionResult ListPages()
+        {
+            var model = getPages();
+            return View(model);
+        }
+
+        //gets all pages in the db and return a list with them 
+        private List<AKAWeb_v01.Models.PageModel> getPages()
+        {
+            List<AKAWeb_v01.Models.PageModel> page_list = new List<PageModel>();
+            DBConnection testconn = new DBConnection();
+            string query = "SELECT id, title, subheader_image, content, section from Pages";
+            SqlDataReader dataReader = testconn.ReadFromTest(query);
+            //while there are records in the datareader
+            while (dataReader.Read())
+            {
+                int id = Int32.Parse(dataReader.GetValue(0).ToString());
+                string title = dataReader.GetValue(1).ToString();
+                string subheaderImage = dataReader.GetValue(2).ToString();
+                string pageContent = dataReader.GetValue(3).ToString();
+                int section = Int32.Parse(dataReader.GetValue(4).ToString());
+                PageModel page = new PageModel(id, title, subheaderImage, pageContent,section);
+                page_list.Add(page);
+
+            }
+
+            return page_list;
+
+        }
+        //gets a single page by id
+        private PageModel getPage(int pageId)
+        {
+            PageModel page = null;
+            DBConnection testconn = new DBConnection();
+            string query = "SELECT id, title, subheader_image, content, section from Pages WHERE id =" + pageId.ToString();
+            SqlDataReader dataReader = testconn.ReadFromTest(query);
+            while (dataReader.Read())
+            {
+                int id = Int32.Parse(dataReader.GetValue(0).ToString());
+                string title = dataReader.GetValue(1).ToString();
+                string subheaderImage = dataReader.GetValue(2).ToString();
+                string pageContent = dataReader.GetValue(3).ToString();
+                int section = Int32.Parse(dataReader.GetValue(4).ToString());
+                page = new PageModel(id, title, subheaderImage, pageContent, section);
+            }
+
+            return page;
+        }
+
+        public ActionResult EditPage(string id)
+        {
+
+            var model = getPage(Int32.Parse(id));
+            if(model != null)
+            {
+                return View(model);
+            }
+            else
+            {
+                return RedirectToAction("ListPages", "Backend");
+            }
+            
+        }
+
 
     }
+
+
 }
