@@ -4,19 +4,77 @@
     ViewBag.Title = "EditPage";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"
+        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+        crossorigin="anonymous"></script>
 <script src="https://cloud.tinymce.com/stable/tinymce.min.js"></script>
-<script>tinymce.init({ selector: 'textarea' });</script>
-<h2>EditPage</h2>
-
-@using (Html.BeginForm("EditPage", "Backend", FormMethod.Post))
-{
-    <div class="form-group">
-        <textarea style="height:500px;" name="content">@Model.pageContent</textarea>
+<script>tinymce.init({
+    selector: 'textarea',
+    plugins: "image",
+    //add call to function to load current images
+    image_list: "/mylist.php"
+    });
+ </script>
+<!--Following script generates the image preview in the subheader image part-->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#fileUpload").on('change', function () {
+            //Get count of selected files
+            var countFiles = $(this)[0].files.length;
+            var imgPath = $(this)[0].value;
+            var extn = imgPath.substring(imgPath.lastIndexOf('.') + 1).toLowerCase();
+            var image_holder = $("#image-holder");
+            image_holder.empty();
+            if (extn == "gif" || extn == "png" || extn == "jpg" || extn == "jpeg") {
+                if (typeof (FileReader) != "undefined") {
+                    //loop for each file selected for uploaded.
+                    for (var i = 0; i < countFiles; i++) {
+                        var reader = new FileReader();
+                        reader.onload = function (e) {
+                            $("#subheaderimg").attr("src", e.target.result);
+                        }
+                        image_holder.show();
+                        reader.readAsDataURL($(this)[0].files[i]);
+                    }
+                } else {
+                    alert("This browser does not support FileReader.");
+                }
+            } else {
+                alert("Pls select only images");
+            }
+        });
+    });
+</script>
+<script type="text/javascript">
+     $(document).ready(function () {
+         $("#restore").on('click', function () {
+             $("#subheaderimg").attr("src", "@Url.Content(Model.subheaderImage)");
+        });
+    });
+</script>
+<div class="container">
+    <h2>EditPage</h2>
+    <div>
+        @Html.Label("Subheader Image")
+        <div><img class="resizeimg" id="subheaderimg" src="@Url.Content(Model.subheaderImage)" /></div>
+        @Html.Label("Upload New Image")
+        <div class="col-md-5"><input id="fileUpload" type="file" name="file" form="content_form" /></div>
+        <div class="col-md-2"><a href="#" id="restore">Reset Image</a></div>
+        
     </div>
-    <button type="submit" class="btn btn-default">Save Changes</button>
+    <div class="row">
+        
+        <div>
+            <textarea style="height:500px;" name="content" form="content_form">@Model.pageContent</textarea>
+        </div>
+        @using (Html.BeginForm("EditPage", "Backend", FormMethod.Post, new { id = "content_form" }))
+        {
+            <input type="hidden" name="id" value="@Model.id" />
+            <button type="submit" class="btn btn-default">Save Changes</button>
 
-}
+        }
+    </div>
+</div>
 
 
     

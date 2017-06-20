@@ -360,6 +360,46 @@ namespace AKAWeb_v01.Controllers
             
         }
 
+        [HttpPost, ValidateInput(false)]     
+        public ActionResult EditPage(string id, string content)
+        {
+            //uncomment the next line to check content being passed through form
+            //System.Web.HttpContext.Current.Session["debug"] = content;
+            
+            DBConnection testconn = new DBConnection();
+            //original query to be executed. It will change if an image is being updated
+            string query = "UPDATE Pages SET content ='" + content + "'  where id =" + id;
+            //check if user is updating the page's subheader image by looking for the file in the request
+            //if he is, this will change the query to be executed
+            if (Request.Files.Count > 0)
+            {
+                var file = Request.Files[0];
+
+                if (file != null && file.ContentLength > 0)
+                    try
+                    {
+                        var fileName = file.FileName;
+                        var path = Path.Combine(Server.MapPath("~/Content/Images/Subheaders"), fileName);
+                        file.SaveAs(path);
+                        query = "UPDATE Pages SET content ='" + content + "', subheader_image ='"+path+"' where id =" + id;
+                        ViewBag.Message = "File uploaded successfully";
+                        
+
+                    }
+                    catch (Exception ex)
+                    {
+                        ViewBag.Message = "ERROR:" + ex.Message.ToString();
+                    }
+
+            }
+            
+            testconn.WriteToTest(query);
+            testconn.CloseConnection();
+
+            return RedirectToAction("ListPages", "Backend");
+
+        }
+
 
     }
 

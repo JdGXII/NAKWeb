@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Web.Mvc;
 
 namespace AKAWeb_v01.Models
 {
@@ -12,6 +13,7 @@ namespace AKAWeb_v01.Models
         public string subheaderImage { get; set; }
         public List<string> leftMenu { get; set; }
         public string leftMenuTitle { get; set; }
+        [AllowHtml]
         public string pageContent { get; set; }
         public int section { get; set; }
         //public DateTime createdAt { get; set; }
