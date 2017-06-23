@@ -238,6 +238,7 @@
     <Content Include="Views\SubPages\Pages.cshtml" />
     <Content Include="Views\Backend\ListPages.cshtml" />
     <Content Include="Views\Backend\EditPage.cshtml" />
+    <Content Include="Views\Backend\CreatePage.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

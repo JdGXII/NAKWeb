@@ -62,13 +62,16 @@ namespace AKAWeb_v01.Controllers
 
         private List<SelectListItem> GenerateViewBagList()
         {
+            DBConnection testconn = new DBConnection();
+            string query = "SELECT * from Sections";
+            SqlDataReader dataReader = testconn.ReadFromTest(query);
             List<SelectListItem> list = new List<SelectListItem>();
-            int carouselnum = int.Parse(WebConfigurationManager.AppSettings["CarouselImageNumber"]);
-            for (int i = carouselnum; i < 7; i++)
+            
+            while (dataReader.Read())
             {
                 SelectListItem item = new SelectListItem();
-                item.Value = i.ToString();
-                item.Text = i.ToString();
+                item.Value = dataReader.GetValue(0).ToString();
+                item.Text = dataReader.GetValue(1).ToString();
 
                 list.Add(item);
 
@@ -364,11 +367,11 @@ namespace AKAWeb_v01.Controllers
         public ActionResult EditPage(string id, string content)
         {
             //uncomment the next line to check content being passed through form
-            //System.Web.HttpContext.Current.Session["debug"] = content;
+            System.Web.HttpContext.Current.Session["debug"] = Request.Files.Count;
             
             DBConnection testconn = new DBConnection();
             //original query to be executed. It will change if an image is being updated
-            string query = "UPDATE Pages SET content ='" + content + "'  where id =" + id;
+            string query = "UPDATE Pages SET content ='" + content + "', subheader_image = tutut  where id =" + id;
             //check if user is updating the page's subheader image by looking for the file in the request
             //if he is, this will change the query to be executed
             if (Request.Files.Count > 0)
@@ -381,7 +384,8 @@ namespace AKAWeb_v01.Controllers
                         var fileName = file.FileName;
                         var path = Path.Combine(Server.MapPath("~/Content/Images/Subheaders"), fileName);
                         file.SaveAs(path);
-                        query = "UPDATE Pages SET content ='" + content + "', subheader_image ='"+path+"' where id =" + id;
+                        string pathForDB = "~/Content/Images/Subheaders/" + fileName.ToString(); 
+                        query = "UPDATE Pages SET content ='" + content + "', subheader_image ='"+ pathForDB + "' where id =" + id;
                         ViewBag.Message = "File uploaded successfully";
                         
 
@@ -393,6 +397,56 @@ namespace AKAWeb_v01.Controllers
 
             }
             
+            testconn.WriteToTest(query);
+            testconn.CloseConnection();
+
+            return RedirectToAction("ListPages", "Backend");
+
+        }
+
+        public ActionResult CreatePage()
+        {
+            ViewData["SectionList"] = GenerateViewBagList();
+           
+            return View();
+        }
+
+        [HttpPost, ValidateInput(false)]
+        public ActionResult CreatePage(string title, string content, string SectionList)
+        {
+            //uncomment the next line to check content being passed through form
+            System.Web.HttpContext.Current.Session["debug"] = Request.Files.Count;
+
+            DBConnection testconn = new DBConnection();
+            //original query to be executed. It will change if an image is being updated
+            string query = "INSERT into Pages (title, content, created_at, modified_at, section)" +
+                "VALUES (" + title + ", " + content + ", " + "(select getdate()), (select getdate()), " + SectionList + ")";
+            //check if user is updating the page's subheader image by looking for the file in the request
+            //if he is, this will change the query to be executed
+            if (Request.Files.Count > 0)
+            {
+                var file = Request.Files[0];
+
+                if (file != null && file.ContentLength > 0)
+                    try
+                    {
+                        var fileName = file.FileName;
+                        var path = Path.Combine(Server.MapPath("~/Content/Images/Subheaders"), fileName);
+                        file.SaveAs(path);
+                        string pathForDB = "~/Content/Images/Subheaders/" + fileName.ToString();
+                        //query = "INSERT into Pages (title, subheader_image, content, created_at, modified_at, section) VALUES (" + title + ", " + pathForDB + ", " + content + ", getdate(), getdate(), " + SectionList + ")";
+                        query = "INSERT into Pages(title, subheader_image, content, created_at, modified_at, section) VALUES('" + title + "', '" + pathForDB + "', '" + content + "', getdate(), getdate(), " + SectionList + ")";
+                        ViewBag.Message = "File uploaded successfully";
+
+
+                    }
+                    catch (Exception ex)
+                    {
+                        ViewBag.Message = "ERROR:" + ex.Message.ToString();
+                    }
+
+            }
+
             testconn.WriteToTest(query);
             testconn.CloseConnection();
 

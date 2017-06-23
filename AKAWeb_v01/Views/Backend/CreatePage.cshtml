@@ -1,20 +1,22 @@
-﻿@model AKAWeb_v01.Models.PageModel
-
+﻿
 @{
-    ViewBag.Title = "EditPage";
+    ViewBag.Title = "Create Page";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+
+<h2>CreatePage</h2>
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"
         integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
         crossorigin="anonymous"></script>
 <script src="https://cloud.tinymce.com/stable/tinymce.min.js"></script>
-<script>tinymce.init({
+<script>
+tinymce.init({
     selector: 'textarea',
     plugins: "image",
     //add call to function to load current images
     image_list: "/mylist.php"
     });
- </script>
+</script>
 <!--Following script generates the image preview in the subheader image part-->
 <script type="text/javascript">
     $(document).ready(function () {
@@ -45,44 +47,32 @@
         });
     });
 </script>
-<script type="text/javascript">
-     $(document).ready(function () {
-         $("#restore").on('click', function () {
-             $("#subheaderimg").attr("src", "@Url.Content(Model.subheaderImage)");
-        });
-    });
-</script>
+
 <div class="container">
-    <h2>EditPage</h2>
+    
+    <div class="form-group">
+        @Html.Label("Select Page Section")
+        @Html.DropDownList("SectionList", ViewData["SectionList"] as SelectList, new { form= "content_form" , @class="form-control"})
+        @Html.Label("Page Title")
+        <input style="margin-bottom: 10px;" form="content_form" type="text" class="form-control" name="title" placeholder="Page Title" />
 
-    <div class="row">
-        
-        <div>
-            <textarea style="height:500px;" name="content" form="content_form">@Model.pageContent</textarea>
-        </div>
-        @using (Html.BeginForm("EditPage", "Backend", FormMethod.Post, new { id = "content_form", enctype = "multipart/form-data" }))
-        {
-            <input type="hidden" name="id" value="@Model.id" />
-            <div>
-                @Html.Label("Subheader Image")
-                <div><img class="resizeimg" id="subheaderimg" src="@Url.Content(Model.subheaderImage)" /></div>
-                
-                <div class="row">
-                    <div class="col-md-3">
-                        @Html.Label("Upload Image")
-                        <input class="form-control" id="fileUpload" type="file" name="file" />
-                    </div>
-                    <div style="margin-top: 40px;" class="col-md-2"><a href="#" id="restore">Reset Image</a></div>
-                </div>
+        <div class="row">
 
+            <div style="margin-bottom: 15px;">
+                <textarea class="form-control" style="height:500px;" name="content" form="content_form">New page content here...</textarea>
             </div>
+            @using (Html.BeginForm("CreatePage", "Backend", FormMethod.Post, new { id = "content_form", enctype = "multipart/form-data" }))
+            {
+                @Html.Label("Subheader Image")
+                <div><img class="resizeimg" id="subheaderimg" src="http://via.placeholder.com/706x151" /></div>
+                @Html.Label("Upload Image")
+                <input class="form-control" id="fileUpload" type="file" name="file" />
+                <button style="margin-top:5px;" type="submit" class="btn btn-default">Save Page</button>
 
-            <button type="submit" class="btn btn-default">Save Changes</button>
-
-        }
+            }
+        </div>
     </div>
 </div>
 
 
-    
 
