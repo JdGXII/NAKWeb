@@ -367,7 +367,7 @@ namespace AKAWeb_v01.Controllers
         public ActionResult EditPage(string id, string content)
         {
             //uncomment the next line to check content being passed through form
-            System.Web.HttpContext.Current.Session["debug"] = Request.Files.Count;
+            //System.Web.HttpContext.Current.Session["debug"] = Request.Files.Count;
             
             DBConnection testconn = new DBConnection();
             //original query to be executed. It will change if an image is being updated
@@ -415,7 +415,7 @@ namespace AKAWeb_v01.Controllers
         public ActionResult CreatePage(string title, string content, string SectionList)
         {
             //uncomment the next line to check content being passed through form
-            System.Web.HttpContext.Current.Session["debug"] = Request.Files.Count;
+            //System.Web.HttpContext.Current.Session["debug"] = Request.Files.Count;
 
             DBConnection testconn = new DBConnection();
             //original query to be executed. It will change if an image is being updated
