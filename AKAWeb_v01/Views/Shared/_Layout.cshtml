@@ -27,7 +27,7 @@
                 </a>
             
                 <ul class="nav navbar-nav" >
-                    <li>@Html.ActionLink("About", "About", "SubPages")</li>
+                    <li>@Html.ActionLink("About Us", "Pages", "SubPages", new {id = "about us" }, null)</li>
                     <li>@Html.ActionLink("Services", "AboutServices", "SubPages")</li>
                     <li>@Html.ActionLink("Resources", "AKABooks", "SubPages")</li>
                    @if (Session["username"] != null)
