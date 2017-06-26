@@ -371,7 +371,7 @@ namespace AKAWeb_v01.Controllers
             
             DBConnection testconn = new DBConnection();
             //original query to be executed. It will change if an image is being updated
-            string query = "UPDATE Pages SET content ='" + content + "', subheader_image = tutut  where id =" + id;
+            string query = "UPDATE Pages SET content ='" + content + "' where id =" + id;
             //check if user is updating the page's subheader image by looking for the file in the request
             //if he is, this will change the query to be executed
             if (Request.Files.Count > 0)
