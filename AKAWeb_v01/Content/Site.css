@@ -105,7 +105,15 @@ textarea {
     }
 }
 
+@media (max-width: 26em) {
+    .logo-hide {
+        display: none;
+    }
+}
+
+
 .left-menu-link {
     color: #106D94;
     
 }
+
