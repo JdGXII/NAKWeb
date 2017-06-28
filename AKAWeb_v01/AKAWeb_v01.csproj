@@ -196,6 +196,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="Properties\PublishProfiles\CustomProfile.pubxml" />
+    <None Include="Properties\PublishProfiles\CustomProfile1.pubxml" />
     <None Include="Properties\PublishProfiles\developmentAKAWebv0120170503101050 - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\developmentAKAWebv0120170525064454 - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\stagingAKAWebv0120170607060749 - Web Deploy.pubxml" />
