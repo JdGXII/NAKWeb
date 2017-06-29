@@ -474,6 +474,12 @@ namespace AKAWeb_v01.Controllers
             testconn.WriteToTest(query2);
             return RedirectToAction("ListPages", "Backend");
         }
+        //for now this just redirects to the regular page i.e. SubPages Controller
+        //I'm leaving it here in case we want to do something different with previews.
+        public ActionResult PreviewPage(string id)
+        {
+            return RedirectToAction("Pages", "SubPages", new { id = id });
+        }
 
 
     }

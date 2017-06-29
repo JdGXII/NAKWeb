@@ -53,7 +53,7 @@
             
         <td>
             @Html.ActionLink("Edit", "EditPage", new { id=item.id }) |
-            @Html.ActionLink("Details", "Details", new { id=item.id }) |
+            @Html.ActionLink("View Page", "PreviewPage", new { id=item.title }, new { target = "_blank" }) |
             @if (item.isLive == true)
             {
                 @Html.ActionLink("Disable Page", "ToggleIsLivePage", new { id = item.id });
