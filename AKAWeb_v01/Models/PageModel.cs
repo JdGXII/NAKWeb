@@ -16,6 +16,7 @@ namespace AKAWeb_v01.Models
         [AllowHtml]
         public string pageContent { get; set; }
         public int section { get; set; }
+        public bool isLive { get; set; }
         //public DateTime createdAt { get; set; }
         //public DateTime modifiedAt { get; set; }
 
@@ -24,13 +25,14 @@ namespace AKAWeb_v01.Models
 
         }
 
-        public PageModel(int id, string title, string subheaderImage, string pageContent, int section)
+        public PageModel(int id, string title, string subheaderImage, string pageContent, int section, bool isLive)
         {
             this.id = id;
             this.title = title;
             this.subheaderImage = subheaderImage;
             this.pageContent = pageContent;
             this.section = section;
+            this.isLive = isLive;
             leftMenu = null;
             leftMenuTitle = null;
 

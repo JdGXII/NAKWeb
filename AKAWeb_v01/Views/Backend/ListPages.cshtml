@@ -5,7 +5,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>EditPages</h2>
+<h2>Edit Pages</h2>
 
 <p>
     @Html.ActionLink("Create New", "CreatePage")
@@ -20,6 +20,10 @@
         </th>
         <th>
             Section
+        </th>
+
+        <th>
+            Is Live
         </th>
 
         <th></th>
@@ -37,10 +41,29 @@
         <td>
             @Html.DisplayFor(modelItem => item.section)
         </td>
+        
+           @if (item.isLive == true)
+           {
+            <td>Yes</td>
+           }
+           else {
+
+               <td>No</td>
+           }
+            
         <td>
             @Html.ActionLink("Edit", "EditPage", new { id=item.id }) |
             @Html.ActionLink("Details", "Details", new { id=item.id }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.id })
+            @if (item.isLive == true)
+            {
+                @Html.ActionLink("Disable Page", "ToggleIsLivePage", new { id = item.id });
+            }
+            else
+            {
+                @Html.ActionLink("Publish Page", "ToggleIsLivePage", new { id = item.id });
+
+            }
+
         </td>
     </tr>
 }

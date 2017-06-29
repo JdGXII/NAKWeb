@@ -310,7 +310,7 @@ namespace AKAWeb_v01.Controllers
         {
             List<AKAWeb_v01.Models.PageModel> page_list = new List<PageModel>();
             DBConnection testconn = new DBConnection();
-            string query = "SELECT id, title, subheader_image, content, section from Pages";
+            string query = "SELECT id, title, subheader_image, content, section, isAlive from Pages";
             SqlDataReader dataReader = testconn.ReadFromTest(query);
             //while there are records in the datareader
             while (dataReader.Read())
@@ -320,7 +320,8 @@ namespace AKAWeb_v01.Controllers
                 string subheaderImage = dataReader.GetValue(2).ToString();
                 string pageContent = dataReader.GetValue(3).ToString();
                 int section = Int32.Parse(dataReader.GetValue(4).ToString());
-                PageModel page = new PageModel(id, title, subheaderImage, pageContent,section);
+                bool isAlive = (bool)dataReader.GetValue(5);
+                PageModel page = new PageModel(id, title, subheaderImage, pageContent,section, isAlive);
                 page_list.Add(page);
 
             }
@@ -333,7 +334,7 @@ namespace AKAWeb_v01.Controllers
         {
             PageModel page = null;
             DBConnection testconn = new DBConnection();
-            string query = "SELECT id, title, subheader_image, content, section from Pages WHERE id =" + pageId.ToString();
+            string query = "SELECT id, title, subheader_image, content, section, isAlive from Pages WHERE id =" + pageId.ToString();
             SqlDataReader dataReader = testconn.ReadFromTest(query);
             while (dataReader.Read())
             {
@@ -342,7 +343,9 @@ namespace AKAWeb_v01.Controllers
                 string subheaderImage = dataReader.GetValue(2).ToString();
                 string pageContent = dataReader.GetValue(3).ToString();
                 int section = Int32.Parse(dataReader.GetValue(4).ToString());
-                page = new PageModel(id, title, subheaderImage, pageContent, section);
+                bool isAlive = (bool)dataReader.GetValue(5);
+                page = new PageModel(id, title, subheaderImage, pageContent, section, isAlive);
+                
             }
 
             return page;
@@ -452,6 +455,24 @@ namespace AKAWeb_v01.Controllers
 
             return RedirectToAction("ListPages", "Backend");
 
+        }
+
+        public ActionResult ToggleIsLivePage(string id)
+        {
+            DBConnection testconn = new DBConnection();
+            //see what is the current state of the page if it's alive or not
+            string query = "SELECT isAlive from Pages where id =" + id;
+            //this query will set a page isAlive to 0 
+            string query2 = "UPDATE Pages SET isAlive = 0 WHERE id =" + id;
+            SqlDataReader dataReader = testconn.ReadFromTest(query);
+            dataReader.Read();
+            //if the page is NOT live, change the query and turn the page to live
+            if (!(bool)dataReader.GetValue(0))
+            {
+                query2 = "UPDATE Pages SET isAlive = 1 WHERE id =" + id;
+            }
+            testconn.WriteToTest(query2);
+            return RedirectToAction("ListPages", "Backend");
         }
 
 
