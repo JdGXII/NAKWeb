@@ -481,6 +481,77 @@ namespace AKAWeb_v01.Controllers
             return RedirectToAction("Pages", "SubPages", new { id = id });
         }
 
+        //retrieves all sections from db and returns in list form
+        private List<SectionModel> getSections()
+        {
+            DBConnection testconn = new DBConnection();
+            string query = "SELECT * from Sections";
+            SqlDataReader dataReader = testconn.ReadFromTest(query);
+            List<SectionModel> sections = new List<SectionModel>();
+            while (dataReader.Read())
+            {
+                int id = Int32.Parse(dataReader.GetValue(0).ToString());
+                string title = dataReader.GetValue(1).ToString();
+                bool isLive = (bool)dataReader.GetValue(2);
+                SectionModel section = new SectionModel(id, title, isLive);
+                sections.Add(section);
+
+            }
+
+            return sections;
+        }
+
+        //Lists all sections
+        public ActionResult ListSections()
+        {
+
+            var model = getSections();
+            return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult EditSection(string sectionid, string sectiontitle)
+        {
+
+            DBConnection testconn = new DBConnection();
+            string query = "UPDATE Sections SET name = '" + sectiontitle + "' WHERE id = " + sectionid;
+            testconn.WriteToTest(query);
+            return RedirectToAction("ListSections", "Backend");
+        }
+
+        public ActionResult ToggleIsLiveSection(string id)
+        {
+            DBConnection testconn = new DBConnection();
+            //see what is the current state of the section if it's alive or not
+            string query = "SELECT isAlive from Sections where id =" + id;
+            //this query will set a section isAlive to 0 
+            string query2 = "UPDATE Sections SET isAlive = 0 WHERE id =" + id;
+            SqlDataReader dataReader = testconn.ReadFromTest(query);
+            dataReader.Read();
+            //if the section is NOT live, change the query and turn the page to live
+            if (!(bool)dataReader.GetValue(0))
+            {
+                query2 = "UPDATE Sections SET isAlive = 1 WHERE id =" + id;
+            }
+            testconn.WriteToTest(query2);
+            testconn.CloseConnection();
+            return RedirectToAction("ListSections", "Backend");
+        }
+
+        public ActionResult CreateSection()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult CreateSection(string sectiontitle)
+        {
+            DBConnection testconn = new DBConnection();
+            string query = "INSERT INTO Sections (name, isAlive) VALUES ('" + sectiontitle + "', 1)";
+            testconn.WriteToTest(query);
+            testconn.CloseConnection();
+            return RedirectToAction("ListSections", "Backend");
+        }
 
     }
 

@@ -1,0 +1,66 @@
+﻿@model IEnumerable<AKAWeb_v01.Models.SectionModel>
+
+@{
+    ViewBag.Title = "Create Section";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Create Section</h2>
+
+<p>
+    @Html.ActionLink("Create Section", "CreateSection")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            Section Title
+        </th>
+        <th>
+            Is Live
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        string formid = "edit" + item.id;
+        <tr>
+            <td>
+
+                @using (Html.BeginForm("EditSection", "Backend", FormMethod.Post, new { id = formid }))
+                {
+                    <input class="form-control" type="text" name="sectiontitle" placeholder="@item.title" />
+                    <input type="hidden" value="@item.id" name="sectionid" />
+                }
+
+            </td>
+            
+
+            @if (item.isLive == true)
+            {
+                <td>Yes</td>
+            }
+            else
+            {
+
+                <td>No</td>
+            }
+
+
+            <td>
+
+                <button type="submit" form="@formid" class="btn btn-default">Save Changes</button> |
+                @if (item.isLive == true)
+                {
+                    @Html.ActionLink("Disable Section", "ToggleIsLiveSection", new { id = item.id });
+                }
+                else
+                {
+                    @Html.ActionLink("Enable Page", "ToggleIsLiveSection", new { id = item.id });
+
+                }
+            </td>
+        </tr>
+    }
+
+</table>

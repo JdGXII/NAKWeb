@@ -155,6 +155,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\CarouselImage.cs" />
+    <Compile Include="Models\SectionModel.cs" />
     <Compile Include="Models\PageModel.cs" />
     <Compile Include="Models\MainMenuItem.cs" />
     <Compile Include="Models\User.cs" />
@@ -240,6 +241,8 @@
     <Content Include="Views\Backend\ListPages.cshtml" />
     <Content Include="Views\Backend\EditPage.cshtml" />
     <Content Include="Views\Backend\CreatePage.cshtml" />
+    <Content Include="Views\Backend\ListSections.cshtml" />
+    <Content Include="Views\Backend\CreateSection.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
