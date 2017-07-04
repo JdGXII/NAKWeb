@@ -351,9 +351,50 @@ namespace AKAWeb_v01.Controllers
             return page;
         }
 
+        //gets and individual section from which a page belongs to and returns it as a SectionModel to be used by views
+        private SectionModel getSection(string id)
+        {
+            DBConnection testconn = new DBConnection();
+            //get which section
+            string query = "SELECT section from Pages where id = " + id;
+            SqlDataReader dataReader = testconn.ReadFromTest(query);
+            dataReader.Read();
+            //change query to get selected sections
+            query = "SELECT id, name, isAlive from Sections where id = " + dataReader.GetValue(0).ToString();
+            dataReader = testconn.ReadFromTest(query);
+            dataReader.Read();
+
+            int section_id = Int32.Parse(dataReader.GetValue(0).ToString());
+            string name = dataReader.GetValue(1).ToString();
+            bool isLive = (bool)dataReader.GetValue(2);
+            SectionModel section = new SectionModel(section_id, name, isLive);
+
+            return section;
+
+        }
+
+        public ActionResult ChangePageSection(string id)
+        {
+            var model = getSection(id);
+            ViewData["SectionList"] = GenerateViewBagList();
+            PageModel page = getPage(Int32.Parse(id));
+            ViewData["PageTitle"] = page.title;
+            return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult ChangePageSection(string SectionList, string page_id)
+        {
+            DBConnection testconn = new DBConnection();
+            string query = "UPDATE Pages SET section=" + SectionList + " WHERE id =" + page_id;
+            bool t = testconn.WriteToTest(query);
+            if (t) { }
+            return RedirectToAction("ChangePageSection", new { id = page_id });
+        }
+
         public ActionResult EditPage(string id)
         {
-
+            
             var model = getPage(Int32.Parse(id));
             if(model != null)
             {
@@ -367,14 +408,14 @@ namespace AKAWeb_v01.Controllers
         }
 
         [HttpPost, ValidateInput(false)]     
-        public ActionResult EditPage(string id, string content)
+        public ActionResult EditPage(string id, string content, string title)
         {
             //uncomment the next line to check content being passed through form
             //System.Web.HttpContext.Current.Session["debug"] = Request.Files.Count;
             
             DBConnection testconn = new DBConnection();
             //original query to be executed. It will change if an image is being updated
-            string query = "UPDATE Pages SET content ='" + content + "' where id =" + id;
+            string query = "UPDATE Pages SET content ='" + content + "', title = '"+title+"' where id =" + id;
             //check if user is updating the page's subheader image by looking for the file in the request
             //if he is, this will change the query to be executed
             if (Request.Files.Count > 0)
@@ -388,7 +429,7 @@ namespace AKAWeb_v01.Controllers
                         var path = Path.Combine(Server.MapPath("~/Content/Images/Subheaders"), fileName);
                         file.SaveAs(path);
                         string pathForDB = "~/Content/Images/Subheaders/" + fileName.ToString(); 
-                        query = "UPDATE Pages SET content ='" + content + "', subheader_image ='"+ pathForDB + "' where id =" + id;
+                        query = "UPDATE Pages SET content ='" + content + "', subheader_image ='"+ pathForDB + "', title = '" + title + "' where id =" + id;
                         ViewBag.Message = "File uploaded successfully";
                         
 

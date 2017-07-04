@@ -53,7 +53,8 @@
            }
             
         <td>
-            @Html.ActionLink("Edit", "EditPage", new { id=item.id }) |
+            @Html.ActionLink("Edit", "EditPage", new { id=item.id }, new { target = "_blank" }) |
+            @Html.ActionLink("Change Page Section", "ChangePageSection", new { id = item.id }, new { target = "_blank" }) |
             @Html.ActionLink("View Page", "PreviewPage", new { id=item.title }, new { target = "_blank" }) |
             @if (item.isLive == true)
             {

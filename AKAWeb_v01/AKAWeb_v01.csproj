@@ -243,6 +243,7 @@
     <Content Include="Views\Backend\CreatePage.cshtml" />
     <Content Include="Views\Backend\ListSections.cshtml" />
     <Content Include="Views\Backend\CreateSection.cshtml" />
+    <Content Include="Views\Backend\ChangePageSection.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

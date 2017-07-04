@@ -1,0 +1,33 @@
+﻿@model AKAWeb_v01.Models.SectionModel
+
+@{
+    ViewBag.Title = "ChangePageSection";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{ string page_id = Html.ViewContext.RouteData.Values["id"].ToString();}
+<h2>Change Page Section</h2>
+
+
+
+<div class="container">
+    <h3>Changing a page section will make it change the menu on which it appears under in the top menu beneath the header</h3>
+    
+    <h3>Page: <a href="@Url.Action("Pages", "SubPages", new { id = ViewData["PageTitle"] })"> @ViewData["PageTitle"]</a> </h3>
+    <div class="form-group">
+
+
+
+            @using (Html.BeginForm("ChangePageSection", "Backend", FormMethod.Post, new { id = "content_form", enctype = "multipart/form-data" }))
+            {
+                @Html.Label("Current Page Section")
+                <p>@Model.title</p>
+                @Html.Label("Select new section for the page")
+                @Html.DropDownList("SectionList", ViewData["SectionList"] as SelectList, new { form = "content_form", @class = "form-control" })
+                <input type="hidden" name="page_id" value="@page_id" />
+                <button style="margin-top:5px;" type="submit" class="btn btn-default">Save Changes</button>
+
+            }
+        
+    </div>
+</div>
