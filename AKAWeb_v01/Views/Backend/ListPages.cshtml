@@ -7,6 +7,17 @@
 
 <h2>Edit Pages</h2>
 
+@section BackMenu{
+    <div class="left-menu-title">Backend Controls</div>
+    <div class="left-menu">
+
+        @foreach (AKAWeb_v01.Models.BackendMenuModel menuitem in ViewData["BackendPages"] as List<AKAWeb_v01.Models.BackendMenuModel>)
+        {
+            <div>@Html.ActionLink(menuitem.title, menuitem.action, menuitem.controller, null, new { @class = "left-menu-link" })</div>
+        }
+
+    </div>
+    }
 <p>
     @Html.ActionLink("Create New Page", "CreatePage") |
     @Html.ActionLink("Create New Section", "ListSections")
@@ -72,4 +83,4 @@
 
 </table>
 
-@Session["debug"]
+

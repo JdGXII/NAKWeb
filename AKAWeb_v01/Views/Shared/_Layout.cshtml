@@ -77,6 +77,17 @@
                     @RenderBody()
                 </div>
             }
+            else if (IsSectionDefined("BackMenu"))
+            {
+
+                <div class="col-md-2 bold-font">
+                    @RenderSection("BackMenu", false)
+                </div>
+                <div class="col-md-10">
+                    @RenderBody()
+                </div>
+            }
+
             else
             {
                 <div class="col-md-12">

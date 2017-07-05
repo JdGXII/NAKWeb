@@ -155,6 +155,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\CarouselImage.cs" />
+    <Compile Include="Models\BackendMenuModel.cs" />
     <Compile Include="Models\SectionModel.cs" />
     <Compile Include="Models\PageModel.cs" />
     <Compile Include="Models\MainMenuItem.cs" />

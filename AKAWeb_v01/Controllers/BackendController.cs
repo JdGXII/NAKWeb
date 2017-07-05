@@ -130,7 +130,7 @@ namespace AKAWeb_v01.Controllers
         public ActionResult EditCarousel()
         {
 
-
+            
             String userpermission = "";
             if (System.Web.HttpContext.Current.Session["userpermission"] != null)
             {
@@ -138,6 +138,8 @@ namespace AKAWeb_v01.Controllers
             }
             if (userpermission.Equals("3"))
             {
+                //creates the left menu in the backend page
+                ViewData["BackendPages"] = getBackendPages();
                 DBConnection testconn = new DBConnection();
                 string query = "select * from pivoted_car_link"; //queries view with unpivoted external links
                 string query2 = "select * from pivoted_car_image"; //queries view with unpivoted image urls
@@ -288,6 +290,7 @@ namespace AKAWeb_v01.Controllers
 
         public ActionResult Main()
         {
+            ViewData["BackendPages"] = getBackendPages();
             return View();
         }
 
@@ -301,6 +304,7 @@ namespace AKAWeb_v01.Controllers
         //controller action that manages the edit pages page. Lists all the pages
         public ActionResult ListPages()
         {
+            ViewData["BackendPages"] = getBackendPages();
             var model = getPages();
             return View(model);
         }
@@ -375,6 +379,7 @@ namespace AKAWeb_v01.Controllers
 
         public ActionResult ChangePageSection(string id)
         {
+            ViewData["BackendPages"] = getBackendPages();
             var model = getSection(id);
             ViewData["SectionList"] = GenerateViewBagList();
             PageModel page = getPage(Int32.Parse(id));
@@ -398,6 +403,7 @@ namespace AKAWeb_v01.Controllers
             var model = getPage(Int32.Parse(id));
             if(model != null)
             {
+                ViewData["BackendPages"] = getBackendPages();
                 return View(model);
             }
             else
@@ -451,7 +457,7 @@ namespace AKAWeb_v01.Controllers
         public ActionResult CreatePage()
         {
             ViewData["SectionList"] = GenerateViewBagList();
-           
+            ViewData["BackendPages"] = getBackendPages();
             return View();
         }
 
@@ -545,7 +551,7 @@ namespace AKAWeb_v01.Controllers
         //Lists all sections
         public ActionResult ListSections()
         {
-
+            ViewData["BackendPages"] = getBackendPages();
             var model = getSections();
             return View(model);
         }
@@ -581,6 +587,7 @@ namespace AKAWeb_v01.Controllers
 
         public ActionResult CreateSection()
         {
+            ViewData["BackendPages"] = getBackendPages();
             return View();
         }
 
@@ -592,6 +599,28 @@ namespace AKAWeb_v01.Controllers
             testconn.WriteToTest(query);
             testconn.CloseConnection();
             return RedirectToAction("ListSections", "Backend");
+        }
+
+        //this function returns the list of backend pages from the DB to populate the backend menu
+        private List<BackendMenuModel> getBackendPages()
+        {
+
+            List<BackendMenuModel> backend_pages = new List<BackendMenuModel>();
+            DBConnection testconn = new DBConnection();
+            string query = "SELECT id, title, controller, action, isLive FROM BackendPages where isLive = 1";
+            SqlDataReader dataReader = testconn.ReadFromTest(query);
+            while (dataReader.Read())
+            {
+                int id = Int32.Parse(dataReader.GetValue(0).ToString());
+                string title = dataReader.GetValue(1).ToString();
+                string controller = dataReader.GetValue(2).ToString();
+                string action = dataReader.GetValue(3).ToString();
+                bool isLive = (bool)dataReader.GetValue(4);
+                BackendMenuModel backendPage = new BackendMenuModel(id, title, controller, action, isLive);
+                backend_pages.Add(backendPage);
+            }
+
+            return backend_pages;
         }
 
     }
