@@ -9,7 +9,7 @@
     <link type="text/css" rel="~/Content/Site.css"/>
 </head>
 <body>
-    <div class="navbar navbar-default navbar-fixed-top header">
+    <div class="navbar navbar-default navbar-fixed-top header" style="max-height: 70px;">
         <div class="container">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -59,6 +59,11 @@
 
             </div>
         </div>
+    </div>
+    <div class="container nav-2 text-center" style="color:darkgray; margin-top:25px; position:relative; z-index:4;">
+
+        @Html.Action("MainMenu", "Menu")
+
     </div>
     <div class="container">
 

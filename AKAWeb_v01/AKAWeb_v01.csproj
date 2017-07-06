@@ -246,7 +246,7 @@
     <Content Include="Views\Backend\ListSections.cshtml" />
     <Content Include="Views\Backend\CreateSection.cshtml" />
     <Content Include="Views\Backend\ChangePageSection.cshtml" />
-    <Content Include="Views\Menu\_TopMenu.cshtml" />
+    <Content Include="Views\Menu\_MainMenu.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
