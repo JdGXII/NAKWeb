@@ -149,6 +149,7 @@
     <Compile Include="Classes\DBConnection.cs" />
     <Compile Include="Controllers\BackendController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\MenuController.cs" />
     <Compile Include="Controllers\ShoppingCartController.cs" />
     <Compile Include="Controllers\SubPagesController.cs" />
     <Compile Include="Global.asax.cs">
@@ -245,6 +246,7 @@
     <Content Include="Views\Backend\ListSections.cshtml" />
     <Content Include="Views\Backend\CreateSection.cshtml" />
     <Content Include="Views\Backend\ChangePageSection.cshtml" />
+    <Content Include="Views\Menu\_TopMenu.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
