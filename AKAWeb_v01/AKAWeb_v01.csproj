@@ -150,6 +150,7 @@
     <Compile Include="Controllers\BackendController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MenuController.cs" />
+    <Compile Include="Controllers\ProductsController.cs" />
     <Compile Include="Controllers\ShoppingCartController.cs" />
     <Compile Include="Controllers\SubPagesController.cs" />
     <Compile Include="Global.asax.cs">
@@ -249,6 +250,7 @@
     <Content Include="Views\Backend\CreateSection.cshtml" />
     <Content Include="Views\Backend\ChangePageSection.cshtml" />
     <Content Include="Views\Menu\_MainMenu.cshtml" />
+    <Content Include="Views\Products\Memberships.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

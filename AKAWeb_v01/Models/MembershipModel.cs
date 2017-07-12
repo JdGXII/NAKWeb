@@ -5,6 +5,9 @@ using System.Web;
 
 namespace AKAWeb_v01.Models
 {
+    //derived class from Product
+    //Not being used for anything at the moment
+    //might be used at a later point
     public class MembershipModel : ProductModel
     {
         public string type { get; set; }
