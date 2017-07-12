@@ -27,10 +27,8 @@
             <div class="navbar-collapse collapse">
           
             
-                <ul class="nav navbar-nav" >
-                    <li>@Html.ActionLink("About Us", "Pages", "SubPages", new {id = "about us" }, null)</li>
-                    <li>@Html.ActionLink("Services", "AboutServices", "SubPages")</li>
-                    <li>@Html.ActionLink("Resources", "AKABooks", "SubPages")</li>
+                <ul style="float:right;" class="nav navbar-nav" >
+
                    @if (Session["username"] != null)
                    {
                     <li>@Html.ActionLink("Hi "+Session["username"].ToString(), "MyProfile", "Backend")</li>
@@ -44,7 +42,7 @@
 
 
                 </ul>
-                <div class="col-sm-3" style="float:left; padding-right:0px; display:inline;">
+                <div class="col-sm-3" style="float:right; padding-right:0px; display:inline;">
                     <form class="navbar-form" role="search">
                         <div class="input-group">
                             <input type="text" class="form-control" placeholder="Search" name="q">
@@ -54,7 +52,7 @@
                         </div>
                     </form>
                 </div>
-                <div style="padding-top:15px;"><a href="@Url.Action("Index", "ShoppingCart")"><span class="glyphicon glyphicon-shopping-cart"></span></a></div>
+                <div style="padding-top:15px; float:right;"><a href="@Url.Action("Index", "ShoppingCart")"><span class="glyphicon glyphicon-shopping-cart"></span></a></div>
  
 
             </div>

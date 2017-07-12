@@ -151,3 +151,19 @@ textarea {
             }
 }
 
+.menu-link {
+    color: #777777;
+}
+
+.menu-link:hover {
+    color: black;
+}
+
+.menu-link:visited {
+        color: black;
+    }
+.menu-link:active {
+        color: black;
+    }
+
+

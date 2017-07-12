@@ -469,8 +469,8 @@ namespace AKAWeb_v01.Controllers
 
             DBConnection testconn = new DBConnection();
             //original query to be executed. It will change if an image is being updated
-            string query = "INSERT into Pages (title, content, created_at, modified_at, section)" +
-                "VALUES (" + title + ", " + content + ", " + "(select getdate()), (select getdate()), " + SectionList + ")";
+            string query = "INSERT into Pages (title, subheader_image, content, created_at, modified_at, section, isAlive)" +
+                "VALUES ('" + title + "', ' ', '" + content + "', " + "(select getdate()), (select getdate()), " + SectionList + ", 1)";
             //check if user is updating the page's subheader image by looking for the file in the request
             //if he is, this will change the query to be executed
             if (Request.Files.Count > 0)
@@ -485,7 +485,7 @@ namespace AKAWeb_v01.Controllers
                         file.SaveAs(path);
                         string pathForDB = "~/Content/Images/Subheaders/" + fileName.ToString();
                         //query = "INSERT into Pages (title, subheader_image, content, created_at, modified_at, section) VALUES (" + title + ", " + pathForDB + ", " + content + ", getdate(), getdate(), " + SectionList + ")";
-                        query = "INSERT into Pages(title, subheader_image, content, created_at, modified_at, section) VALUES('" + title + "', '" + pathForDB + "', '" + content + "', getdate(), getdate(), " + SectionList + ")";
+                        query = "INSERT into Pages(title, subheader_image, content, created_at, modified_at, section, isAlive) VALUES('" + title + "', '" + pathForDB + "', '" + content + "', getdate(), getdate(), " + SectionList + ", 1)";
                         ViewBag.Message = "File uploaded successfully";
 
 
