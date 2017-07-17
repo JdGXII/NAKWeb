@@ -19,7 +19,11 @@
 @foreach (var item in Model) {
     <tr>
         <td>
-            @Html.DisplayFor(modelItem => item.description)
+            @Html.DisplayFor(modelItem => item.description) <br />
+            <a href="#@item.id" data-toggle="collapse">Details</a>
+            <div id="@item.id" class="collapse">
+                @Html.DisplayFor(modelItem => item.details)
+            </div>
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.length) year(s)

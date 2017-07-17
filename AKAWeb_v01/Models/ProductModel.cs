@@ -13,6 +13,8 @@ namespace AKAWeb_v01.Models
         public string description { get; set; }
         public string length { get; set; }
         public bool isLive { get; set; }
+        public string details { get; set; }
+        public string image { get; set; }
         
         public ProductModel(int id, int cost, string type, string description, string length, bool isLive)
         {
@@ -22,6 +24,19 @@ namespace AKAWeb_v01.Models
             this.description = description;
             this.length = length;
             this.isLive = isLive;
+
+        }
+
+        public ProductModel(int id, int cost, string type, string description, string length, bool isLive, string details, string image)
+        {
+            this.id = id;
+            this.cost = cost;
+            this.type = type;
+            this.description = description;
+            this.length = length;
+            this.isLive = isLive;
+            this.details = details;
+            this.image = image;
 
         }
 
