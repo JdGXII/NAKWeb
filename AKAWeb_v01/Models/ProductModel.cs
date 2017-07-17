@@ -24,5 +24,13 @@ namespace AKAWeb_v01.Models
             this.isLive = isLive;
 
         }
+
+        public ProductModel(int id, int cost)
+        {
+            this.id = id;
+            this.cost = cost;
+          
+
+        }
     }
 }

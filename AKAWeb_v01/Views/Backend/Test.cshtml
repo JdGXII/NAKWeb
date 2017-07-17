@@ -6,8 +6,4 @@
 
 <h2>Test</h2>
 
-@using (Html.BeginForm("Test", "Backend", FormMethod.Post, new { enctype = "multipart/form-data" }))
-{
-    <input type="file" name="FileUpload" />
-    <input type="submit" name="Submit" id="Submit" value="Upload" />
-}
+@Session["exception"]

@@ -24,6 +24,13 @@ namespace AKAWeb_v01.Controllers
             return View(model);
         }
 
+        /*[ChildActionOnly]
+        public PartialViewResult Memberships()
+        {
+            var model = getMemberships();
+            return PartialView("_Memberships", model);
+        }*/
+
         private List<ProductModel> getMemberships()
         {
             DBConnection testconn = new DBConnection();

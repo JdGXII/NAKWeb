@@ -22,7 +22,7 @@ namespace AKAWeb_v01.Controllers
         {
             DBConnection testconn = new DBConnection();
 
-            string query = "Select name, email, password, access from Users Where email ='" + username + "' AND password ='" + password + "'";
+            string query = "Select name, email, id, access from Users Where email ='" + username + "' AND password ='" + password + "'";
 
 
             try
@@ -36,6 +36,7 @@ namespace AKAWeb_v01.Controllers
                 {
                     System.Web.HttpContext.Current.Session["userpermission"] = dataReader.GetValue(3).ToString();
                     System.Web.HttpContext.Current.Session["username"] = dataReader.GetValue(0).ToString();
+                    System.Web.HttpContext.Current.Session["userid"] = dataReader.GetValue(2).ToString();
 
                     //ViewData["sessionString"] = System.Web.HttpContext.Current.Session["userpermission"];
                     testconn.CloseDataReader();
@@ -621,6 +622,11 @@ namespace AKAWeb_v01.Controllers
             }
 
             return backend_pages;
+        }
+
+        public ActionResult Test()
+        {
+            return View();
         }
 
     }

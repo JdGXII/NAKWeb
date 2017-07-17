@@ -1,49 +1,40 @@
 ﻿@model IEnumerable<AKAWeb_v01.Models.ProductModel>
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
+
 <table class="table">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.cost)
+            Membership Type
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.type)
+            Duration
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.description)
+            Cost
         </th>
-        <th>
-            @Html.DisplayNameFor(model => model.length)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.isLive)
-        </th>
+
         <th></th>
     </tr>
 
 @foreach (var item in Model) {
     <tr>
         <td>
-            @Html.DisplayFor(modelItem => item.cost)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.type)
-        </td>
-        <td>
             @Html.DisplayFor(modelItem => item.description)
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.length)
+            @Html.DisplayFor(modelItem => item.length) year(s)
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.isLive)
+            $@Html.DisplayFor(modelItem => item.cost)
         </td>
+
         <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.id }) |
-            @Html.ActionLink("Details", "Details", new { id=item.id }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.id })
+            @using (Html.BeginForm("AddToCart", "ShoppingCart", FormMethod.Post, new { @class = "form-group" }))
+            {
+                <button type="submit" class="btn btn-default">Add to cart <span class="glyphicon glyphicon-shopping-cart"></span></button>
+                <input type="hidden" value="@item.id" name="product_id"/>
+            }
+
         </td>
     </tr>
 }
