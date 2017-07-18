@@ -20,7 +20,7 @@
     <tr>
         <td>
             @Html.DisplayFor(modelItem => item.description) <br />
-            <a style="color:#777777;" href="#@item.id" data-toggle="collapse">Details</a>
+            <a class="menu-link" href="#@item.id" data-toggle="collapse">Details</a>
             <div id="@item.id" class="collapse">
                 @Html.DisplayFor(modelItem => item.details)
             </div>
