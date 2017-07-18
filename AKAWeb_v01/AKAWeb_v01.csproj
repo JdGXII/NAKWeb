@@ -158,6 +158,8 @@
     </Compile>
     <Compile Include="Models\CarouselImage.cs" />
     <Compile Include="Models\BackendMenuModel.cs" />
+    <Compile Include="Models\CartModel.cs" />
+    <Compile Include="Models\CartViewModel.cs" />
     <Compile Include="Models\MembershipModel.cs" />
     <Compile Include="Models\ProductModel.cs" />
     <Compile Include="Models\SectionModel.cs" />

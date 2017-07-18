@@ -1,8 +1,56 @@
-﻿
+﻿@model  AKAWeb_v01.Models.CartViewModel
+
 @{
     ViewBag.Title = "Cart";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <h2>Cart</h2>
+
+
+@if (Session["userid"] != null)
+{
+
+    <table class="table">
+        <tr>
+            <th>
+                Product Name
+            </th>
+            <th>
+                Cost
+            </th>
+
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model.cart)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.product_description) 
+                </td>
+                <td>
+                    $@Html.DisplayFor(modelItem => item.product_cost) 
+                </td>
+                <td>
+                    
+                    @Html.ActionLink("Remove from cart", "RemoveFromCart", new { id = item.id }, null)
+                </td>
+
+
+            </tr>
+        }
+
+    </table>
+    <div class="row"><div class="col-md-3" style="float:right"><b>Total: $ @Model.total</b></div></div>
+
+    <div class="row"><div class="col-md-3" style="float:right"><button class="btn btn-default">Purchase</button></div></div>
+
+}
+else
+{
+    <p>Please @Html.ActionLink("Sign In", "Index", "Backend") to view the contents of your shopping cart.</p>
+}
+
+
 
