@@ -11,6 +11,10 @@ namespace AKAWeb_v01.Controllers
 {
     public class ShoppingCartController : Controller
     {
+        public ActionResult Index()
+        {
+            return RedirectToAction("Cart");
+        }
         // GET: ShoppingCart
         public ActionResult Cart()
         {
@@ -51,10 +55,13 @@ namespace AKAWeb_v01.Controllers
 
         //this function removes an item from the Cart by deleting the entry
         //from the DB by matching the id parameter with the id in the DB
-        [HttpPost]
+        
         public ActionResult RemoveFromCart(int id)
         {
-            return View();
+            DBConnection testconn = new DBConnection();
+            string query = "DELETE FROM Cart WHERE id = " + id.ToString();
+            testconn.WriteToTest(query);
+            return RedirectToAction("Cart");
         }
 
         //This function returns all the items in someone's cart from the Cart table.
@@ -82,6 +89,12 @@ namespace AKAWeb_v01.Controllers
             testconn.CloseConnection();
             return cart_list;
 
+        }
+
+        [HttpPost]
+        public ActionResult Purchase()
+        {
+            return RedirectToAction("PurchaseDone");
         }
 
         //this function returns a CartViewModel which is the actual Cart page model

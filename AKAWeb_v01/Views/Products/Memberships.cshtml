@@ -1,46 +1,66 @@
 ﻿@model IEnumerable<AKAWeb_v01.Models.ProductModel>
 
-
-<table class="table">
-    <tr>
-        <th>
-            Membership Type
-        </th>
-        <th>
-            Duration
-        </th>
-        <th>
-            Cost
-        </th>
-
-        <th></th>
-    </tr>
-
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.description) <br />
-            <a class="menu-link" href="#@item.id" data-toggle="collapse">Details</a>
-            <div id="@item.id" class="collapse">
-                @Html.DisplayFor(modelItem => item.details)
-            </div>
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.length) year(s)
-        </td>
-        <td>
-            $@Html.DisplayFor(modelItem => item.cost)
-        </td>
-
-        <td>
-            @using (Html.BeginForm("AddToCart", "ShoppingCart", FormMethod.Post, new { @class = "form-group" }))
-            {
-                <button type="submit" class="btn btn-default">Add to cart <span class="glyphicon glyphicon-shopping-cart"></span></button>
-                <input type="hidden" value="@item.id" name="product_id"/>
-            }
-
-        </td>
-    </tr>
+@{
+    Layout = "";
 }
 
-</table>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - My ASP.NET Application</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    
+    <link type="text/css" rel="~/Content/Site.css" />
+</head>
+<body>
+    <table class="table">
+        <tr>
+            <th>
+                Membership Type
+            </th>
+            <th>
+                Duration
+            </th>
+            <th>
+                Cost
+            </th>
+
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.description) <br />
+                    <a class="menu-link" href="#@item.id" data-toggle="collapse">Details</a>
+                    <div id="@item.id" class="collapse">
+                        @Html.DisplayFor(modelItem => item.details)
+                    </div>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.length) year(s)
+                </td>
+                <td>
+                    $@Html.DisplayFor(modelItem => item.cost)
+                </td>
+
+                <td>
+                    @using (Html.BeginForm("AddToCart", "ShoppingCart", FormMethod.Post, new { @class = "form-group", target = "_top" }))
+                    {
+                        <button type="submit" class="btn btn-default">Add to cart <span class="glyphicon glyphicon-shopping-cart"></span></button>
+                        <input type="hidden" value="@item.id" name="product_id" />
+                    }
+
+                </td>
+            </tr>
+        }
+
+    </table>
+</body>
+</html>
