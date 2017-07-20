@@ -14,7 +14,8 @@ tinymce.init({
     selector: 'textarea',
     plugins: "image",
     //add call to function to load current images
-    image_list: "/mylist.php"
+    image_list: "/mylist.php",
+    extended_valid_elements: "iframe[src|title|width|height|allowfullscreen|frameborder|class|id]"
     });
 </script>
 <!--Following script generates the image preview in the subheader image part-->
