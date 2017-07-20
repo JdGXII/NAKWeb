@@ -5,6 +5,12 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+<script type="text/javascript">
+  function form_submit() {
+      document.getElementById("retrieval_form").submit();
+   }
+</script>
+
 <h2>Login</h2>
 @Session["exception"]
 @model AKAWeb_v01.Models.User
@@ -26,6 +32,38 @@
             </form>
         </div>
         <p>Don't have an account? <a href="@Url.Action("Register","Backend")">Click here</a> to register</p>
+        <p><a href="#myModal" data-toggle="modal" data-target="#myModal">Forgot your password?</a></p>
+
+        <!-- Modal -->
+        <div id="myModal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Recover Password</h4>
+                    </div>
+                    <div class="modal-body">
+                        @using (Html.BeginForm("RecoverPassword", "Backend", FormMethod.Post, new { id = "retrieval_form" }))
+                        {
+
+                            <div class="form-group">
+                                <label for="email">Email address</label>
+                                <input type="email" class="form-control" name="email" placeholder="Enter email">
+                            </div>
+
+                            <button onclick="form_submit()" data-dismiss="modal" type="submit" class="btn btn-primary">Send</button>
+
+                        }
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
     </div>
 </div>
 

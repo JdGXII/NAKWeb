@@ -7,6 +7,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Configuration;
 using System.Web.Mvc;
+using System.Web.Security;
 using AKAWeb_v01.Classes;
 using AKAWeb_v01.Models;
 
@@ -622,6 +623,34 @@ namespace AKAWeb_v01.Controllers
             }
 
             return backend_pages;
+        }
+
+        [HttpPost]
+        public ActionResult RecoverPassword(string email)
+        {
+            DBConnection testconn = new DBConnection();
+            string query = "SELECT id, email from Users where email = '" + email+"'";
+            SqlDataReader dataReader = testconn.ReadFromTest(query);
+            if (dataReader.Read())
+            {
+                string id = dataReader.GetValue(0).ToString();
+                RandomPassword(id);
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+        }
+
+        private void RandomPassword(string id)
+        {
+            string password = Membership.GeneratePassword(8, 3);
+            DBConnection testconn = new DBConnection();
+            string query = "UPDATE Users SET password = '" + password + "' WHERE id = " + id;
+            testconn.WriteToTest(query);
+            testconn.CloseConnection();
         }
 
         public ActionResult Test()
