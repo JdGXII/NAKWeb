@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
+using System.Net.Mail;
 using System.Web;
 using System.Web.Configuration;
 using System.Web.Mvc;
@@ -15,8 +16,8 @@ namespace AKAWeb_v01.Controllers
 {
     public class BackendController : Controller
     {
-        private string username = "admin";
-        private string password = "admin";
+        //private string username = "admin";
+        //private string password = "admin";
 
         [HttpPost]
         public ActionResult Login(string username, string password)
@@ -625,37 +626,55 @@ namespace AKAWeb_v01.Controllers
             return backend_pages;
         }
 
+        //Checks if the email the user provided exists
+        //If it does it sets messages for the email and website calls the RandomPassword function and
+        //Sends the email with the password
+        //If the email is not recognized a message with the notice of failure is set
         [HttpPost]
         public ActionResult RecoverPassword(string email)
         {
             DBConnection testconn = new DBConnection();
             string query = "SELECT id, email from Users where email = '" + email+"'";
             SqlDataReader dataReader = testconn.ReadFromTest(query);
+            //if email exists
             if (dataReader.Read())
             {
                 string id = dataReader.GetValue(0).ToString();
                 string mail = dataReader.GetValue(1).ToString(); 
-                RandomPassword(id);
-                string message = "An email has been sent to " + mail + " with a new temporary password.";
-                TempData["passwordmessage"] = message;
+                string password = RandomPassword(id);
+                //message for the website
+                string webmessage = "An email has been sent to " + mail + " with a new temporary password.";
+                //message for email
+                string emailmessage = setEmailString(password);
+                string subject = "Password Recovery";
+                //this forwards the webmessage to the view that will display it and can then access it
+                TempData["passwordmessage"] = webmessage;
+                
+                //send the email with the new password
+                sendEmail(emailmessage, mail, subject);
                 return RedirectToAction("PasswordRecoveryMessage");
             }
             else
             {
+                //message for the website. No email message is necessary
                 string message = "Email provided doesn't match any records.";
+                //this forwards the webmessage to the view that will display it and can then access it
                 TempData["passwordmessage"] = message;
                 return RedirectToAction("PasswordRecoveryMessage");
             }
 
         }
 
-        private void RandomPassword(string id)
+        //Generates a random password and sets in the database
+        //Receives the user's id whose password will be randomized
+        private string RandomPassword(string id)
         {
             string password = Membership.GeneratePassword(8, 3);
             DBConnection testconn = new DBConnection();
             string query = "UPDATE Users SET password = '" + password + "' WHERE id = " + id;
             testconn.WriteToTest(query);
             testconn.CloseConnection();
+            return password;
         }
 
 
@@ -664,6 +683,43 @@ namespace AKAWeb_v01.Controllers
             ViewBag.Message = TempData["passwordmessage"].ToString();
             return View();
    
+        }
+
+        //Builds the message for the email containing the random password
+        //the user requested when recovering his password
+        private string setEmailString(string password)
+        {
+            string message = "Your new temporary password is: " +
+                            password + 
+                            " You can set a new password from your MyProfile page after signing in.";
+            return message;
+        }
+
+        //function to send email, takes in the message, the email address to mail to and subject
+        private void sendEmail(string emailmessage, string mailTo, string subject)
+        {
+            try
+            {
+                MailMessage mail = new MailMessage();
+                SmtpClient SmtpServer = new SmtpClient("smtp.gmail.com");
+
+                mail.From = new MailAddress("jralzaibar@gmail.com");
+                mail.To.Add(mailTo);
+                mail.Subject = subject;
+                mail.Body = emailmessage;
+
+                SmtpServer.Port = 587;
+                SmtpServer.Credentials = new System.Net.NetworkCredential("jralzaibar", "");
+                SmtpServer.EnableSsl = true;
+
+                SmtpServer.Send(mail);
+               
+            }
+            catch (Exception ex)
+            {
+                //set exception in session for debugging purposes
+                System.Web.HttpContext.Current.Session["mailfail"] = ex;
+            }
         }
 
         public ActionResult Test()
