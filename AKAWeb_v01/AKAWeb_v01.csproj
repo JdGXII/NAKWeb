@@ -256,6 +256,7 @@
     <Content Include="Views\Backend\ChangePageSection.cshtml" />
     <Content Include="Views\Menu\_MainMenu.cshtml" />
     <Content Include="Views\Products\Memberships.cshtml" />
+    <Content Include="Views\Backend\PasswordRecoveryMessage.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

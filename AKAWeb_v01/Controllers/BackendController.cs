@@ -634,12 +634,17 @@ namespace AKAWeb_v01.Controllers
             if (dataReader.Read())
             {
                 string id = dataReader.GetValue(0).ToString();
+                string mail = dataReader.GetValue(1).ToString(); 
                 RandomPassword(id);
-                return RedirectToAction("Index");
+                string message = "An email has been sent to " + mail + " with a new temporary password.";
+                TempData["passwordmessage"] = message;
+                return RedirectToAction("PasswordRecoveryMessage");
             }
             else
             {
-                return RedirectToAction("Index", "Home");
+                string message = "Email provided doesn't match any records.";
+                TempData["passwordmessage"] = message;
+                return RedirectToAction("PasswordRecoveryMessage");
             }
 
         }
@@ -651,6 +656,14 @@ namespace AKAWeb_v01.Controllers
             string query = "UPDATE Users SET password = '" + password + "' WHERE id = " + id;
             testconn.WriteToTest(query);
             testconn.CloseConnection();
+        }
+
+
+        public ActionResult PasswordRecoveryMessage()
+        {
+            ViewBag.Message = TempData["passwordmessage"].ToString();
+            return View();
+   
         }
 
         public ActionResult Test()
