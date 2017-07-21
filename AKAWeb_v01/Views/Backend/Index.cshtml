@@ -17,8 +17,9 @@
 <div class="row">
     <div class="col-md-offset-4">
         <h1>Login</h1>
-        <div class=".form-group">
-            <form action="Backend/Login" method="post">
+        <div class="form-group">
+            @using (Html.BeginForm("Login", "Backend", FormMethod.Post))
+            {
                 <div class="form-group">
                     @Html.Label("Username")
                     <input class="form-control" name="username" type="text" placeholder="username" />
@@ -28,9 +29,12 @@
 
                     <input class="form-control" name="password" type="password" placeholder="password" />
                 </div>
-                <button type="submit" class="btn btn-primary">Submit</button>
-            </form>
+
+                <button type="submit" class="btn btn-primary">Login</button>
+
+            }
         </div>
+
         <p>Don't have an account? <a href="@Url.Action("Register","Backend")">Click here</a> to register</p>
         <p><a href="#myModal" data-toggle="modal" data-target="#myModal">Forgot your password?</a></p>
 

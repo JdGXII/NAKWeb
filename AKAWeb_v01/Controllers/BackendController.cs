@@ -31,10 +31,10 @@ namespace AKAWeb_v01.Controllers
             {
                 SqlDataReader dataReader;
                 dataReader = testconn.ReadFromTest(query);
-                dataReader.Read();
+               
 
 
-                if (dataReader.GetValue(1) != null)  //(username == this.username) && (password == this.password))
+                if (dataReader.Read())  //(username == this.username) && (password == this.password))
                 {
                     System.Web.HttpContext.Current.Session["userpermission"] = dataReader.GetValue(3).ToString();
                     System.Web.HttpContext.Current.Session["username"] = dataReader.GetValue(0).ToString();
@@ -43,7 +43,7 @@ namespace AKAWeb_v01.Controllers
                     //ViewData["sessionString"] = System.Web.HttpContext.Current.Session["userpermission"];
                     testconn.CloseDataReader();
                     testconn.CloseConnection();
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("MyProfile");
 
                 }
                 else
@@ -292,7 +292,16 @@ namespace AKAWeb_v01.Controllers
 
         public ActionResult MyProfile()
         {
-            return View();
+            if(System.Web.HttpContext.Current.Session["username"] != null)
+            {
+                ViewData["BackendPages"] = getBackendPages();
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("Index");
+            }
+            
         }
 
         public ActionResult Main()
