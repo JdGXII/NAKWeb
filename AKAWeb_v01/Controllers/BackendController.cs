@@ -282,6 +282,10 @@ namespace AKAWeb_v01.Controllers
             testconn.CloseConnection();
             System.Web.HttpContext.Current.Session["userpermission"] = "1";
             System.Web.HttpContext.Current.Session["username"] = name;
+            //email message
+            string message = "Thank you for registering with an account.";
+            //send registration confirmation email.
+            sendEmail(message, email, "AKA Registration");
 
             return RedirectToAction("Index", "Home");
         }
@@ -700,6 +704,7 @@ namespace AKAWeb_v01.Controllers
         {
             try
             {
+                string password = WebConfigurationManager.AppSettings.Get("emailPassword");
                 MailMessage mail = new MailMessage();
                 SmtpClient SmtpServer = new SmtpClient("smtp.gmail.com");
 
@@ -709,7 +714,7 @@ namespace AKAWeb_v01.Controllers
                 mail.Body = emailmessage;
 
                 SmtpServer.Port = 587;
-                SmtpServer.Credentials = new System.Net.NetworkCredential("jralzaibar", "");
+                SmtpServer.Credentials = new System.Net.NetworkCredential("jralzaibar", password);
                 SmtpServer.EnableSsl = true;
 
                 SmtpServer.Send(mail);
