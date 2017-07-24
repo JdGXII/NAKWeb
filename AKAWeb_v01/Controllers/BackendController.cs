@@ -744,6 +744,11 @@ namespace AKAWeb_v01.Controllers
             {
                 string user_id = System.Web.HttpContext.Current.Session["userid"].ToString();
                 var model = getUserModel(user_id);
+                //if coming from an update operation and there's a message, set it to viewbag
+                if(TempData["updatedresult"] != null)
+                {
+                    ViewBag.Result = TempData["updatedresult"].ToString();
+                }
                 return View(model);
             }
             else
@@ -817,11 +822,14 @@ namespace AKAWeb_v01.Controllers
             //add && updateUserAddress later
             if (updateUserInfo)
             {
+                //set success message before redirecting
+                TempData["updatedresult"] = "Information succesfully updated";
                 return RedirectToAction("AccountInfo");
             }
             else
             {
-                //add some sort of error notification later through TempData or something else
+                //set failure message before redirecting
+                TempData["updatedresult"] = "Something went wrong. Information was not updated";
                 return RedirectToAction("AccountInfo");
             }
         }
@@ -844,6 +852,86 @@ namespace AKAWeb_v01.Controllers
                 "city = '" + city + "', street_address = '" +street_address+"', zip = '"+ zip+"' WHERE user_id = " + user_id;
 
 
+            return testconn.WriteToTest(query);
+        }
+
+        //Returns view with form to UpdatePassword
+        //Assumes user has logged in
+        public ActionResult UpdatePassword()
+        {
+            //we're checking if the user has logged in and there's a session variable set
+            if (System.Web.HttpContext.Current.Session["username"] != null)
+            {
+                string user_id = System.Web.HttpContext.Current.Session["userid"].ToString();
+                var model = getUserModel(user_id);
+                //if password update message has been set, add it to viewbag
+                if(TempData["passwordupdatemessage"] != null)
+                {
+                    ViewBag.Result = TempData["passwordupdatemessage"].ToString();
+                }
+                
+                
+                return View(model);
+            }
+            else
+            {
+                return RedirectToAction("Index");
+            }
+
+        }
+
+        [HttpPost]
+        public ActionResult UpdatePassword(string current_password, string new_password, string id)
+        {
+            //check if current_password is same as one stored in DB
+            bool passwordMatch = MatchPassword(current_password, id);
+
+            //if passwords matched
+            if (passwordMatch)
+            {
+                //call function that updates password
+                bool success = UpdateUserPassword(new_password, id);
+                //if operation is a success set success message
+                if (success)
+                {
+                    TempData["passwordupdatemessage"] = "Password has been succesfully updated.";
+                }
+                else
+                {
+                    TempData["passwordupdatemessage"] = "Something went wrong. Password not updated.";
+                }
+                return RedirectToAction("UpdatePassword");
+            }
+            else
+            {
+                TempData["passwordupdatemessage"] = "Password not updated. Current Password field did not match with account's records.";
+                return RedirectToAction("UpdatePassword");
+            }
+
+        }
+
+        //checks if submitted password matches current stored password and returns true or false
+        private bool MatchPassword(string submitted_password, string user_id)
+        {
+            bool match = false;
+            DBConnection testconn = new DBConnection();
+            string query = "SELECT password from Users WHERE id = " + user_id +"AND password = '"+submitted_password+"'";
+            SqlDataReader dataReader = testconn.ReadFromTest(query);
+            if (dataReader.Read())
+            {
+                match = true;
+            }
+
+            return match;
+        }
+
+        //function that actually performes the password update 
+        private bool UpdateUserPassword(string new_password, string user_id)
+        {
+            DBConnection testconn = new DBConnection();
+            string query = "UPDATE Users SET password = '" + new_password + "' WHERE id = " + user_id;
+
+            //if the Write function was succesful returns true, false if otherwise
             return testconn.WriteToTest(query);
         }
 
