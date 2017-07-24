@@ -258,6 +258,8 @@
     <Content Include="Views\Products\Memberships.cshtml" />
     <Content Include="Views\Backend\PasswordRecoveryMessage.cshtml" />
     <Content Include="email.config" />
+    <Content Include="Views\Backend\AccountInfo.cshtml" />
+    <Content Include="Views\Backend\PurchaseHistory.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
