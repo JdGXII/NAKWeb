@@ -736,6 +736,117 @@ namespace AKAWeb_v01.Controllers
             }
         }
 
+        //returns View for Account info, can only be accessed if user is logged in
+        public ActionResult AccountInfo()
+        {
+            //we're checking if the user has logged in and there's a session variable set
+            if (System.Web.HttpContext.Current.Session["username"] != null)
+            {
+                string user_id = System.Web.HttpContext.Current.Session["userid"].ToString();
+                var model = getUserModel(user_id);
+                return View(model);
+            }
+            else
+            {
+                return RedirectToAction("Index");
+            }
+
+        }
+
+        //gets the information from one user given the user's id and returns it as a UserModel object
+        //it assumes the user will be found because there's already been a
+        //login and user verification process
+        //so the id being passed is valid
+        private UserModel getUserModel(string user_id)
+        {
+            DBConnection testconn = new DBConnection();
+            //get user by id
+            string query = "SELECT id, name, email, password, access FROM Users WHERE id = " + user_id;
+            SqlDataReader dataReader = testconn.ReadFromTest(query);
+            if (dataReader.Read())
+            {
+                int id = Int32.Parse(dataReader.GetValue(0).ToString());
+                string name = dataReader.GetValue(1).ToString();
+                string email = dataReader.GetValue(2).ToString();
+                string password = dataReader.GetValue(3).ToString();
+                int access = Int32.Parse(dataReader.GetValue(4).ToString());
+                AddressModel address = getAddressModel(user_id);
+
+                UserModel user = new UserModel(id, name, email, password, access, address);
+
+                return user;
+            }
+            else
+            {
+                return new UserModel();
+            }
+
+        }
+
+        //returns an AddressModel object given a user id for the address we're looking for. 
+        private AddressModel getAddressModel(string user_id)
+        {
+            DBConnection testconn = new DBConnection();
+            string query = "SELECT country, state, city, street_address, zip FROM User_has_Address WHERE user_id =" + user_id;
+            SqlDataReader dataReader = testconn.ReadFromTest(query);
+            if (dataReader != null)
+            {
+                string country = dataReader.GetValue(0).ToString();
+                string state = dataReader.GetValue(1).ToString();
+                string city = dataReader.GetValue(2).ToString();
+                string street_address = dataReader.GetValue(3).ToString();
+                string zip = dataReader.GetValue(4).ToString();
+
+                AddressModel address = new AddressModel(country, state, city, zip, street_address);
+                return address;
+            }
+            else
+            {
+                AddressModel address = new AddressModel();
+                return address;
+            }
+        }
+
+
+        [HttpPost]
+        public ActionResult UpdateProfile(string name, string email, string country, string state, string city, string street_address, string zip, string id)
+        {
+            bool updateUserInfo = UpdateUserInfo(name, email, id);
+            //add call to this later when table User_has_Address has been added to DB
+            //bool updateUserAddress = UpdateUserAddress(country, state, city, street_address, zip, id);
+            //add && updateUserAddress later
+            if (updateUserInfo)
+            {
+                return RedirectToAction("AccountInfo");
+            }
+            else
+            {
+                //add some sort of error notification later through TempData or something else
+                return RedirectToAction("AccountInfo");
+            }
+        }
+
+        //Updates the user's info, right now just name and email
+        //Password update has its own function
+        private bool UpdateUserInfo(string name, string email, string user_id)
+        {
+            DBConnection testconn = new DBConnection();
+            string query = "UPDATE Users SET name = '" + name + "', email = '" + email + "' WHERE id = " + user_id;
+
+            return testconn.WriteToTest(query);
+        }
+
+        //Updates user address, takes in relevant address info and a user id
+        private bool UpdateUserAddress(string country, string state, string city, string street_address, string zip, string user_id)
+        {
+            DBConnection testconn = new DBConnection();
+            string query = "UPDATE User_has_Address SET country = '" + country + "', state = '" + state + "'," +
+                "city = '" + city + "', street_address = '" +street_address+"', zip = '"+ zip+"' WHERE user_id = " + user_id;
+
+
+            return testconn.WriteToTest(query);
+        }
+
         public ActionResult Test()
         {
             return View();

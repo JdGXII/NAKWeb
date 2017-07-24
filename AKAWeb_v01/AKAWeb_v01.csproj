@@ -163,12 +163,13 @@
     <Compile Include="Models\BackendMenuModel.cs" />
     <Compile Include="Models\CartModel.cs" />
     <Compile Include="Models\CartViewModel.cs" />
+    <Compile Include="Models\AddressModel.cs" />
     <Compile Include="Models\MembershipModel.cs" />
     <Compile Include="Models\ProductModel.cs" />
     <Compile Include="Models\SectionModel.cs" />
     <Compile Include="Models\PageModel.cs" />
     <Compile Include="Models\MainMenuItem.cs" />
-    <Compile Include="Models\User.cs" />
+    <Compile Include="Models\UserModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
