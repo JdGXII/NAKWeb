@@ -166,4 +166,16 @@ textarea {
         color: black;
     }
 
+.my-profile-btn {
+    background-color: #106D6A;
+    border-color: #106D6A;
+}
+
+    .my-profile-btn:hover {
+        background-color: #019392;
+        border-color: #019392;
+    }
+
+
+
 
