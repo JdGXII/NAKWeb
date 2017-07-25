@@ -169,6 +169,7 @@
     <Compile Include="Models\SectionModel.cs" />
     <Compile Include="Models\PageModel.cs" />
     <Compile Include="Models\MainMenuItem.cs" />
+    <Compile Include="Models\UserHasProductModel.cs" />
     <Compile Include="Models\UserModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
