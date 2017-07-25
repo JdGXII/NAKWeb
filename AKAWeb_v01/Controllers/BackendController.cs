@@ -290,6 +290,7 @@ namespace AKAWeb_v01.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+
         public ActionResult MyProfile()
         {
             if(System.Web.HttpContext.Current.Session["username"] != null)
@@ -639,6 +640,29 @@ namespace AKAWeb_v01.Controllers
             return backend_pages;
         }
 
+        //this function returns a list with the MyProfile pages
+        //it uses a backendmenumodel because the information is very similar, but source is different
+        private List<BackendMenuModel> getMyProfilePages()
+        {
+
+            List<BackendMenuModel> backend_pages = new List<BackendMenuModel>();
+            DBConnection testconn = new DBConnection();
+            string query = "SELECT id, title, controller, action, isLive FROM MyProfilePages where isLive = 1";
+            SqlDataReader dataReader = testconn.ReadFromTest(query);
+            while (dataReader.Read())
+            {
+                int id = Int32.Parse(dataReader.GetValue(0).ToString());
+                string title = dataReader.GetValue(1).ToString();
+                string controller = dataReader.GetValue(2).ToString();
+                string action = dataReader.GetValue(3).ToString();
+                bool isLive = (bool)dataReader.GetValue(4);
+                BackendMenuModel backendPage = new BackendMenuModel(id, title, controller, action, isLive);
+                backend_pages.Add(backendPage);
+            }
+
+            return backend_pages;
+        }
+
         //Checks if the email the user provided exists
         //If it does it sets messages for the email and website calls the RandomPassword function and
         //Sends the email with the password
@@ -749,6 +773,8 @@ namespace AKAWeb_v01.Controllers
                 {
                     ViewBag.Result = TempData["updatedresult"].ToString();
                 }
+                //pass information for left menu
+                ViewData["MyProfilePages"] = getMyProfilePages();
                 return View(model);
             }
             else
@@ -869,8 +895,8 @@ namespace AKAWeb_v01.Controllers
                 {
                     ViewBag.Result = TempData["passwordupdatemessage"].ToString();
                 }
-                
-                
+
+                ViewData["MyProfilePages"] = getMyProfilePages();
                 return View(model);
             }
             else
@@ -933,6 +959,76 @@ namespace AKAWeb_v01.Controllers
 
             //if the Write function was succesful returns true, false if otherwise
             return testconn.WriteToTest(query);
+        }
+
+        //returns a product model (representing a product) by id
+        private ProductModel getProduct(string product_id)
+        {
+            DBConnection testconn = new DBConnection();
+            string query = "SELECT id, type, cost, description, length, details FROM Products WHERE isLive = 1 AND id = "+ product_id;
+            SqlDataReader dataReader = testconn.ReadFromTest(query);
+            ProductModel product = new ProductModel();
+            while (dataReader.Read())
+            {
+                int id = Int32.Parse(dataReader.GetValue(0).ToString());
+                string type = dataReader.GetValue(1).ToString();
+                int cost = Int32.Parse(dataReader.GetValue(2).ToString());
+                string description = dataReader.GetValue(3).ToString();
+                string length = dataReader.GetValue(4).ToString();
+                string details = dataReader.GetValue(5).ToString();
+                product = new ProductModel(id, cost, type, description, length, true, details, null);
+                
+            }
+
+            return product;
+        }
+
+        //returns a userhasproduct model list of products purchased by a user
+        //it takes a user id and retrieves the products he owns from the db
+        //this functions is meant to be called for actions that occur once the user has logged in
+        //in that sense  it assumes validation has already happened and the id being passed is valid
+        private List<UserHasProductModel> getUserHasProducts(string user_id)
+        {
+            DBConnection testconn = new DBConnection();
+            string query = "SELECT id, user_id, product_id, product_start, product_end, isValid FROM User_Has_Product WHERE user_id = " + user_id;
+            SqlDataReader dataReader = testconn.ReadFromTest(query);
+            List<UserHasProductModel> userhasproducts = new List<UserHasProductModel>();
+            while (dataReader.Read())
+            {
+                int id = Int32.Parse(dataReader.GetValue(0).ToString());
+                string userid = dataReader.GetValue(1).ToString();
+                string product_id = dataReader.GetValue(2).ToString();
+                string product_start = dataReader.GetValue(3).ToString();
+                string product_end = dataReader.GetValue(4).ToString();
+                bool isValid = (bool)dataReader.GetValue(5);
+
+                UserModel user = getUserModel(userid);
+                ProductModel product = getProduct(product_id);
+
+                UserHasProductModel userhasproduct = new UserHasProductModel(id, user, product, product_start, product_end, isValid);
+                userhasproducts.Add(userhasproduct);
+            }
+
+            return userhasproducts;
+        }
+
+        //populates the purchase history view
+        public ActionResult PurchaseHistory()
+        {
+            //check if user is logged in, if not, redirect them to login
+            if (System.Web.HttpContext.Current.Session["username"] != null)
+            {
+                string user_id = System.Web.HttpContext.Current.Session["userid"].ToString();
+                var model = getUserHasProducts(user_id);
+                ViewData["MyProfilePages"] = getMyProfilePages();
+                return View(model);
+
+            }
+            else
+            {
+                return RedirectToAction("Index");
+            }
+
         }
 
         public ActionResult Test()

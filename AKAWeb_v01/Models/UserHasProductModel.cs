@@ -8,24 +8,35 @@ namespace AKAWeb_v01.Models
     //class representing a row from the User_has_Product table in DB
     public class UserHasProductModel
     {
-        public int user_id { get; set; }
-        public int product_id { get; set; }
+        public int id { get; set; }
+        public UserModel user { get; set; }
+        public ProductModel product { get; set; }
         public string start_date { get; set; }
         public string end_date { get; set; }
-        public bool isLive { get; set; }
+        public bool isValid { get; set; }
 
         public UserHasProductModel()
         {
 
         }
 
-        public UserHasProductModel(int user_id, int product_id, string start_date, string end_date, bool isLive)
+        public UserHasProductModel(UserModel user, ProductModel product, string start_date, string end_date, bool isLive)
         {
-            this.user_id = user_id;
-            this.product_id = product_id;
+            this.user = user;
+            this.product = product;
             this.start_date = start_date;
             this.end_date = end_date;
-            this.isLive = isLive;
+            this.isValid = isLive;
+        }
+
+        public UserHasProductModel(int id, UserModel user, ProductModel product, string start_date, string end_date, bool isLive)
+        {
+            this.id = id;
+            this.user = user;
+            this.product = product;
+            this.start_date = start_date;
+            this.end_date = end_date;
+            this.isValid = isLive;
         }
     }
 }

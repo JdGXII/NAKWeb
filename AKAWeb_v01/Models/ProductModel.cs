@@ -15,6 +15,19 @@ namespace AKAWeb_v01.Models
         public bool isLive { get; set; }
         public string details { get; set; }
         public string image { get; set; }
+
+        public ProductModel() {
+
+            this.id = 0;
+            this.cost = 0;
+            this.type = "Empty";
+            this.description = "Empty";
+            this.length = "Empty";
+            this.isLive = false;
+            this.details = "Empty";
+            this.image = "Empty";
+
+        }
         
         public ProductModel(int id, int cost, string type, string description, string length, bool isLive)
         {
