@@ -51,6 +51,7 @@ namespace AKAWeb_v01.Controllers
                     ViewBag.Message = "Wrong Credentials";
                     testconn.CloseDataReader();
                     testconn.CloseConnection();
+                    TempData["failedlogin"] = "Sign in failed. Password or email not recognized.";
                     return RedirectToAction("Index");
                 }
 
@@ -58,7 +59,8 @@ namespace AKAWeb_v01.Controllers
             catch (Exception e)
             {
                 System.Web.HttpContext.Current.Session["exception"] = e.ToString();
-                return RedirectToAction("Index", "Home");
+                
+                return RedirectToAction("Index");
             }
 
         }
@@ -186,7 +188,17 @@ namespace AKAWeb_v01.Controllers
         // GET: Backend
         public ActionResult Index()
         {
-            return View();
+            //check if coming back from a failed login
+            if(TempData["failedlogin"] != null)
+            {
+                ViewBag.LoginFailed = TempData["failedlogin"].ToString();
+                return View();
+            }
+            else
+            {
+                return View();
+            }
+            
         }
 
 
