@@ -42,6 +42,12 @@ namespace AKAWeb_v01.Controllers
                 string query = "INSERT INTO Cart(user_id, product_id) VALUES("+userid+","+product_id+")";
                 testconn.WriteToTest(query);
                 testconn.CloseConnection();
+
+                if(TempData["paid"] != null)
+                {
+                    ViewBag.Done = TempData["paid"].ToString();
+                }
+
                 return RedirectToAction("Cart");
 
 
@@ -91,10 +97,68 @@ namespace AKAWeb_v01.Controllers
 
         }
 
+        //finishes the purchasing process after payment has gone through
+        //Assumes user has been logged in
         [HttpPost]
-        public ActionResult Purchase()
+        public string Purchase()
         {
-            return RedirectToAction("PurchaseDone");
+            approveProductsForUser();
+            generateInvoice();
+            deleteFromCart();
+            return "Purchase complete";
+        }
+
+        //deletes from cart
+        private bool deleteFromCart()
+        {
+            string userid = System.Web.HttpContext.Current.Session["userid"].ToString();
+            DBConnection testconn = new DBConnection();
+            string query = "DELETE FROM Cart WHERE user_id = " + userid;
+            return testconn.WriteToTest(query);
+
+        }
+
+        //if payment goes through send cart contents to proper tables in DB
+        //to give the buyer access to the products he bought
+        private void approveProductsForUser()
+        {
+            DBConnection testconn = new DBConnection();
+            List<CartModel> cart = getCartItems();
+           
+            foreach (CartModel item in cart)
+            {
+                string user_id = item.user_id.ToString();
+                string product_id = item.product_id.ToString();
+
+
+                string query = "INSERT INTO User_Has_Product (user_id, product_id, product_start, product_end, isValid) VALUES (" + user_id + ", " + product_id + ", getdate(), dateadd(year,1,getdate()), 1)";
+                testconn.WriteToTest(query);
+            }
+        }
+
+        //records sale in invoice table and sends email to buyer with invoice information
+        //assumes user has been logged in
+        private void generateInvoice()
+        {
+            DBConnection testconn = new DBConnection();
+            CartViewModel cartmodel = getModel();
+            string total = cartmodel.total;
+            string user_id = System.Web.HttpContext.Current.Session["userid"].ToString();
+            string query = "INSERT INTO Invoice (user_id, total, date) VALUES (" + user_id + ", " + total + ", " + " getdate())";
+            testconn.WriteToTest(query);
+            string get_latest_invoice_id = "SELECT IDENT_CURRENT('Invoice')";
+            SqlDataReader dataReader = testconn.ReadFromTest(get_latest_invoice_id);
+            dataReader.Read();
+            string latest_invoice_id = dataReader.GetValue(0).ToString();
+
+            string invoice_id = dataReader.GetValue(0).ToString();
+
+            foreach(CartModel item in cartmodel.cart)
+            {
+                string query_for_invoice = "INSERT INTO Invoice_Has_Product (invoice_id, product_id, product_cost) VALUES (" + latest_invoice_id + ", " + item.product_id + ", '" + item.product_cost + "')";
+                testconn.WriteToTest(query_for_invoice);
+            }
+
         }
 
         //this function returns a CartViewModel which is the actual Cart page model
