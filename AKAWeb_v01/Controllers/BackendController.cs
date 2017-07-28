@@ -286,20 +286,20 @@ namespace AKAWeb_v01.Controllers
             return View();
         }
 
+        [HttpPost]
         public ActionResult RegisterUser(string name, string email, string password)
         {
             DBConnection testconn = new DBConnection();
             string query = "INSERT INTO Users (name, email, password, access) VALUES ('" + name + "', '" + email + "', '" + password + "',  1)";
             testconn.WriteToTest(query);
             testconn.CloseConnection();
-            System.Web.HttpContext.Current.Session["userpermission"] = "1";
-            System.Web.HttpContext.Current.Session["username"] = name;
+
             //email message
             string message = "Thank you for registering with an account.";
             //send registration confirmation email.
             sendEmail(message, email, "AKA Registration");
 
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "Backend");
         }
 
 
@@ -832,7 +832,7 @@ namespace AKAWeb_v01.Controllers
             DBConnection testconn = new DBConnection();
             string query = "SELECT country, state, city, street_address, zip FROM User_has_Address WHERE user_id =" + user_id;
             SqlDataReader dataReader = testconn.ReadFromTest(query);
-            if (dataReader != null)
+            if (dataReader.Read())
             {
                 string country = dataReader.GetValue(0).ToString();
                 string state = dataReader.GetValue(1).ToString();
@@ -855,10 +855,10 @@ namespace AKAWeb_v01.Controllers
         public ActionResult UpdateProfile(string name, string email, string country, string state, string city, string street_address, string zip, string id)
         {
             bool updateUserInfo = UpdateUserInfo(name, email, id);
-            //add call to this later when table User_has_Address has been added to DB
-            //bool updateUserAddress = UpdateUserAddress(country, state, city, street_address, zip, id);
-            //add && updateUserAddress later
-            if (updateUserInfo)
+            
+            bool updateUserAddress = UpdateUserAddress(country, state, city, street_address, zip, id);
+            
+            if (updateUserInfo && updateUserAddress)
             {
                 //set success message before redirecting
                 TempData["updatedresult"] = "Information succesfully updated";
@@ -886,8 +886,20 @@ namespace AKAWeb_v01.Controllers
         private bool UpdateUserAddress(string country, string state, string city, string street_address, string zip, string user_id)
         {
             DBConnection testconn = new DBConnection();
-            string query = "UPDATE User_has_Address SET country = '" + country + "', state = '" + state + "'," +
-                "city = '" + city + "', street_address = '" +street_address+"', zip = '"+ zip+"' WHERE user_id = " + user_id;
+            string check_user_exists = "SELECT user_id FROM User_Has_Address  WHERE user_id = " + user_id;
+            SqlDataReader dataReader = testconn.ReadFromTest(check_user_exists);
+            string query = "";
+            if (dataReader.Read())
+            {
+                query = "UPDATE User_Has_Address SET country = '" + country + "', state = '" + state + "'," +
+    "city = '" + city + "', street_address = '" + street_address + "', zip = '" + zip + "' WHERE user_id = " + user_id;
+            }
+            else
+            {
+                query = "INSERT INTO User_Has_Address (country, state, city, street_address, zip, user_id) VALUES('" + country + "', '" + state + "'," +
+"'" + city + "','" + street_address + "', '" + zip + "', " + user_id+")";
+            }
+
 
 
             return testconn.WriteToTest(query);
