@@ -11,6 +11,7 @@ using System.Web.Mvc;
 using System.Web.Security;
 using AKAWeb_v01.Classes;
 using AKAWeb_v01.Models;
+using reCAPTCHA.MVC;
 
 namespace AKAWeb_v01.Controllers
 {
@@ -283,12 +284,23 @@ namespace AKAWeb_v01.Controllers
 
         public ActionResult Register()
         {
-            return View();
+            if(TempData["captchafailed"]  != null)
+            {
+                ViewBag.Captchafail = TempData["captchafailed"].ToString();
+                return View();
+            }
+            else
+            {
+                return View();
+            }
+            
         }
 
         [HttpPost]
-        public ActionResult RegisterUser(string name, string email, string password)
+        [CaptchaValidator]
+        public ActionResult RegisterUser(string name, string email, string password, bool captchaValid)
         {
+            if (captchaValid) { 
             DBConnection testconn = new DBConnection();
             string query = "INSERT INTO Users (name, email, password, access) VALUES ('" + name + "', '" + email + "', '" + password + "',  1)";
             testconn.WriteToTest(query);
@@ -300,6 +312,12 @@ namespace AKAWeb_v01.Controllers
             sendEmail(message, email, "AKA Registration");
 
             return RedirectToAction("Index", "Backend");
+            }
+            else
+            {
+                TempData["captchafailed"] = "We couldn't properly validate you are human. Please try again.";
+                return RedirectToAction("Register");
+            }
         }
 
 

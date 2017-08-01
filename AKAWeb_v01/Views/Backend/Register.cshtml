@@ -9,6 +9,9 @@
     <div class="col-md-offset-4">
         <h1>Register</h1>
 
+        <p style="color:red;"><b>@ViewBag.Captchafail</b></p>
+
+        @using reCAPTCHA.MVC
         @using (Html.BeginForm("RegisterUser", "Backend", FormMethod.Post))
         {
             <div class="form-group">
@@ -25,6 +28,8 @@
                 <input type="password" class="form-control" name="password" placeholder="Password">
             </div>
 
+            @Html.Recaptcha()
+            @Html.ValidationMessage("ReCaptcha")
             <button type="submit" class="btn btn-primary">Register</button>
 
         }
