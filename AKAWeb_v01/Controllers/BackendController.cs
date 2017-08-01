@@ -412,7 +412,7 @@ namespace AKAWeb_v01.Controllers
         [CaptchaValidator]
         public ActionResult RegisterUser(string name, string email, string password, bool captchaValid)
         {
-            if (captchaValid) { 
+            if (captchaValid && (validateRegisterForm(name, email, password) == "true")) { 
             DBConnection testconn = new DBConnection();
             string query = "INSERT INTO Users (name, email, password, access) VALUES ('" + name + "', '" + email + "', '" + password + "',  1)";
             testconn.WriteToTest(query);
@@ -427,7 +427,8 @@ namespace AKAWeb_v01.Controllers
             }
             else
             {
-                TempData["captchafailed"] = "We couldn't properly validate you are human. Please try again.";
+                TempData["captchafailed"] = "Ooops! Something went wrong. Either we couldn't properly validate you are human or " +
+                    "there was something wrong with something you input. Please try again.";
                 return RedirectToAction("Register");
             }
         }
