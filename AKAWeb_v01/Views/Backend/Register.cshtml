@@ -4,6 +4,9 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+
+@section Head{
+
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"
         integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
         crossorigin="anonymous"></script>
@@ -21,7 +24,7 @@
 
             $.post(url, { name: name, email: email, password: password }, function (data) {
 
-                
+
                 if (data == "true") {
                     $("#submit").prop('disabled', false);
                 }
@@ -39,15 +42,15 @@
         $("#email").blur(function () {
             var url = "/Backend/checkEmail";
             var email = $("#email").val();
- 
+
 
             $.post(url, { email: email }, function (data) {
 
 
 
                 $("#email_error").text(data);
-                
-    
+
+
             });
         });
 
@@ -137,23 +140,8 @@
         });
     });
 </script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    
+    }
 
 
 <div class="row">
@@ -187,17 +175,3 @@
     </div>
 </div>
 
-<script>
-        function test() {
-            var url = "/ShoppingCart/Purchase";
-            var first = "Bob";
-            var last = "Cravens";
-            $.post(url, { }, function (data) {
-                window.alert(data);
-                window.location.reload()
-            });
-
-        }
-
-
-</script>

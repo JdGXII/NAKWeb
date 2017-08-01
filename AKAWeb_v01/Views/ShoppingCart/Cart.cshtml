@@ -5,10 +5,14 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+@section Head{
 <script src="https://www.paypalobjects.com/api/checkout.js"></script>
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"
         integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
         crossorigin="anonymous"></script>
+
+
+    }
 
 <h2>Cart</h2>
 
@@ -108,20 +112,7 @@
     }, '#paypal-button-container');
 
     </script>
-    <script>
-        function test() {
-            var url = "/ShoppingCart/Purchase";
-            var first = "Bob";
-            var last = "Cravens";
-            $.post(url, { }, function (data) {
-                window.alert(data);
-                window.location.reload()
-            });
 
-        }
-
-
-    </script>
 
 }
 else
