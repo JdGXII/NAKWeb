@@ -296,6 +296,118 @@ namespace AKAWeb_v01.Controllers
             
         }
 
+        //asynchronously validate the register form to enable the register button
+        [HttpPost]
+        public string validateRegisterForm(string name, string email, string password)
+        {
+            string form = "false";
+            //if name and password are not empty and email return code is true (meaning no problems with email address)
+            if(validateNotEmpty(name) && validateNotEmpty(password) && (validateEmail(email) == 2))
+            {
+                //form is true/valid
+                form = "true";
+            }
+
+            return form;
+
+        }
+
+        //action that sees if an email is valid and returns a message to be rendered by the view if it is not valid
+        [HttpPost]
+        public string checkEmail(string email)
+        {
+            int validation = validateEmail(email);
+            //if email is valid, don't return an error message
+            if(validation == 2)
+            {
+                return "";
+            }
+            else if(validation == 1)
+            {
+                return "already exists. Please try a different email address.";
+            }
+            else if(validation == 3)
+            {
+                return "format not accepted. Please input a valid email address.";
+            }
+            else
+            {
+                return "";
+            }
+        }
+
+        //check if name is valid/not empty and returns a message if there's something wrong
+        [HttpPost]
+        public string checkName(string name)
+        {
+            //if it's not empty, it's ok
+            if (validateNotEmpty(name))
+            {
+                return "";
+            }
+            else
+            {
+                return "can't be empty.";
+            }
+        }
+
+        //check if password is valid and returns a message
+        [HttpPost]
+        public string checkPassword(string password)
+        {
+            //if it's not empty, it's ok
+            if (validateNotEmpty(password))
+            {
+                return "";
+            }
+            else
+            {
+                return "can't be empty.";
+            }
+        }
+
+        //checks if a string is not empty, returns true if true, false if empty
+        private bool validateNotEmpty(string str)
+        {
+            if(String.IsNullOrEmpty(str))
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        //validates that an email is not already in the DB or that it has an email format
+        private int validateEmail(string email)
+        {
+            if (email.Contains("@"))
+            {
+
+
+                DBConnection testconn = new DBConnection();
+                string query = "SELECT id FROM Users WHERE email = '" + email + "'";
+                SqlDataReader dataReader = testconn.ReadFromTest(query);
+                if (dataReader.Read())
+                {
+                    //address already exists in db
+                    return 1; //"already exists. Please try a different email address.";
+                }
+                else
+                {
+                    //everything ok
+                    return 2;
+                }
+
+            }
+            else
+            {
+                //problem with format missing @ sign
+                return 3; //"format not accepted. Please input a valid email address.";
+            }
+        }
+
         [HttpPost]
         [CaptchaValidator]
         public ActionResult RegisterUser(string name, string email, string password, bool captchaValid)
