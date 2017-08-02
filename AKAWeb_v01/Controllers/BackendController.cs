@@ -5,6 +5,8 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Net.Mail;
+using System.Security.Cryptography;
+using System.Text;
 using System.Web;
 using System.Web.Configuration;
 using System.Web.Mvc;
@@ -19,6 +21,7 @@ namespace AKAWeb_v01.Controllers
     {
         //private string username = "admin";
         //private string password = "admin";
+        private HashService hash_service = new HashService();
 
         [HttpPost]
         public ActionResult Login(string username, string password)
@@ -408,27 +411,40 @@ namespace AKAWeb_v01.Controllers
             }
         }
 
+
         [HttpPost]
         [CaptchaValidator]
         public ActionResult RegisterUser(string name, string email, string password, bool captchaValid)
         {
-            if (captchaValid && (validateRegisterForm(name, email, password) == "true")) { 
-            DBConnection testconn = new DBConnection();
-            string query = "INSERT INTO Users (name, email, password, access) VALUES ('" + name + "', '" + email + "', '" + password + "',  1)";
-            testconn.WriteToTest(query);
-            testconn.CloseConnection();
+            if (captchaValid)
+            {
+                if((validateRegisterForm(name, email, password) == "true"))
+                {
+                    //hash password before inserting in db
+                    string hashed_password = hash_service.HashPassword(password);
+                    DBConnection testconn = new DBConnection();
+                    string query = "INSERT INTO Users (name, email, password, access) VALUES ('" + name + "', '" + email + "', '" + hashed_password + "',  1)";
+                    testconn.WriteToTest(query);
+                    testconn.CloseConnection();
 
-            //email message
-            string message = "Thank you for registering with an account.";
-            //send registration confirmation email.
-            sendEmail(message, email, "AKA Registration");
+                    //email message
+                    string message = "Thank you for registering with an account.";
+                    //send registration confirmation email.
+                    sendEmail(message, email, "AKA Registration");
 
-            return RedirectToAction("Index", "Backend");
+                    return RedirectToAction("Index", "Backend");
+
+                }
+                else
+                {
+                    TempData["captchafailed"] = "There was something wrong with something you input. Please try again.";
+                    return RedirectToAction("Register");
+                }
+
             }
             else
             {
-                TempData["captchafailed"] = "Ooops! Something went wrong. Either we couldn't properly validate you are human or " +
-                    "there was something wrong with something you input. Please try again.";
+                TempData["captchafailed"] = "We couldn't properly validate you are human. Please try again.";
                 return RedirectToAction("Register");
             }
         }
