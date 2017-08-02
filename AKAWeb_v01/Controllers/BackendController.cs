@@ -1154,11 +1154,14 @@ namespace AKAWeb_v01.Controllers
         {
             bool match = false;
             DBConnection testconn = new DBConnection();
-            string query = "SELECT password from Users WHERE id = " + user_id +"AND password = '"+submitted_password+"'";
+            string query = "SELECT password from Users WHERE id = " + user_id;
             SqlDataReader dataReader = testconn.ReadFromTest(query);
             if (dataReader.Read())
             {
-                match = true;
+                string hashedPasswordFromDB = dataReader.GetValue(0).ToString();
+
+                //true if they match, false if they don't
+                match = hash_service.VerifyPassword(hashedPasswordFromDB, submitted_password);
             }
 
             return match;
@@ -1168,7 +1171,10 @@ namespace AKAWeb_v01.Controllers
         private bool UpdateUserPassword(string new_password, string user_id)
         {
             DBConnection testconn = new DBConnection();
-            string query = "UPDATE Users SET password = '" + new_password + "' WHERE id = " + user_id;
+            //hashes new password
+            string hashNewPassword = hash_service.HashPassword(new_password);
+            //saved hashed password to db
+            string query = "UPDATE Users SET password = '" + hashNewPassword + "' WHERE id = " + user_id;
 
             //if the Write function was succesful returns true, false if otherwise
             return testconn.WriteToTest(query);
