@@ -903,13 +903,14 @@ namespace AKAWeb_v01.Controllers
 
         }
 
-        //Generates a random password and sets in the database
+        //Generates a random password emails it to the user, then the password hash is set in the database
         //Receives the user's id whose password will be randomized
         private string RandomPassword(string id)
         {
             string password = Membership.GeneratePassword(8, 3);
+            string hashedPassword = hash_service.HashPassword(password);
             DBConnection testconn = new DBConnection();
-            string query = "UPDATE Users SET password = '" + password + "' WHERE id = " + id;
+            string query = "UPDATE Users SET password = '" + hashedPassword + "' WHERE id = " + id;
             testconn.WriteToTest(query);
             testconn.CloseConnection();
             return password;
