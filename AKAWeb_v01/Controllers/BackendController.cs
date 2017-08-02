@@ -23,49 +23,81 @@ namespace AKAWeb_v01.Controllers
         //private string password = "admin";
         private HashService hash_service = new HashService();
 
-        [HttpPost]
-        public ActionResult Login(string username, string password)
+        //perform the actual login steps
+        //returns a boolean true if login was a success, false if it was not.
+        private bool doLogin(string email, string password)
         {
+            bool login = false;
             DBConnection testconn = new DBConnection();
 
-            string query = "Select name, email, id, access from Users Where email ='" + username + "' AND password ='" + password + "'";
+            string query = "Select name, email, id, access, password from Users Where email ='" + email + "'";
 
 
             try
             {
                 SqlDataReader dataReader;
                 dataReader = testconn.ReadFromTest(query);
-               
 
 
-                if (dataReader.Read())  //(username == this.username) && (password == this.password))
+                //if email exists in db
+                if (dataReader.Read())  
                 {
-                    System.Web.HttpContext.Current.Session["userpermission"] = dataReader.GetValue(3).ToString();
-                    System.Web.HttpContext.Current.Session["username"] = dataReader.GetValue(0).ToString();
-                    System.Web.HttpContext.Current.Session["userid"] = dataReader.GetValue(2).ToString();
+                    //get password from db where it is hashed
+                    string hashedPassword = dataReader.GetValue(4).ToString();
+                    //if password matches, login is succesful
+                    if(hash_service.VerifyPassword(hashedPassword, password))
+                    {
+                        System.Web.HttpContext.Current.Session["userpermission"] = dataReader.GetValue(3).ToString();
+                        System.Web.HttpContext.Current.Session["username"] = dataReader.GetValue(0).ToString();
+                        System.Web.HttpContext.Current.Session["userid"] = dataReader.GetValue(2).ToString();
 
-                    //ViewData["sessionString"] = System.Web.HttpContext.Current.Session["userpermission"];
-                    testconn.CloseDataReader();
-                    testconn.CloseConnection();
-                    return RedirectToAction("MyProfile");
+                        //ViewData["sessionString"] = System.Web.HttpContext.Current.Session["userpermission"];
+                        testconn.CloseDataReader();
+                        testconn.CloseConnection();
+
+                        login = true;
+                      
+
+                    }
+
+
 
                 }
-                else
-                {
-                    ViewBag.Message = "Wrong Credentials";
-                    testconn.CloseDataReader();
-                    testconn.CloseConnection();
-                    TempData["failedlogin"] = "Sign in failed. Password or email not recognized.";
-                    return RedirectToAction("Index");
-                }
+
 
             }
             catch (Exception e)
             {
                 System.Web.HttpContext.Current.Session["exception"] = e.ToString();
-                
-                return RedirectToAction("Index");
+                login = false;
             }
+
+            return login;
+
+        }
+
+        [HttpPost]
+        public ActionResult Login(string username, string password)
+        {
+
+
+
+            bool login = doLogin(username, password);
+
+                if (login)  //(username == this.username) && (password == this.password))
+                {
+
+                    return RedirectToAction("MyProfile");
+
+                }
+                else
+                {
+
+                    TempData["failedlogin"] = "Sign in failed. Password or email not recognized.";
+                    return RedirectToAction("Index");
+                }
+
+ 
 
         }
 
@@ -432,7 +464,17 @@ namespace AKAWeb_v01.Controllers
                     //send registration confirmation email.
                     sendEmail(message, email, "AKA Registration");
 
-                    return RedirectToAction("Index", "Backend");
+                    bool login = doLogin(email, password);
+                    if (login)
+                    {
+                        return RedirectToAction("AccountInfo", "Backend");
+                    }
+                    else
+                    {
+                        return RedirectToAction("Index", "Backend");
+                    }
+
+                    
 
                 }
                 else
