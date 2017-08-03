@@ -282,40 +282,7 @@ namespace AKAWeb_v01.Controllers
             
         }
 
-        public ActionResult EditMenu()
-        {
 
-            var model = new List<MainMenuItem>();
-            DBConnection testconn = new DBConnection();
-            string query = "SELECT * FROM main_menu";
-            SqlDataReader dataReader = testconn.ReadFromTest(query);
-            while (dataReader.Read())
-            {
-                var item = new MainMenuItem();
-                item.id = Convert.ToInt32(dataReader.GetValue(0));
-                item.item_name = dataReader.GetValue(1).ToString();
-                item.islive = (bool)dataReader.GetValue(2);
-                item.submenu_item = dataReader.GetValue(3) as MainMenuItem;
-
-                model.Add(item);
-            }
-            testconn.CloseDataReader();
-            testconn.CloseConnection();
-            return View(model);
-        }
-
-        [HttpPost]
-        public ActionResult AddMainMenuItem(string menu_name)
-        {
-            DBConnection testconn = new DBConnection();
-            string query = "INSERT INTO main_menu (item_name, islive) VALUES ('" + menu_name + "', 1)";
-            testconn.WriteToTest(query);
-            testconn.CloseConnection();
-
-
-
-            return RedirectToAction("EditMenu");
-        }
 
         public ActionResult Register()
         {
@@ -506,11 +473,6 @@ namespace AKAWeb_v01.Controllers
             
         }
 
-        public ActionResult Main()
-        {
-            ViewData["BackendPages"] = getBackendPages();
-            return View();
-        }
 
         public ActionResult Logout()
         {
@@ -522,9 +484,22 @@ namespace AKAWeb_v01.Controllers
         //controller action that manages the edit pages page. Lists all the pages
         public ActionResult ListPages()
         {
-            ViewData["BackendPages"] = getBackendPages();
-            var model = getPages();
-            return View(model);
+            String userpermission = "";
+            if (System.Web.HttpContext.Current.Session["userpermission"] != null)
+            {
+                userpermission = System.Web.HttpContext.Current.Session["userpermission"] as String;
+            }
+            if (userpermission.Equals("3"))
+            {
+                ViewData["BackendPages"] = getBackendPages();
+                var model = getPages();
+                return View(model);
+            }
+            else
+            {
+                return RedirectToAction("Index");
+            }
+
         }
 
         //gets all pages in the db and return a list with them 
@@ -597,12 +572,25 @@ namespace AKAWeb_v01.Controllers
 
         public ActionResult ChangePageSection(string id)
         {
-            ViewData["BackendPages"] = getBackendPages();
-            var model = getSection(id);
-            ViewData["SectionList"] = GenerateViewBagList();
-            PageModel page = getPage(Int32.Parse(id));
-            ViewData["PageTitle"] = page.title;
-            return View(model);
+            String userpermission = "";
+            if (System.Web.HttpContext.Current.Session["userpermission"] != null)
+            {
+                userpermission = System.Web.HttpContext.Current.Session["userpermission"] as String;
+            }
+            if (userpermission.Equals("3"))
+            {
+                ViewData["BackendPages"] = getBackendPages();
+                var model = getSection(id);
+                ViewData["SectionList"] = GenerateViewBagList();
+                PageModel page = getPage(Int32.Parse(id));
+                ViewData["PageTitle"] = page.title;
+                return View(model);
+            }
+            else
+            {
+                return RedirectToAction("Index");
+            }
+
         }
 
         [HttpPost]
@@ -617,17 +605,30 @@ namespace AKAWeb_v01.Controllers
 
         public ActionResult EditPage(string id)
         {
-            
-            var model = getPage(Int32.Parse(id));
-            if(model != null)
+            String userpermission = "";
+            if (System.Web.HttpContext.Current.Session["userpermission"] != null)
             {
-                ViewData["BackendPages"] = getBackendPages();
-                return View(model);
+                userpermission = System.Web.HttpContext.Current.Session["userpermission"] as String;
+            }
+            if (userpermission.Equals("3"))
+            {
+                var model = getPage(Int32.Parse(id));
+                if (model != null)
+                {
+                    ViewData["BackendPages"] = getBackendPages();
+                    return View(model);
+                }
+                else
+                {
+                    return RedirectToAction("ListPages", "Backend");
+                }
+
             }
             else
             {
-                return RedirectToAction("ListPages", "Backend");
+                return RedirectToAction("Index");
             }
+
             
         }
 
@@ -674,9 +675,23 @@ namespace AKAWeb_v01.Controllers
 
         public ActionResult CreatePage()
         {
-            ViewData["SectionList"] = GenerateViewBagList();
-            ViewData["BackendPages"] = getBackendPages();
-            return View();
+            String userpermission = "";
+            if (System.Web.HttpContext.Current.Session["userpermission"] != null)
+            {
+                userpermission = System.Web.HttpContext.Current.Session["userpermission"] as String;
+            }
+            if (userpermission.Equals("3"))
+            {
+                ViewData["SectionList"] = GenerateViewBagList();
+                ViewData["BackendPages"] = getBackendPages();
+                return View();
+
+            }
+            else
+            {
+                return RedirectToAction("Index");
+            }
+
         }
 
         [HttpPost, ValidateInput(false)]
@@ -769,9 +784,23 @@ namespace AKAWeb_v01.Controllers
         //Lists all sections
         public ActionResult ListSections()
         {
-            ViewData["BackendPages"] = getBackendPages();
-            var model = getSections();
-            return View(model);
+            String userpermission = "";
+            if (System.Web.HttpContext.Current.Session["userpermission"] != null)
+            {
+                userpermission = System.Web.HttpContext.Current.Session["userpermission"] as String;
+            }
+            if (userpermission.Equals("3"))
+            {
+                ViewData["BackendPages"] = getBackendPages();
+                var model = getSections();
+                return View(model);
+
+            }
+            else
+            {
+                return RedirectToAction("Index");
+            }
+
         }
 
         [HttpPost]
@@ -805,8 +834,21 @@ namespace AKAWeb_v01.Controllers
 
         public ActionResult CreateSection()
         {
-            ViewData["BackendPages"] = getBackendPages();
-            return View();
+            String userpermission = "";
+            if (System.Web.HttpContext.Current.Session["userpermission"] != null)
+            {
+                userpermission = System.Web.HttpContext.Current.Session["userpermission"] as String;
+            }
+            if (userpermission.Equals("3"))
+            {
+                ViewData["BackendPages"] = getBackendPages();
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("Index");
+            }
+
         }
 
         [HttpPost]
