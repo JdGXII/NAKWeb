@@ -206,7 +206,7 @@ namespace AKAWeb_v01.Controllers
                 return View(model);
             }
             else
-                return RedirectToAction("Index");
+                return RedirectToAction("MyProfile");
         }
 
         private int getCurrentCarouselNumber()
@@ -497,7 +497,7 @@ namespace AKAWeb_v01.Controllers
             }
             else
             {
-                return RedirectToAction("Index");
+                return RedirectToAction("MyProfile");
             }
 
         }
@@ -588,7 +588,7 @@ namespace AKAWeb_v01.Controllers
             }
             else
             {
-                return RedirectToAction("Index");
+                return RedirectToAction("MyProfile");
             }
 
         }
@@ -626,7 +626,7 @@ namespace AKAWeb_v01.Controllers
             }
             else
             {
-                return RedirectToAction("Index");
+                return RedirectToAction("MyProfile");
             }
 
             
@@ -689,7 +689,7 @@ namespace AKAWeb_v01.Controllers
             }
             else
             {
-                return RedirectToAction("Index");
+                return RedirectToAction("MyProfile");
             }
 
         }
@@ -798,7 +798,7 @@ namespace AKAWeb_v01.Controllers
             }
             else
             {
-                return RedirectToAction("Index");
+                return RedirectToAction("MyProfile");
             }
 
         }
@@ -846,7 +846,7 @@ namespace AKAWeb_v01.Controllers
             }
             else
             {
-                return RedirectToAction("Index");
+                return RedirectToAction("MyProfile");
             }
 
         }
