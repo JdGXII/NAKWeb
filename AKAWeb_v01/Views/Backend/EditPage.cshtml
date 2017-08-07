@@ -12,7 +12,11 @@
     selector: 'textarea',
     plugins: "image",
     //add call to function to load current images
-    image_list: "/mylist.php",
+    image_list: [
+        { title: 'Dog', value: 'mydog.jpg' },
+        { title: 'Cat', value: 'mycat.gif' }
+    ],
+    paste_data_images: true,
     extended_valid_elements: "iframe[src|title|width|height|allowfullscreen|frameborder|class|id]"
     });
  </script>

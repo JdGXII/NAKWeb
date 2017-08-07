@@ -168,6 +168,7 @@
     <Compile Include="Models\CartModel.cs" />
     <Compile Include="Models\CartViewModel.cs" />
     <Compile Include="Models\AddressModel.cs" />
+    <Compile Include="Models\ImageModel.cs" />
     <Compile Include="Models\MembershipModel.cs" />
     <Compile Include="Models\ProductModel.cs" />
     <Compile Include="Models\SectionModel.cs" />
@@ -267,9 +268,12 @@
     <Content Include="Views\Backend\AccountInfo.cshtml" />
     <Content Include="Views\Backend\PurchaseHistory.cshtml" />
     <Content Include="Views\Backend\UpdatePassword.cshtml" />
+    <Content Include="Views\Backend\ReturnImageList.cshtml" />
+    <Content Include="Views\Backend\UploadSubPageImage.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Content\Images\SubPagesUploads\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

@@ -655,7 +655,7 @@ namespace AKAWeb_v01.Controllers
                         file.SaveAs(path);
                         string pathForDB = "~/Content/Images/Subheaders/" + fileName.ToString(); 
                         query = "UPDATE Pages SET content ='" + content + "', subheader_image ='"+ pathForDB + "', title = '" + title + "' where id =" + id;
-                        ViewBag.Message = "File uploaded successfully";
+                        
                         
 
                     }
@@ -1293,8 +1293,92 @@ namespace AKAWeb_v01.Controllers
 
         }
 
+        //get the list of images uploaded to the folder containing
+        //the images for editing subpages and returns it
+        private List<AKAWeb_v01.Models.ImageModel> getImageList()
+        {
+            List<AKAWeb_v01.Models.ImageModel> image_list = new List<ImageModel>();
+            DBConnection testconn = new DBConnection();
+            string query = "SELECT id, title, url FROM SubPages_Images";
+            SqlDataReader dataReader = testconn.ReadFromTest(query);
+            //while there are records in the datareader
+            while (dataReader.Read())
+            {
+                int id = Int32.Parse(dataReader.GetValue(0).ToString());
+                string title = dataReader.GetValue(1).ToString();
+                string url = dataReader.GetValue(2).ToString();
+           
+                ImageModel image = new ImageModel(id, title, url);
+                image_list.Add(image);
+
+            }
+
+            return image_list;
+
+
+        }
+
+        //action that makes the Image list from GetImaList() available as images for easy copy and paste
+        public ActionResult ReturnImageList()
+        {
+            if(TempData["imageUploadSuccess"] != null)
+            {
+                ViewBag.UploadSuccess = TempData["imageUploadSuccess"].ToString();
+            }
+            //this condition is to set an element of the viewbag with the
+            //exception if failure to upload the image happens
+            //it's for debugging purposes
+            else if(TempData["imageUploadException"] != null)
+            {
+                ViewBag.ShowImageUploadExcepcion = TempData["imageUploadException"].ToString();
+            }
+            ViewData["BackendPages"] = getBackendPages();
+            var model = getImageList();
+            return View(model);
+        }
+
+        //method to upload images to subpages
+        [HttpPost]
+        public ActionResult UploadSubPageImage(string title)
+        {
+
+            
+            if (Request.Files.Count > 0)
+            {
+                var file = Request.Files[0];
+
+                if (file != null && file.ContentLength > 0)
+                    try
+                    {
+                        var fileName = file.FileName;
+                        var path = Path.Combine(Server.MapPath("~/Content/Images/SubPagesUploads"), fileName);
+                        file.SaveAs(path);
+                        string pathForDB = "~/Content/Images/SubPagesUploads/" + fileName.ToString();
+                        DBConnection testconn = new DBConnection();
+                        string query = "INSERT INTO SubPages_Images(title, url) VALUES('" + title + "', '" + pathForDB + "')";
+                        testconn.WriteToTest(query);
+
+                        TempData["imageUploadSuccess"] = "Image uploaded succesfully!";
+                        
+
+
+
+                    }
+                    catch (Exception ex)
+                    {
+                        
+                        TempData["imageUploadSuccess"] = "Something went wrong. Image did not upload.";
+                        TempData["imageUploadException"] = ex;
+                    }
+
+            }
+
+            return RedirectToAction("ReturnImageList");
+        }
+
         public ActionResult Test()
         {
+            //ViewBag.List = GetImageList();
             return View();
         }
 

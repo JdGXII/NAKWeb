@@ -1,0 +1,114 @@
+﻿@model  IEnumerable<AKAWeb_v01.Models.ImageModel>
+
+@{
+    ViewBag.Title = "AccountInfo";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Head{
+
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"
+            integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+            crossorigin="anonymous"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#fileUpload").on('change', function () {
+                //Get count of selected files
+                var countFiles = $(this)[0].files.length;
+                var imgPath = $(this)[0].value;
+                var extn = imgPath.substring(imgPath.lastIndexOf('.') + 1).toLowerCase();
+                var image_holder = $("#image-holder");
+                image_holder.empty();
+                if (extn == "gif" || extn == "png" || extn == "jpg" || extn == "jpeg") {
+                    if (typeof (FileReader) != "undefined") {
+                        //loop for each file selected for uploaded.
+                        for (var i = 0; i < countFiles; i++) {
+                            var reader = new FileReader();
+                            reader.onload = function (e) {
+                                $("#subheaderimg").attr("src", e.target.result);
+                            }
+                            image_holder.show();
+                            reader.readAsDataURL($(this)[0].files[i]);
+                        }
+                    } else {
+                        alert("This browser does not support FileReader.");
+                    }
+                } else {
+                    alert("Pls select only images");
+                }
+            });
+        });
+    </script>
+    }
+
+    @section LeftMenu{
+<div class="left-menu-title">Backend Controls</div>
+    <div class="left-menu">
+
+        @foreach (AKAWeb_v01.Models.BackendMenuModel menuitem in ViewData["BackendPages"] as List<AKAWeb_v01.Models.BackendMenuModel>)
+        {
+            <div>@Html.ActionLink(menuitem.title, menuitem.action, menuitem.controller, null, new { @class = "left-menu-link" })</div>
+        }
+
+    </div>
+}
+@ViewBag.ShowImageUploadExcepcion
+<p>
+    <p style="color:red;"><b>@ViewBag.UploadSuccess</b></p>
+    <a class="menu-link" href="#addImage" data-toggle="collapse">Upload New Image</a>
+    <div id="addImage" class="collapse">
+        @using (Html.BeginForm("UploadSubPageImage", "Backend", FormMethod.Post, new { id = "content_form", enctype = "multipart/form-data" }))
+        {
+
+            <div><img class="resizeimg" id="subheaderimg" src="http://via.placeholder.com/200x200" /></div>
+            @Html.Label("Upload Image")
+            <input class="form-control" id="fileUpload" type="file" name="file" />
+            @Html.Label("Image Title")
+            <input class="form-control" type="text" name="title" placeholder="Title" />
+            <button style="margin-top:5px;" type="submit" class="btn btn-default">Save Image</button>
+
+        }
+    </div>
+    
+</p>
+<table class="table">
+    <tr>
+        <th>
+            Image
+        </th>
+        <th>
+            Title
+        </th>
+
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        string formid = "edit" + item.id;
+        <tr>
+
+            <td>
+                <img style="height:100px; width:100px;" src="@Url.Content(item.url)" />
+                
+            </td>
+            <td>
+                @using (Html.BeginForm("EditImageTitle", "Backend", FormMethod.Post, new { id = formid }))
+                {
+                    <input class="form-control" type="text" name="imagetitle" placeholder="@item.title" />
+                    <input type="hidden" value="@item.id" name="sectionid" />
+                }
+            </td>
+
+
+            <td>
+                <button type="submit" form="@formid" class="btn btn-default">Save Changes</button> |
+  
+                    @Html.ActionLink("Delete Image", "DeleteSubPageImage", new { id = item.id });
+
+            </td>
+        </tr>
+    }
+
+</table>
+

@@ -7,3 +7,8 @@
 <h2>Test</h2>
 
 @Session["exception"]
+
+@foreach(FileInfo img in ViewBag.List as List<FileInfo>)
+{
+   <img src="@Url.Content("~/Content/Images/"+img.ToString())" />
+}
