@@ -93,10 +93,10 @@
                 
             </td>
             <td>
-                @using (Html.BeginForm("EditImageTitle", "Backend", FormMethod.Post, new { id = formid }))
+                @using (Html.BeginForm("EditSubPageImageTitle", "Backend", FormMethod.Post, new { id = formid }))
                 {
                     <input class="form-control" type="text" name="imagetitle" placeholder="@item.title" />
-                    <input type="hidden" value="@item.id" name="sectionid" />
+                    <input type="hidden" value="@item.id" name="imageid" />
                 }
             </td>
 
@@ -104,7 +104,7 @@
             <td>
                 <button type="submit" form="@formid" class="btn btn-default">Save Changes</button> |
   
-                    @Html.ActionLink("Delete Image", "DeleteSubPageImage", new { id = item.id });
+                    @Html.ActionLink("Delete Image", "DeleteSubPageImage", new { id = item.id, url = item.url }, null)
 
             </td>
         </tr>

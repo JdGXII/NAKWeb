@@ -1376,6 +1376,103 @@ namespace AKAWeb_v01.Controllers
             return RedirectToAction("ReturnImageList");
         }
 
+        //edits the title of an image.
+        //title is NOT the name of the file, it is an attribute we use for models
+        //not the file name.
+        [HttpPost]
+        public ActionResult EditSubPageImageTitle(string imageid, string imagetitle)
+        {
+            DBConnection testconn = new DBConnection();
+            string query = "UPDATE SubPages_Images SET title = '"+ imagetitle + "' WHERE id = " + imageid;
+            if (testconn.WriteToTest(query))
+            {
+                TempData["imageUploadSuccess"] = "Image title succesfully edited.";
+            }
+            else
+            {
+                TempData["imageUploadSuccess"] = "Something went wrong. Title not updated.";
+            }
+            
+            return RedirectToAction("ReturnImageList");
+        }
+
+        //deletes an image, both from the db and the file system
+        public ActionResult DeleteSubPageImage(string id, string url)
+        {
+            
+            DBConnection testconn = new DBConnection();
+            string query = "DELETE FROM SubPages_Images WHERE id = " + id;
+
+            //get the path of the image from the server
+            string path = Server.MapPath(url);
+
+            //if file exists delete it
+            if (System.IO.File.Exists(path))
+            {
+                //delete from file system
+                System.IO.File.Delete(path);
+                //delete from DB
+                testconn.WriteToTest(query);
+                testconn.CloseConnection();
+                TempData["imageUploadSuccess"] = "Image succesfully deleted.";
+
+
+            }
+            else
+            {
+                TempData["imageUploadSuccess"] = "Something went wrong. Image not deleted.";
+            }
+            
+
+            return RedirectToAction("ReturnImageList");
+        }
+
+        //this function returns a Json array to be fed into the text/html editor
+        //to serve as a list for existing images for easier editing
+        public JsonResult ImageJsonList()
+        {
+            /*var builder = new StringBuilder();
+            builder.Append("[");
+            foreach (var item in getImageList())
+            {
+                builder.Append("{\"title\": \"" + item.title + "\", \"value\": \"" + Server.MapPath(item.url) + "\"},");
+                
+            }
+                
+            var result = builder.ToString().TrimEnd(new char[] { ',', ' ' }) + "]";
+            return result;*/
+            //List<ImagePair> list = getImagesForJson();
+            List<ImagePair> list = getImagesForJson();
+            //list.Add(new ImagePair { title = "20150326_180444_resized.jpg", value = "/Images/Images/20150326_180444_resized.jpg" });
+            //list.Add(new ImagePair { title = "20150326_180444_resized.jpg", value = "/Images/Images/20150326_180444_resized.jpg" });
+            //ImagePair[] img = new ImagePair[2] { };
+            return Json(list, JsonRequestBehavior.AllowGet);
+
+        }
+
+        private List<ImagePair> getImagesForJson()
+        {
+
+            List<AKAWeb_v01.Models.ImagePair> image_list = new List<ImagePair>();
+            DBConnection testconn = new DBConnection();
+            string query = "SELECT title, url FROM SubPages_Images";
+            SqlDataReader dataReader = testconn.ReadFromTest(query);
+            //while there are records in the datareader
+            while (dataReader.Read())
+            {
+                
+                string title = dataReader.GetValue(0).ToString();
+                string url = dataReader.GetValue(1).ToString();
+                string value = Url.Content(url);
+                //ImagePair image = new ImagePair(title, url);
+                image_list.Add(new ImagePair { title = title, value = value });
+
+            }
+
+            return image_list;
+
+        }
+
         public ActionResult Test()
         {
             //ViewBag.List = GetImageList();
