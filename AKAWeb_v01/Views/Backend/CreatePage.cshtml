@@ -5,22 +5,22 @@
 
 }
 
-@{ string images = "d";}
-<h2>Create Page</h2>
+@section Head{
+
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"
         integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
         crossorigin="anonymous"></script>
 <script src="https://cloud.tinymce.com/stable/tinymce.min.js"></script>
 <script>
-tinymce.init({
-    selector: 'textarea',
-    plugins: "image",
-    //add call to function to load current images
+    tinymce.init({
+        selector: 'textarea',
+        plugins: "image",
+        //add call to function to load current images
 
-    extended_valid_elements: "iframe[src|title|width|height|allowfullscreen|frameborder|class|id]",
-    paste_data_images: true,
-    image_list: "/Backend/ImageJsonList"
-});
+        extended_valid_elements: "iframe[src|title|width|height|allowfullscreen|frameborder|class|id]",
+        paste_data_images: true,
+        image_list: "/Backend/ImageJsonList"
+    });
 
 </script>
 <!--Following script generates the image preview in the subheader image part-->
@@ -53,6 +53,11 @@ tinymce.init({
         });
     });
 </script>
+    
+    
+    }
+<h2>Create Page</h2>
+
 @section BackMenu{
     <div class="left-menu-title">Backend Controls</div>
     <div class="left-menu">
