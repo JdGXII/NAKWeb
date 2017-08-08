@@ -78,7 +78,7 @@
         <input style="margin-bottom: 10px;" form="content_form" type="text" class="form-control" name="title" placeholder="Page Title" />
 
         <div class="row">
-            <div><a class="btn" href="javascript:;" onclick="tinymce.execCommand('mceToggleEditor',false,'content');"><span>Toggle to HTML view</span></a></div>
+            <div><a class="btn" href="javascript:;" onclick="tinymce.execCommand('mceToggleEditor',false,'content');"><span>Toggle to HTML view</span></a>| @Html.ActionLink("Go to image list", "ReturnImageList", null, new { target = "_blank" })</div>
             <div style="margin-bottom: 15px;">
                 <textarea style="height:500px; max-width:5000px;" class="form-control" style="height:500px;" name="content" form="content_form">New page content here...</textarea>
             </div>

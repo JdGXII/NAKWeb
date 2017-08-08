@@ -77,7 +77,7 @@ tinymce.init({
     <div class="row">
         <div>@Html.Label("Page Title")
         <input style="margin-bottom: 10px;" value="@Model.title" form="content_form" type="text" class="form-control" name="title" placeholder="@Model.title" /></div>
-        <div><a class="btn" href="javascript:;" onclick="tinymce.execCommand('mceToggleEditor',false,'content');"><span>Toggle to HTML view</span></a></div>
+        <div><a class="btn" href="javascript:;" onclick="tinymce.execCommand('mceToggleEditor',false,'content');"><span>Toggle to HTML view</span></a> | @Html.ActionLink("Go to image list", "ReturnImageList", null, new { target = "_blank"})</div>
         <div>
             <textarea style="height:500px; max-width:5000px; width:1140px;" name="content" form="content_form">@Model.pageContent</textarea>
         </div>
