@@ -1321,21 +1321,31 @@ namespace AKAWeb_v01.Controllers
         //action that makes the Image list from GetImaList() available as images for easy copy and paste
         public ActionResult ReturnImageList()
         {
-            if(TempData["imageUploadSuccess"] != null)
+            if (System.Web.HttpContext.Current.Session["username"] != null)
             {
-                ViewBag.UploadSuccess = TempData["imageUploadSuccess"].ToString();
+                if (TempData["imageUploadSuccess"] != null)
+                {
+                    ViewBag.UploadSuccess = TempData["imageUploadSuccess"].ToString();
+                }
+                //this condition is to set an element of the viewbag with the
+                //exception if failure to upload the image happens
+                //it's for debugging purposes
+                else if (TempData["imageUploadException"] != null)
+                {
+                    ViewBag.ShowImageUploadExcepcion = TempData["imageUploadException"].ToString();
+                }
+                ViewData["BackendPages"] = getBackendPages();
+                var model = getImageList();
+                return View(model);
             }
-            //this condition is to set an element of the viewbag with the
-            //exception if failure to upload the image happens
-            //it's for debugging purposes
-            else if(TempData["imageUploadException"] != null)
+            else
             {
-                ViewBag.ShowImageUploadExcepcion = TempData["imageUploadException"].ToString();
+                return RedirectToAction("MyProfile");
+
             }
-            ViewData["BackendPages"] = getBackendPages();
-            var model = getImageList();
-            return View(model);
+
         }
+
 
         //method to upload images to subpages
         [HttpPost]
@@ -1399,32 +1409,40 @@ namespace AKAWeb_v01.Controllers
         //deletes an image, both from the db and the file system
         public ActionResult DeleteSubPageImage(string id, string url)
         {
-            
-            DBConnection testconn = new DBConnection();
-            string query = "DELETE FROM SubPages_Images WHERE id = " + id;
-
-            //get the path of the image from the server
-            string path = Server.MapPath(url);
-
-            //if file exists delete it
-            if (System.IO.File.Exists(path))
+            if (System.Web.HttpContext.Current.Session["username"] != null)
             {
-                //delete from file system
-                System.IO.File.Delete(path);
-                //delete from DB
-                testconn.WriteToTest(query);
-                testconn.CloseConnection();
-                TempData["imageUploadSuccess"] = "Image succesfully deleted.";
+                DBConnection testconn = new DBConnection();
+                string query = "DELETE FROM SubPages_Images WHERE id = " + id;
 
+                //get the path of the image from the server
+                string path = Server.MapPath(url);
+
+                //if file exists delete it
+                if (System.IO.File.Exists(path))
+                {
+                    //delete from file system
+                    System.IO.File.Delete(path);
+                    //delete from DB
+                    testconn.WriteToTest(query);
+                    testconn.CloseConnection();
+                    TempData["imageUploadSuccess"] = "Image succesfully deleted.";
+
+
+                }
+                else
+                {
+                    TempData["imageUploadSuccess"] = "Something went wrong. Image not deleted.";
+                }
+
+
+                return RedirectToAction("ReturnImageList");
 
             }
             else
             {
-                TempData["imageUploadSuccess"] = "Something went wrong. Image not deleted.";
+                return RedirectToAction("MyProfile");
             }
-            
 
-            return RedirectToAction("ReturnImageList");
         }
 
         //this function returns a Json array to be fed into the text/html editor
