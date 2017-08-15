@@ -22,6 +22,8 @@ namespace AKAWeb_v01.Controllers
         //private string username = "admin";
         //private string password = "admin";
         private HashService hash_service = new HashService();
+        //Uncomment only if you need to do bulk upload to db from an excel sheet
+        //private ExcelService excel_service = new ExcelService();
 
         //perform the actual login steps
         //returns a boolean true if login was a success, false if it was not.
