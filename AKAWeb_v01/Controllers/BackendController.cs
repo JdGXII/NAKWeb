@@ -1247,6 +1247,32 @@ namespace AKAWeb_v01.Controllers
             return product;
         }
 
+        //returns a list with all the products in the DB
+        private List<ProductModel> getProducts()
+        {
+            DBConnection testconn = new DBConnection();
+            string query = "SELECT id, type, cost, description, length, details, isLive, image FROM Products";
+            SqlDataReader dataReader = testconn.ReadFromTest(query);
+            List<ProductModel> product_list = new List<ProductModel>();
+            while (dataReader.Read())
+            {
+                int id = Int32.Parse(dataReader.GetValue(0).ToString());
+                string type = dataReader.GetValue(1).ToString();
+                int cost = Int32.Parse(dataReader.GetValue(2).ToString());
+                string description = dataReader.GetValue(3).ToString();
+                string length = dataReader.GetValue(4).ToString();
+                string details = dataReader.GetValue(5).ToString();
+                bool isLive = (bool)dataReader.GetValue(6);
+                string image = dataReader.GetValue(7).ToString();
+                ProductModel product = new ProductModel(id, cost, type, description, length, isLive, details, image);
+                product_list.Add(product);
+                
+
+            }
+
+            return product_list;
+        }
+
         //returns a userhasproduct model list of products purchased by a user
         //it takes a user id and retrieves the products he owns from the db
         //this functions is meant to be called for actions that occur once the user has logged in
@@ -1490,6 +1516,108 @@ namespace AKAWeb_v01.Controllers
             }
 
             return image_list;
+
+        }
+
+        public ActionResult ListProducts()
+        {
+            if (System.Web.HttpContext.Current.Session["username"] != null)
+            {
+                if (TempData["productEditSuccess"] != null)
+                {
+                    ViewBag.ProductEditSuccess = TempData["productEditSuccess"].ToString();
+                }
+                else if (TempData["productCreationSuccess"] != null)
+                {
+                    ViewBag.ProductEditSuccess = TempData["productCreationSuccess"].ToString();
+                }
+                ViewData["BackendPages"] = getBackendPages();
+                var model = getProducts();
+                return View(model);
+
+            }
+            else
+            {
+                return RedirectToAction("MyProfile");
+            }
+
+        }
+
+        [HttpPost]
+        public ActionResult EditProduct (string cost, string type, string description, string length, string details, string productid)
+        {
+            if (System.Web.HttpContext.Current.Session["username"] != null)
+            {
+                DBConnection testconn = new DBConnection();
+                string query = "UPDATE Products SET cost = '" + cost + "', type= '" + type + "', description = '" + description + "', length = '" + length + "', details = '" + details + "' WHERE id = " + productid;
+                if (testconn.WriteToTest(query))
+                {
+                    TempData["productEditSuccess"] = "Product edited succesfully.";
+
+                }
+                else
+                {
+                    TempData["productEditSuccess"] = "Something went wrong, product did not update.";
+                }
+
+                return RedirectToAction("ListProducts");
+
+            }
+            else
+            {
+                return RedirectToAction("MyProfile");
+            }
+
+        }
+
+        public ActionResult ToggleIsLiveProduct(string id)
+        {
+            if (System.Web.HttpContext.Current.Session["username"] != null)
+            {
+                DBConnection testconn = new DBConnection();
+                //see what is the current state of the product if it's alive or not
+                string query = "SELECT islive from Products where id =" + id;
+                //this query will set a product isAlive to 0 
+                string query2 = "UPDATE Products SET islive = 0 WHERE id =" + id;
+                SqlDataReader dataReader = testconn.ReadFromTest(query);
+                dataReader.Read();
+                //if the product is NOT live, change the query and turn the product to live
+                if (!(bool)dataReader.GetValue(0))
+                {
+                    query2 = "UPDATE Products SET islive = 1 WHERE id =" + id;
+                }
+                testconn.WriteToTest(query2);
+                testconn.CloseConnection();
+                return RedirectToAction("ListProducts", "Backend");
+            }
+            else
+            {
+                return RedirectToAction("MyProfile");
+            }
+
+        }
+
+        [HttpPost]
+        public ActionResult CreateProduct(string cost, string type, string description, string details, string duration)
+        {
+            if (System.Web.HttpContext.Current.Session["username"] != null)
+            {
+                DBConnection testconn = new DBConnection();
+                string query = "INSERT INTO Products(cost, type, description, details, length, isLive) VALUES('" + cost + "', '" + type + "', '" + description + "', '" + details + "', '" + duration + "', 1)";
+                if (testconn.WriteToTest(query))
+                {
+                    TempData["productCreationSuccess"] = "Product successfully created!";
+                }
+                else
+                {
+                    TempData["productCreationSuccess"] = "Something went wrong. Product not created";
+                }
+                return RedirectToAction("ListProducts");
+            }
+            else
+            {
+                return RedirectToAction("MyProfile");
+            }
 
         }
 

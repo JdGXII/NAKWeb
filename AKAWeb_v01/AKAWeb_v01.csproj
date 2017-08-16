@@ -275,6 +275,7 @@
     <Content Include="Views\Backend\UpdatePassword.cshtml" />
     <Content Include="Views\Backend\ReturnImageList.cshtml" />
     <Content Include="Views\Backend\UploadSubPageImage.cshtml" />
+    <Content Include="Views\Backend\ListProducts.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
