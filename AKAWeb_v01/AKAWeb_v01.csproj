@@ -202,6 +202,7 @@
     <Content Include="Content\Images\CarouselUploads\carouselpicture3.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\Images\favicon.ico" />
     <Content Include="Content\Images\feature_Events_and_Services.jpg" />
     <Content Include="Content\Images\headerBackgroundSlice.png" />
     <Content Include="Content\Images\headerBackgroundSlice71px.png" />
