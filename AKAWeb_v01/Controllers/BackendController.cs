@@ -1650,6 +1650,29 @@ namespace AKAWeb_v01.Controllers
         }
 
         [HttpPost]
+        public ActionResult CreateProductType(string prodtype)
+        {
+            if (System.Web.HttpContext.Current.Session["username"] != null)
+            {
+                DBConnection testconn = new DBConnection();
+                string query = "INSERT INTO Product_Type (name) VALUES('" + prodtype + "')";
+                if (testconn.WriteToTest(query))
+                {
+                    TempData["productCreationSuccess"] = "Product Type successfully created!";
+                }
+                else
+                {
+                    TempData["productCreationSuccess"] = "Something went wrong. Product Type not created";
+                }
+                return RedirectToAction("ListProducts");
+            }
+            else
+            {
+                return RedirectToAction("MyProfile");
+            }
+        }
+
+        [HttpPost]
         public ActionResult CreateProduct(string cost, string ProductTypes, string description, string details, string duration)
         {
             if (System.Web.HttpContext.Current.Session["username"] != null)

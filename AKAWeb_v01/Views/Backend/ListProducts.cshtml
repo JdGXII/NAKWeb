@@ -20,7 +20,33 @@
 }
 <p style="color:red;"><b>@ViewBag.ProductEditSuccess</b></p>
 <p>
-    <a class="menu-link" href="#addProduct" data-toggle="collapse">Create New Product</a>
+    <a class="menu-link" href="#addProduct" data-toggle="collapse">Create New Product</a> | <a class="menu-link" href="#addProductType" data-toggle="collapse">Create New Product Type</a>
+    <div id="addProductType" class="collapse">
+        @using (Html.BeginForm("CreateProductType", "Backend", FormMethod.Post, new { id = "prodtype_form", enctype = "multipart/form-data" }))
+        {
+            <table class="table">
+                <tr>
+                    <th>
+                        Product Type Name
+                    </th>
+
+                    <th></th>
+
+                </tr>
+                <tr>
+                    <td>
+                        <input class="form-control" type="text" name="prodtype" placeholder="Product Type Name" />
+                    </td>
+
+                    <td><button style="margin-top:5px;" type="submit" class="btn btn-default">Create Product Type</button></td>
+                </tr>
+            </table>
+
+
+
+
+        }
+    </div>
     <div id="addProduct" class="collapse">
         @using (Html.BeginForm("CreateProduct", "Backend", FormMethod.Post, new { id = "content_form", enctype = "multipart/form-data" }))
         {
