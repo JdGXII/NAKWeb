@@ -176,6 +176,7 @@
     <Compile Include="Models\ImagePair.cs" />
     <Compile Include="Models\MembershipModel.cs" />
     <Compile Include="Models\ProductModel.cs" />
+    <Compile Include="Models\ProductTypeModel.cs" />
     <Compile Include="Models\SectionModel.cs" />
     <Compile Include="Models\PageModel.cs" />
     <Compile Include="Models\MainMenuItem.cs" />

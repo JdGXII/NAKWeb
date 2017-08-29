@@ -49,7 +49,8 @@
                         <input class="form-control" type="text" name="cost" placeholder="Cost" />
                     </td>
                     <td>
-                        <input class="form-control" type="text" name="type" placeholder="Type" />
+                        
+                        @Html.DropDownList("ProductTypes", ViewData["ProductTypes"] as SelectList, new { form = "content_form", @class = "form-control" })
                     </td>
                     <td>
                         <input class="form-control" type="text" name="description" placeholder="Description" />
@@ -107,7 +108,7 @@
             
         </td>
         <td>
-            <input form="@formid" class="form-control" type="text" name="type" value="@item.type" placeholder="@item.type"/>
+            @Html.DropDownList("type", item.dropdown,  new { form = formid, @class = "form-control" })
             
         </td>
         <td>

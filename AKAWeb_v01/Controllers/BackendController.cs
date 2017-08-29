@@ -103,6 +103,8 @@ namespace AKAWeb_v01.Controllers
 
         }
 
+        //returns a list of all the sections as a SelectListItem list
+        //This is to fill dropdowns with the pertinent information in whatever view requires the sections in dropdown form
         private List<SelectListItem> GenerateViewBagList()
         {
             DBConnection testconn = new DBConnection();
@@ -121,6 +123,54 @@ namespace AKAWeb_v01.Controllers
             }
             return list;
         }
+
+        //this returns a generic SelectListItem with productTypes to fill a Dropdown
+        private List<SelectListItem> getProductTypes()
+        {
+            DBConnection testconn = new DBConnection();
+            string query = "SELECT id, name FROM Product_Type";
+            SqlDataReader dataReader = testconn.ReadFromTest(query);
+            List<SelectListItem> list = new List<SelectListItem>();
+
+            while (dataReader.Read())
+            {
+                SelectListItem item = new SelectListItem();
+                item.Value = dataReader.GetValue(1).ToString();
+                item.Text = dataReader.GetValue(1).ToString();
+
+                list.Add(item);
+
+            }
+            return list;
+        }
+
+        //this overloads the getProductTypes it receives the type of a product
+        //and sets that type as a default for the dropwdown
+        private List<SelectListItem> getProductTypes(string product_type)
+        {
+            DBConnection testconn = new DBConnection();
+            string query = "SELECT id, name FROM Product_Type";
+            SqlDataReader dataReader = testconn.ReadFromTest(query);
+            List<SelectListItem> list = new List<SelectListItem>();
+
+            while (dataReader.Read())
+            {
+                SelectListItem item = new SelectListItem();
+                item.Value = dataReader.GetValue(1).ToString();
+                item.Text = dataReader.GetValue(1).ToString();
+                if(dataReader.GetValue(1).ToString() == product_type)
+                {
+                    item.Selected = true;
+                    
+                }
+                
+
+                list.Add(item);
+
+            }
+            return list;
+        }
+
 
         [HttpPost]
         public ActionResult DeleteImage(int picnum)
@@ -1264,7 +1314,8 @@ namespace AKAWeb_v01.Controllers
                 string details = dataReader.GetValue(5).ToString();
                 bool isLive = (bool)dataReader.GetValue(6);
                 string image = dataReader.GetValue(7).ToString();
-                ProductModel product = new ProductModel(id, cost, type, description, length, isLive, details, image);
+                List<SelectListItem> dropdown = getProductTypes(type);
+                ProductModel product = new ProductModel(id, cost, type, description, length, isLive, details, image, dropdown);
                 product_list.Add(product);
                 
 
@@ -1532,6 +1583,7 @@ namespace AKAWeb_v01.Controllers
                     ViewBag.ProductEditSuccess = TempData["productCreationSuccess"].ToString();
                 }
                 ViewData["BackendPages"] = getBackendPages();
+                ViewData["ProductTypes"] = getProductTypes();
                 var model = getProducts();
                 return View(model);
 
@@ -1598,12 +1650,12 @@ namespace AKAWeb_v01.Controllers
         }
 
         [HttpPost]
-        public ActionResult CreateProduct(string cost, string type, string description, string details, string duration)
+        public ActionResult CreateProduct(string cost, string ProductTypes, string description, string details, string duration)
         {
             if (System.Web.HttpContext.Current.Session["username"] != null)
             {
                 DBConnection testconn = new DBConnection();
-                string query = "INSERT INTO Products(cost, type, description, details, length, isLive) VALUES('" + cost + "', '" + type + "', '" + description + "', '" + details + "', '" + duration + "', 1)";
+                string query = "INSERT INTO Products(cost, type, description, details, length, isLive) VALUES('" + cost + "', '" + ProductTypes + "', '" + description + "', '" + details + "', '" + duration + "', 0)";
                 if (testconn.WriteToTest(query))
                 {
                     TempData["productCreationSuccess"] = "Product successfully created!";
