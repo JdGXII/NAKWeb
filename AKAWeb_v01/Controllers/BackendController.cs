@@ -1703,12 +1703,12 @@ namespace AKAWeb_v01.Controllers
         }
 
         [HttpPost]
-        public ActionResult CreateProduct(string cost, string ProductTypes, string description, string details, string duration)
+        public ActionResult CreateProduct(string cost, string ProductTypes, string description, string details, string duration, string stock)
         {
             if (System.Web.HttpContext.Current.Session["username"] != null)
             {
                 DBConnection testconn = new DBConnection();
-                string query = "INSERT INTO Products(cost, type, description, details, length, isLive) VALUES('" + cost + "', '" + ProductTypes + "', '" + description + "', '" + details + "', '" + duration + "', 0)";
+                string query = "INSERT INTO Products(cost, type, description, details, length, isLive, stock) VALUES('" + cost + "', '" + ProductTypes + "', '" + description + "', '" + details + "', '" + duration + "', 0, "+stock+")";
                 if (testconn.WriteToTest(query))
                 {
                     TempData["productCreationSuccess"] = "Product successfully created!";
