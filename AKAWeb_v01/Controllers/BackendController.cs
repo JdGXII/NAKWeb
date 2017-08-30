@@ -24,6 +24,8 @@ namespace AKAWeb_v01.Controllers
         private HashService hash_service = new HashService();
         //Uncomment only if you need to do bulk upload to db from an excel sheet
         //private ExcelService excel_service = new ExcelService();
+        //this uses product service that does things like check what the low stock level alert number is
+        private ProductService product_service = new ProductService();
 
         //perform the actual login steps
         //returns a boolean true if login was a success, false if it was not.
@@ -515,14 +517,40 @@ namespace AKAWeb_v01.Controllers
         {
             if(System.Web.HttpContext.Current.Session["username"] != null)
             {
-                ViewData["BackendPages"] = getBackendPages();
-                return View();
+                if(System.Web.HttpContext.Current.Session["userpermission"].ToString() == "3")
+                {
+                    ViewData["BackendPages"] = getBackendPages();
+                    ViewBag.LowStock = alertLowStock();
+                    return View();
+                }
+                else
+                {
+                    return View();
+                }
+
             }
             else
             {
                 return RedirectToAction("Index");
             }
             
+        }
+
+        //returns true if there is a live product with low stock, false if no live product has low stock
+        //comparing its stock with the low_stock_alert number which is the minimum stock number
+        private bool alertLowStock()
+        {
+            var products = getProducts();
+            bool low_stock = false;
+            foreach(ProductModel product in products)
+            {
+                if(product.isLive && product.stock <= product_service.low_stock_alert)
+                {
+                    low_stock = true;
+                }
+            }
+
+            return low_stock;
         }
 
 
@@ -1301,7 +1329,7 @@ namespace AKAWeb_v01.Controllers
         private List<ProductModel> getProducts()
         {
             DBConnection testconn = new DBConnection();
-            string query = "SELECT id, type, cost, description, length, details, isLive, image FROM Products";
+            string query = "SELECT id, type, cost, description, length, details, isLive, image, stock FROM Products";
             SqlDataReader dataReader = testconn.ReadFromTest(query);
             List<ProductModel> product_list = new List<ProductModel>();
             while (dataReader.Read())
@@ -1315,7 +1343,8 @@ namespace AKAWeb_v01.Controllers
                 bool isLive = (bool)dataReader.GetValue(6);
                 string image = dataReader.GetValue(7).ToString();
                 List<SelectListItem> dropdown = getProductTypes(type);
-                ProductModel product = new ProductModel(id, cost, type, description, length, isLive, details, image, dropdown);
+                int stock = Int32.Parse(dataReader.GetValue(8).ToString());
+                ProductModel product = new ProductModel(id, cost, type, description, length, isLive, details, image, dropdown, stock);
                 product_list.Add(product);
                 
 
@@ -1584,6 +1613,7 @@ namespace AKAWeb_v01.Controllers
                 }
                 ViewData["BackendPages"] = getBackendPages();
                 ViewData["ProductTypes"] = getProductTypes();
+                ViewBag.LowStockNumber = product_service.low_stock_alert;
                 var model = getProducts();
                 return View(model);
 
@@ -1596,12 +1626,12 @@ namespace AKAWeb_v01.Controllers
         }
 
         [HttpPost]
-        public ActionResult EditProduct (string cost, string type, string description, string length, string details, string productid)
+        public ActionResult EditProduct (string cost, string type, string description, string length, string details, string productid, string stock)
         {
             if (System.Web.HttpContext.Current.Session["username"] != null)
             {
                 DBConnection testconn = new DBConnection();
-                string query = "UPDATE Products SET cost = '" + cost + "', type= '" + type + "', description = '" + description + "', length = '" + length + "', details = '" + details + "' WHERE id = " + productid;
+                string query = "UPDATE Products SET cost = '" + cost + "', type= '" + type + "', description = '" + description + "', length = '" + length + "', details = '" + details + "', stock = "+stock+" WHERE id = " + productid;
                 if (testconn.WriteToTest(query))
                 {
                     TempData["productEditSuccess"] = "Product edited succesfully.";

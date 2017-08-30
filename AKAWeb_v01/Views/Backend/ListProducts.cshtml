@@ -151,9 +151,30 @@
         <td>
             <input form="@formid" class="form-control" type="text" name="details" value="@item.details" placeholder="@item.details" />
         </td>
-        <td>@item.stock</td>
-     
-            
+          @if (ViewBag.LowStockNumber != null)
+          {
+            if (item.stock <= ViewBag.LowStockNumber)
+            {
+                <td style="color: red">
+                    <b>Low stock!</b><br />
+                    <input form="@formid" class="form-control" type="text" name="stock" value="@item.stock" placeholder="@item.stock" />
+                </td>
+            }
+            else
+            {
+                <td><input form="@formid" class="form-control" type="text" name="stock" value="@item.stock" placeholder="@item.stock" /></td>
+              }
+          }
+          else
+          {
+            <td><input form="@formid" class="form-control" type="text" name="stock" value="@item.stock" placeholder="@item.stock" /></td>
+          }
+
+
+
+
+
+
             @if (item.isLive == true)
             {
             <td>Yes</td>

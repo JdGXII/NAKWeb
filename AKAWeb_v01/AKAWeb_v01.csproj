@@ -158,6 +158,7 @@
     <Compile Include="Classes\DBConnection.cs" />
     <Compile Include="Classes\ExcelService.cs" />
     <Compile Include="Classes\HashService.cs" />
+    <Compile Include="Classes\ProductService.cs" />
     <Compile Include="Controllers\BackendController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MenuController.cs" />
