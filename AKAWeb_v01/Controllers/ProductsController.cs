@@ -34,7 +34,7 @@ namespace AKAWeb_v01.Controllers
         private List<ProductModel> getMemberships()
         {
             DBConnection testconn = new DBConnection();
-            string query = "SELECT id, type, cost, description, length, details FROM Products WHERE isLive = 1 AND type = 'Membership'";
+            string query = "SELECT id, type, cost, description, length, details FROM Products WHERE isLive = 1 AND type = 'Membership' AND stock > 0";
             SqlDataReader dataReader = testconn.ReadFromTest(query);
             List<ProductModel> memberships = new List<ProductModel>();
             while (dataReader.Read())

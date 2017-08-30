@@ -104,8 +104,35 @@ namespace AKAWeb_v01.Controllers
         {
             approveProductsForUser();
             generateInvoice();
+            updateStock();
             deleteFromCart();
             return "Purchase complete";
+        }
+
+        //updates the product stock, decreasing the current stock by one unit
+        private bool updateStock()
+        {
+            DBConnection testconn = new DBConnection();
+            List<CartModel> cart = getCartItems();
+            bool success = true;
+            foreach (CartModel item in cart)
+            {
+                string user_id = item.user_id.ToString();
+                string product_id = item.product_id.ToString();
+
+                string query = "UPDATE Products SET stock = ((SELECT stock from Products WHERE id = " + product_id + ") -1) WHERE id = " + product_id;
+
+
+                
+                bool flag = testconn.WriteToTest(query);
+                //if flag is false the stock for one of the items was not complete and function will return false
+                if (!flag)
+                {
+                    success = false;
+                }
+            }
+
+            return success;
         }
 
         //deletes from cart

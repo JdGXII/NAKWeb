@@ -17,6 +17,7 @@ namespace AKAWeb_v01.Models
         public string details { get; set; }
         public string image { get; set; }
         public List<SelectListItem>  dropdown { get; set; }
+        public string stock { get; set; }
 
         public ProductModel() {
 
@@ -74,6 +75,21 @@ namespace AKAWeb_v01.Models
             this.details = details;
             this.image = image;
             this.dropdown = dropdown;
+            stock = "1000000";
+        }
+
+        public ProductModel(int id, int cost, string type, string description, string length, bool isLive, string details, string image, List<SelectListItem> dropdown, string stock)
+        {
+            this.id = id;
+            this.cost = cost;
+            this.type = type;
+            this.description = description;
+            this.length = length;
+            this.isLive = isLive;
+            this.details = details;
+            this.image = image;
+            this.dropdown = dropdown;
+            this.stock = stock;
         }
     }
 }
