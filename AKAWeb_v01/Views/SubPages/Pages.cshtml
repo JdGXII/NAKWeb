@@ -13,10 +13,10 @@
                 <div class="col-md-9">
                     <img class="subheader-image resizeimg" src="@Url.Content(Model.subheaderImage)" />
                 </div>
-                <div class="col-md-3 subheader-span-div resizeimg reziseheigt">
-                    <p style="text-align: center;">
-                        <span class="subheader-span"> @Model.title </span>
-                    </p>
+                <div class="col-md-3 subheader-span-div">
+                    
+                      <h3 class="subheader-span">@Model.title </h3>  
+                    
 
                 </div>
             </div>
@@ -32,7 +32,7 @@
     
         @foreach(string menuitem in Model.leftMenu)
         {
-            <div>@Html.ActionLink(menuitem, "Pages", "SubPages", new { id = menuitem }, new { @class = "left-menu-link" })</div>
+            <div class="left-menu-item">@Html.ActionLink(menuitem, "Pages", "SubPages", new { id = menuitem }, new { @class = "left-menu-link" })</div>
         }
 
 </div>

@@ -63,7 +63,7 @@ textarea {
 
 .subheader-span {
     font-family: trebuchet ms,geneva;
-    font-size: 24pt;
+    /*font-size: 24pt;*/
     color: #ffffff;
 }
 
@@ -71,7 +71,8 @@ textarea {
     background-color: #019392;
     margin-top: 23px;
     height: 150px;
-    padding-top: 50px;
+    padding: 35px;
+    text-align:center;
 }
 
 .subheader-image {
@@ -93,6 +94,11 @@ textarea {
     padding: 10px;
     color: white;
     font-size: 12pt;
+}
+
+.left-menu-item{
+
+    margin-bottom:5px;
 }
 
 .bold-font {
@@ -175,7 +181,6 @@ textarea {
         background-color: #019392;
         border-color: #019392;
     }
-
 
 
 
