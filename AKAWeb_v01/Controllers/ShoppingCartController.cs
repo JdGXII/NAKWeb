@@ -47,6 +47,8 @@ namespace AKAWeb_v01.Controllers
                 {
                     ViewBag.Done = TempData["paid"].ToString();
                 }
+                testconn.CloseDataReader();
+                testconn.CloseConnection();
 
                 return RedirectToAction("Cart");
 

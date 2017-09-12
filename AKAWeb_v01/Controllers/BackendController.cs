@@ -69,13 +69,17 @@ namespace AKAWeb_v01.Controllers
                 }
 
 
+
             }
             catch (Exception e)
             {
+                testconn.CloseDataReader();
+                testconn.CloseConnection();
                 System.Web.HttpContext.Current.Session["exception"] = e.ToString();
                 login = false;
             }
-
+            testconn.CloseDataReader();
+            testconn.CloseConnection();
             return login;
 
         }
@@ -123,6 +127,8 @@ namespace AKAWeb_v01.Controllers
                 list.Add(item);
 
             }
+            testconn.CloseDataReader();
+            testconn.CloseConnection();
             return list;
         }
 
@@ -143,6 +149,8 @@ namespace AKAWeb_v01.Controllers
                 list.Add(item);
 
             }
+            testconn.CloseDataReader();
+            testconn.CloseConnection();
             return list;
         }
 
@@ -170,6 +178,8 @@ namespace AKAWeb_v01.Controllers
                 list.Add(item);
 
             }
+            testconn.CloseDataReader();
+            testconn.CloseConnection();
             return list;
         }
 
@@ -205,7 +215,8 @@ namespace AKAWeb_v01.Controllers
             //}
 
 
-
+            dbconnect.CloseDataReader();
+            dbconnect.CloseConnection();
             return RedirectToAction("EditCarousel");
 
         }
@@ -257,6 +268,9 @@ namespace AKAWeb_v01.Controllers
                 dataReader = testconn.ReadFromTest(query3);
                 dataReader.Read();
                 ViewBag.CarouselImageNumber = dataReader.GetValue(0);
+
+                testconn.CloseDataReader();
+                testconn.CloseConnection();
                 return View(model);
             }
             else
@@ -271,8 +285,10 @@ namespace AKAWeb_v01.Controllers
             dataReader = testconn.ReadFromTest(query3);
             dataReader.Read();
             int number = Int32.Parse(dataReader.GetValue(0).ToString());
+
             testconn.CloseDataReader();
             testconn.CloseConnection();
+
             return number;
         }
         // GET: Backend
@@ -332,6 +348,9 @@ namespace AKAWeb_v01.Controllers
         {
             DBConnection testconn = new DBConnection();
             string query = "Update carousel_links set link" + picnum.ToString() + " = '" + url + "' where id = 1";
+
+
+            testconn.CloseConnection();
             testconn.WriteToTest(query);
             
         }
@@ -447,14 +466,19 @@ namespace AKAWeb_v01.Controllers
                 SqlDataReader dataReader = testconn.ReadFromTest(query);
                 if (dataReader.Read())
                 {
+                    testconn.CloseDataReader();
+                    testconn.CloseConnection();
                     //address already exists in db
                     return 1; //"already exists. Please try a different email address.";
                 }
                 else
                 {
+                    testconn.CloseDataReader();
+                    testconn.CloseConnection();
                     //everything ok
                     return 2;
                 }
+
 
             }
             else
@@ -462,6 +486,7 @@ namespace AKAWeb_v01.Controllers
                 //problem with format missing @ sign
                 return 3; //"format not accepted. Please input a valid email address.";
             }
+
         }
 
 
@@ -495,7 +520,7 @@ namespace AKAWeb_v01.Controllers
                         return RedirectToAction("Index", "Backend");
                     }
 
-                    
+
 
                 }
                 else
@@ -603,6 +628,8 @@ namespace AKAWeb_v01.Controllers
 
             }
 
+            testconn.CloseDataReader();
+            testconn.CloseConnection();
             return page_list;
 
         }
@@ -625,6 +652,8 @@ namespace AKAWeb_v01.Controllers
                 
             }
 
+            testconn.CloseDataReader();
+            testconn.CloseConnection();
             return page;
         }
 
@@ -646,6 +675,8 @@ namespace AKAWeb_v01.Controllers
             bool isLive = (bool)dataReader.GetValue(2);
             SectionModel section = new SectionModel(section_id, name, isLive);
 
+            testconn.CloseDataReader();
+            testconn.CloseConnection();
             return section;
 
         }
@@ -679,7 +710,9 @@ namespace AKAWeb_v01.Controllers
             DBConnection testconn = new DBConnection();
             string query = "UPDATE Pages SET section=" + SectionList + " WHERE id =" + page_id;
             bool t = testconn.WriteToTest(query);
-            if (t) { }
+
+
+            testconn.CloseConnection();
             return RedirectToAction("ChangePageSection", new { id = page_id });
         }
 
@@ -832,6 +865,9 @@ namespace AKAWeb_v01.Controllers
                 query2 = "UPDATE Pages SET isAlive = 1 WHERE id =" + id;
             }
             testconn.WriteToTest(query2);
+
+ 
+            testconn.CloseConnection();
             return RedirectToAction("ListPages", "Backend");
         }
         //for now this just redirects to the regular page i.e. SubPages Controller
@@ -858,6 +894,8 @@ namespace AKAWeb_v01.Controllers
 
             }
 
+            testconn.CloseDataReader();
+            testconn.CloseConnection();
             return sections;
         }
 
@@ -890,6 +928,8 @@ namespace AKAWeb_v01.Controllers
             DBConnection testconn = new DBConnection();
             string query = "UPDATE Sections SET name = '" + sectiontitle + "' WHERE id = " + sectionid;
             testconn.WriteToTest(query);
+
+            testconn.CloseConnection();
             return RedirectToAction("ListSections", "Backend");
         }
 
@@ -908,6 +948,8 @@ namespace AKAWeb_v01.Controllers
                 query2 = "UPDATE Sections SET isAlive = 1 WHERE id =" + id;
             }
             testconn.WriteToTest(query2);
+
+            testconn.CloseDataReader();
             testconn.CloseConnection();
             return RedirectToAction("ListSections", "Backend");
         }
@@ -960,6 +1002,8 @@ namespace AKAWeb_v01.Controllers
                 backend_pages.Add(backendPage);
             }
 
+            testconn.CloseDataReader();
+            testconn.CloseConnection();
             return backend_pages;
         }
 
@@ -983,6 +1027,8 @@ namespace AKAWeb_v01.Controllers
                 backend_pages.Add(backendPage);
             }
 
+            testconn.CloseDataReader();
+            testconn.CloseConnection();
             return backend_pages;
         }
 
@@ -1012,6 +1058,9 @@ namespace AKAWeb_v01.Controllers
                 
                 //send the email with the new password
                 sendEmail(emailmessage, mail, subject);
+
+                testconn.CloseDataReader();
+                testconn.CloseConnection();
                 return RedirectToAction("PasswordRecoveryMessage");
             }
             else
@@ -1033,6 +1082,7 @@ namespace AKAWeb_v01.Controllers
             string hashedPassword = hash_service.HashPassword(password);
             DBConnection testconn = new DBConnection();
             string query = "UPDATE Users SET password = '" + hashedPassword + "' WHERE id = " + id;
+
             testconn.WriteToTest(query);
             testconn.CloseConnection();
             return password;
@@ -1129,6 +1179,8 @@ namespace AKAWeb_v01.Controllers
 
                 UserModel user = new UserModel(id, name, email, password, access, address);
 
+                testconn.CloseDataReader();
+                testconn.CloseConnection();
                 return user;
             }
             else
@@ -1153,6 +1205,9 @@ namespace AKAWeb_v01.Controllers
                 string zip = dataReader.GetValue(4).ToString();
 
                 AddressModel address = new AddressModel(country, state, city, zip, street_address);
+
+                testconn.CloseDataReader();
+                testconn.CloseConnection();
                 return address;
             }
             else
@@ -1190,8 +1245,10 @@ namespace AKAWeb_v01.Controllers
         {
             DBConnection testconn = new DBConnection();
             string query = "UPDATE Users SET name = '" + name + "', email = '" + email + "' WHERE id = " + user_id;
+            bool result = testconn.WriteToTest(query);
 
-            return testconn.WriteToTest(query);
+            testconn.CloseConnection();
+            return result;
         }
 
         //Updates user address, takes in relevant address info and a user id
@@ -1213,8 +1270,11 @@ namespace AKAWeb_v01.Controllers
             }
 
 
+            bool result = testconn.WriteToTest(query);
 
-            return testconn.WriteToTest(query);
+            testconn.CloseDataReader();
+            testconn.CloseConnection();
+            return result;
         }
 
         //Returns view with form to UpdatePassword
@@ -1287,6 +1347,8 @@ namespace AKAWeb_v01.Controllers
                 match = hash_service.VerifyPassword(hashedPasswordFromDB, submitted_password);
             }
 
+            testconn.CloseDataReader();
+            testconn.CloseConnection();
             return match;
         }
 
@@ -1300,7 +1362,10 @@ namespace AKAWeb_v01.Controllers
             string query = "UPDATE Users SET password = '" + hashNewPassword + "' WHERE id = " + user_id;
 
             //if the Write function was succesful returns true, false if otherwise
-            return testconn.WriteToTest(query);
+            bool result = testconn.WriteToTest(query);
+
+            testconn.CloseConnection();
+            return result;
         }
 
         //returns a product model (representing a product) by id
@@ -1322,6 +1387,8 @@ namespace AKAWeb_v01.Controllers
                 
             }
 
+            testconn.CloseDataReader();
+            testconn.CloseConnection();
             return product;
         }
 
@@ -1350,6 +1417,8 @@ namespace AKAWeb_v01.Controllers
 
             }
 
+            testconn.CloseDataReader();
+            testconn.CloseConnection();
             return product_list;
         }
 
@@ -1379,6 +1448,8 @@ namespace AKAWeb_v01.Controllers
                 userhasproducts.Add(userhasproduct);
             }
 
+            testconn.CloseDataReader();
+            testconn.CloseConnection();
             return userhasproducts;
         }
 
@@ -1421,6 +1492,8 @@ namespace AKAWeb_v01.Controllers
 
             }
 
+            testconn.CloseDataReader();
+            testconn.CloseConnection();
             return image_list;
 
 
@@ -1474,8 +1547,9 @@ namespace AKAWeb_v01.Controllers
                         string pathForDB = "~/Content/Images/SubPagesUploads/" + fileName.ToString();
                         DBConnection testconn = new DBConnection();
                         string query = "INSERT INTO SubPages_Images(title, url) VALUES('" + title + "', '" + pathForDB + "')";
-                        testconn.WriteToTest(query);
 
+                        testconn.WriteToTest(query);
+                        testconn.CloseConnection();
                         TempData["imageUploadSuccess"] = "Image uploaded succesfully!";
                         
 
@@ -1510,7 +1584,8 @@ namespace AKAWeb_v01.Controllers
             {
                 TempData["imageUploadSuccess"] = "Something went wrong. Title not updated.";
             }
-            
+
+            testconn.CloseConnection();
             return RedirectToAction("ReturnImageList");
         }
 
@@ -1531,8 +1606,8 @@ namespace AKAWeb_v01.Controllers
                     //delete from file system
                     System.IO.File.Delete(path);
                     //delete from DB
-                    testconn.WriteToTest(query);
-                    testconn.CloseConnection();
+
+                   
                     TempData["imageUploadSuccess"] = "Image succesfully deleted.";
 
 
@@ -1543,6 +1618,7 @@ namespace AKAWeb_v01.Controllers
                 }
 
 
+                testconn.CloseConnection();
                 return RedirectToAction("ReturnImageList");
 
             }
@@ -1594,7 +1670,8 @@ namespace AKAWeb_v01.Controllers
                 image_list.Add(new ImagePair { title = title, value = value });
 
             }
-
+            testconn.CloseDataReader();
+            testconn.CloseConnection();
             return image_list;
 
         }
@@ -1642,6 +1719,7 @@ namespace AKAWeb_v01.Controllers
                     TempData["productEditSuccess"] = "Something went wrong, product did not update.";
                 }
 
+                testconn.CloseConnection();
                 return RedirectToAction("ListProducts");
 
             }
@@ -1669,6 +1747,7 @@ namespace AKAWeb_v01.Controllers
                     query2 = "UPDATE Products SET islive = 1 WHERE id =" + id;
                 }
                 testconn.WriteToTest(query2);
+                testconn.CloseDataReader();
                 testconn.CloseConnection();
                 return RedirectToAction("ListProducts", "Backend");
             }
@@ -1694,6 +1773,8 @@ namespace AKAWeb_v01.Controllers
                 {
                     TempData["productCreationSuccess"] = "Something went wrong. Product Type not created";
                 }
+                testconn.CloseDataReader();
+                testconn.CloseConnection();
                 return RedirectToAction("ListProducts");
             }
             else
@@ -1717,6 +1798,8 @@ namespace AKAWeb_v01.Controllers
                 {
                     TempData["productCreationSuccess"] = "Something went wrong. Product not created";
                 }
+
+                testconn.CloseConnection();
                 return RedirectToAction("ListProducts");
             }
             else

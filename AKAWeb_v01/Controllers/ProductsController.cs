@@ -48,6 +48,8 @@ namespace AKAWeb_v01.Controllers
                 ProductModel membership = new ProductModel(id, cost, type, description, length, true, details, null);
                 memberships.Add(membership);
             }
+            testconn.CloseDataReader();
+            testconn.CloseConnection();
 
             return memberships;
         }

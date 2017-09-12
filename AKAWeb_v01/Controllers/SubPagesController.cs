@@ -80,6 +80,8 @@ namespace AKAWeb_v01.Controllers
                 page.leftMenuTitle = leftMenuTitle;
                 page.isLive = (bool)datareader.GetValue(5);
 
+                testconn.CloseDataReader();
+                testconn.CloseConnection();
                 return page;
             }
             else

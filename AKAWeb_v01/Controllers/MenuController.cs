@@ -36,6 +36,8 @@ namespace AKAWeb_v01.Controllers
                 page_list.Add(page);
 
             }
+            testconn.CloseDataReader();
+            testconn.CloseConnection();
 
             return page_list;
 
@@ -57,6 +59,8 @@ namespace AKAWeb_v01.Controllers
                 sections.Add(section);
 
             }
+            testconn.CloseDataReader();
+            testconn.CloseConnection();
 
             return sections;
         }

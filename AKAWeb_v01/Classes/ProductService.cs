@@ -18,6 +18,8 @@ namespace AKAWeb_v01.Classes
             SqlDataReader dataReader = testconn.ReadFromTest(query);
             dataReader.Read();
             low_stock_alert = Int32.Parse(dataReader.GetValue(0).ToString());
+            testconn.CloseDataReader();
+            testconn.CloseConnection();
             
         }
 
