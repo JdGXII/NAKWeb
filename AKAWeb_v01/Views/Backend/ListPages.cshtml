@@ -17,7 +17,17 @@
         }
 
     </div>
-    }
+}
+
+@section Head{
+    <script type="text/javascript">
+        function form_submit(x) {
+            document.getElementById("delete_form" + x).submit();
+        }
+    </script>
+}
+
+<p style="color:red;"><b>@ViewBag.PageAlert</b></p>
 <p>
     @Html.ActionLink("Create New Page", "CreatePage") |
     @Html.ActionLink("Create New Section", "ListSections")
@@ -41,44 +51,83 @@
         <th></th>
     </tr>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.id)
-        </td>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.id)
+            </td>
 
-        <td>
-            @Html.DisplayFor(modelItem => item.title)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.section)
-        </td>
-        
-           @if (item.isLive == true)
-           {
-            <td>Yes</td>
-           }
-           else {
+            <td>
+                @Html.DisplayFor(modelItem => item.title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.section)
+            </td>
 
-               <td>No</td>
-           }
-            
-        <td>
-            @Html.ActionLink("Edit", "EditPage", new { id=item.id }, new { target = "_blank" }) |
-            @Html.ActionLink("Change Page Section", "ChangePageSection", new { id = item.id }, new { target = "_blank" }) |
-            @Html.ActionLink("View Page", "PreviewPage", new { id=item.title }, new { target = "_blank" }) |
             @if (item.isLive == true)
             {
-                @Html.ActionLink("Disable Page", "ToggleIsLivePage", new { id = item.id });
+                <td>Yes</td>
             }
             else
             {
-                @Html.ActionLink("Publish Page", "ToggleIsLivePage", new { id = item.id });
 
+                <td>No</td>
             }
 
-        </td>
-    </tr>
-}
+            <td>
+                @Html.ActionLink("Edit", "EditPage", new { id = item.id }, new { target = "_blank" }) |
+                @Html.ActionLink("Change Page Section", "ChangePageSection", new { id = item.id }, new { target = "_blank" }) |
+                @Html.ActionLink("View Page", "PreviewPage", new { id = item.title }, new { target = "_blank" }) |
+                @if (item.isLive == true)
+                {
+                    @Html.ActionLink("Disable Page", "ToggleIsLivePage", new { id = item.id });
+                }
+                else
+                {
+                    @Html.ActionLink("Publish Page", "ToggleIsLivePage", new { id = item.id });
+
+                    <span>| <a href="#@item.id" data-toggle="modal" data-target="#@item.id">Delete Page</a></span>
+
+
+
+                }
+
+
+
+            </td>
+        </tr>
+        <!-- Modal -->
+        <div id="@item.id" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Delete Page</h4>
+                    </div>
+                    <div class="modal-body">
+                        @using (Html.BeginForm("DeletePage", "Backend", FormMethod.Post, new { id = "delete_form" + item.id.ToString() }))
+                        {
+
+                            <div class="form-group">
+                                <label for="email">Are you sure you want to permanently delete <span style="color:red">@item.title</span>?</label>
+                                <input type="hidden" value="@item.id" name="page_id" />
+
+                            </div>
+
+                            <button onclick="form_submit(@item.id)" data-dismiss="modal" type="submit" class="btn btn-primary">Yes</button>
+
+                        }
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    }
 
 </table>

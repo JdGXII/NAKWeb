@@ -73,7 +73,8 @@ namespace AKAWeb_v01.Classes
                 AddAddressToUser(user);
                 created = true;
             }
-
+            testconn.CloseDataReader();
+            testconn.CloseConnection();
             return created;
 
         }
@@ -84,6 +85,8 @@ namespace AKAWeb_v01.Classes
             string query = "INSERT INTO User_Has_Address (country, state, city, street_address, zip, user_id) VALUES('" + user.address.country + "', '" + user.address.state + "'," +
 "'" + user.address.city + "','" + user.address.street_address + "', '" + user.address.zip + "', " + user.id + ")";
             testconn.WriteToTest(query);
+            testconn.CloseDataReader();
+            testconn.CloseConnection();
 
 
         }
@@ -96,6 +99,8 @@ namespace AKAWeb_v01.Classes
             dataReader.Read();
             int product_id = Int32.Parse(dataReader.GetValue(0).ToString());
 
+            testconn.CloseDataReader();
+            testconn.CloseConnection();
             return product_id;
         }
 
@@ -106,6 +111,8 @@ namespace AKAWeb_v01.Classes
             SqlDataReader dataReader = testconn.ReadFromTest(query);
             dataReader.Read();
             int user_id = Int32.Parse(dataReader.GetValue(0).ToString());
+            testconn.CloseDataReader();
+            testconn.CloseConnection();
             return user_id;
         }
 

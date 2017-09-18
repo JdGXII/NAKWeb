@@ -596,6 +596,10 @@ namespace AKAWeb_v01.Controllers
             }
             if (userpermission.Equals("3"))
             {
+                if(TempData["pageDeletionSuccess"] != null)
+                {
+                    ViewBag.PageAlert = TempData["pageDeletionSuccess"].ToString();
+                }
                 ViewData["BackendPages"] = getBackendPages();
                 var model = getPages();
                 return View(model);
@@ -1807,6 +1811,31 @@ namespace AKAWeb_v01.Controllers
                 return RedirectToAction("MyProfile");
             }
 
+        }
+
+        [HttpPost]
+        public ActionResult DeletePage(string page_id)
+        {
+            if (System.Web.HttpContext.Current.Session["username"] != null)
+            {
+                DBConnection testconn = new DBConnection();
+                string query = "DELETE FROM Pages WHERE id = "+page_id;
+                if (testconn.WriteToTest(query))
+                {
+                    TempData["pageDeletionSuccess"] = "Page has been succesfully deleted";
+                }
+                else
+                {
+                    TempData["pageDeletionSuccess"] = "Something went wrong. Page wasn't deleted";
+                }
+                testconn.CloseDataReader();
+                testconn.CloseConnection();
+                return RedirectToAction("ListPages");
+            }
+            else
+            {
+                return RedirectToAction("MyProfile");
+            }
         }
 
         public ActionResult Test()

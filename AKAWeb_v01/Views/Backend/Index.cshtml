@@ -5,11 +5,13 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<script type="text/javascript">
-  function form_submit() {
-      document.getElementById("retrieval_form").submit();
-   }
+@section Head{
+    <script type="text/javascript">
+        function form_submit() {
+            document.getElementById("retrieval_form").submit();
+        }
 </script>
+    }
 
 <h2>Login</h2>
 
