@@ -1,0 +1,106 @@
+﻿@model IEnumerable<AKAWeb_v01.Models.ProductModel>
+
+<table class="table">
+    <tr>
+        <th></th>
+        <th>
+            Description
+        </th>
+        <th>
+            Details
+        </th>
+        <th>
+            Cost in $
+        </th>
+
+
+
+    </tr>
+
+    @{ int count = 0;}
+
+    @foreach (AKAWeb_v01.Models.ProductModel ticket in Model)
+    {
+
+
+
+        <tr>
+            <td>
+                <input type="checkbox" value="@ticket.id" name="addon" class="form-control" form="conference_form" />
+            </td>
+            <td>
+
+
+                <input class="form-control" type="text" name="tickets[@count].description" value="@ticket.description" form="conference_form" />
+            </td>
+            <td>
+
+                <input class="form-control" type="text" name="tickets[@count].details" value="@ticket.details" form="conference_form" />
+            </td>
+            <td>
+
+                <input class="form-control" type="text" name="tickets[@count].cost" value="@ticket.cost" form="conference_form" />
+                <input type="hidden" name="tickets[@count].id" value="@ticket.id" form="conference_form" />
+            </td>
+
+            <td></td>
+        </tr>
+        count++;
+    }
+
+
+
+</table>
+<p>
+    <a class="menu-link" href="#addProduct" data-toggle="collapse">Create New Ticket</a>
+    <div id="addProduct" class="collapse">
+
+        <table class="table">
+            <tr>
+                <th>
+                    Cost in $
+                </th>
+                <th>
+                    Description
+                </th>
+                <th>
+                    Details
+                </th>
+                <th>
+                    Duration in years
+                </th>
+                <th>
+                    Initial stock
+                </th>
+                <th></th>
+
+            </tr>
+            <tr>
+                <td>
+                    <input class="form-control" type="text" id="ticket_cost" name="cost" placeholder="Cost" />
+
+
+                </td>
+                <td><input class="form-control" type="text" id="ticket_description" name="description" placeholder="Description" /></td>
+                <td>
+                    <input class="form-control" type="text" id="ticket_details" name="details" placeholder="Details" />
+                </td>
+                <td>
+                    <input class="form-control" type="text" id="ticket_duration" name="duration" placeholder="Duration" />
+                </td>
+                <td>
+                    <input class="form-control" type="text" id="ticket_stock" name="stock" placeholder="Initial Stock" />
+                </td>
+                <td><button style="margin-top:5px;" id="createNew" type="submit" class="btn btn-default">Create Product</button></td>
+            </tr>
+        </table>
+
+
+
+
+
+    </div>
+
+</p>
+
+

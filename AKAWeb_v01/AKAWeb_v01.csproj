@@ -173,6 +173,7 @@
     <Compile Include="Models\CartModel.cs" />
     <Compile Include="Models\CartViewModel.cs" />
     <Compile Include="Models\AddressModel.cs" />
+    <Compile Include="Models\ConferenceModel.cs" />
     <Compile Include="Models\ImageModel.cs" />
     <Compile Include="Models\ImagePair.cs" />
     <Compile Include="Models\MembershipModel.cs" />
@@ -279,6 +280,8 @@
     <Content Include="Views\Backend\ReturnImageList.cshtml" />
     <Content Include="Views\Backend\UploadSubPageImage.cshtml" />
     <Content Include="Views\Backend\ListProducts.cshtml" />
+    <Content Include="Views\Backend\_AsyncTickets.cshtml" />
+    <Content Include="Views\Backend\CreateConference.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

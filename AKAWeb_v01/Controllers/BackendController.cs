@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net.Mail;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Configuration;
 using System.Web.Mvc;
@@ -1836,6 +1837,50 @@ namespace AKAWeb_v01.Controllers
             {
                 return RedirectToAction("MyProfile");
             }
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> CreateConference()
+        {
+
+            return View();
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> GetTicketsForConferencePartialView()
+        {
+            var model = await product_service.getTickets();
+            return PartialView("_AsyncTickets", model);
+
+        }
+
+        [HttpPost]
+        public ActionResult CreateConference(ICollection<string> addon, ICollection<ProductModel> tickets)
+        {
+            return RedirectToAction("CreateConference");
+        }
+
+        [HttpPost]
+        public string CreateTicketConference(string cost, string description, string details, string duration)
+        {
+            DBConnection testconn = new DBConnection();
+            string query = "INSERT INTO Products(cost, type, description, details, length, isLive, stock) VALUES('" + cost + "', 'Ticket', '" + description + "', '" + details + "', '" + duration + "', 0, 100000)";
+            bool success = testconn.WriteToTest(query);
+            testconn.CloseConnection();
+            if (success)
+            {
+
+                return "Success";
+            }
+            else
+            {
+
+                return "Fail";
+            }
+
+
+
+
         }
 
         public ActionResult Test()
