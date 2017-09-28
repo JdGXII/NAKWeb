@@ -1854,6 +1854,14 @@ namespace AKAWeb_v01.Controllers
 
         }
 
+        /*[HttpGet]
+        public async Task<ActionResult> GetAddOnsForConferencePartialView()
+        {
+            var model = await product_service.getConferenceAddOns();
+            return PartialView("_AsyncTickets", model);
+
+        }*/
+
         [HttpPost]
         public ActionResult CreateConference(ICollection<string> addon, ICollection<ProductModel> tickets)
         {

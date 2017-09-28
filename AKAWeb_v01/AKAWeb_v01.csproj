@@ -282,6 +282,7 @@
     <Content Include="Views\Backend\ListProducts.cshtml" />
     <Content Include="Views\Backend\_AsyncTickets.cshtml" />
     <Content Include="Views\Backend\CreateConference.cshtml" />
+    <Content Include="Views\Backend\_AsyncAddOns.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
