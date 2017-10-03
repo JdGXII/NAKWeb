@@ -601,8 +601,16 @@ namespace AKAWeb_v01.Controllers
                 {
                     ViewBag.PageAlert = TempData["pageDeletionSuccess"].ToString();
                 }
+
+
+                if(TempData["PageCreation"] != null)
+                {
+                    ViewBag.PageAlert = TempData["PageCreation"].ToString();
+                }
+
                 ViewData["BackendPages"] = getBackendPages();
                 var model = getPages();
+
                 return View(model);
             }
             else
@@ -863,7 +871,17 @@ namespace AKAWeb_v01.Controllers
 
             }
 
-            testconn.WriteToTest(query);
+            bool success = testconn.WriteToTest(query);
+
+            if (success)
+            {
+                TempData["PageCreation"] = "Page succesfully created.";
+            }
+            else
+            {
+                TempData["PageCreation"] = "Something went wrong. Page was not created.";
+            }
+
             testconn.CloseConnection();
 
             return RedirectToAction("ListPages", "Backend");
