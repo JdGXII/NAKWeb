@@ -58,22 +58,23 @@
                     </form>
                 </div>
                 <div style="padding-top:15px; float:right;"><a href="@Url.Action("Index", "ShoppingCart")"><span class="glyphicon glyphicon-shopping-cart"></span></a></div>
+                    <div class="container nav-2 text-center" style="color:darkgray; margin-top:75px; position:relative; z-index:4;">
+
+        @Html.Action("MainMenu", "Menu")
+
+    </div>
  
 
             </div>
         </div>
     </div>
-    <div class="container nav-2 text-center" style="color:darkgray; margin-top:25px; position:relative; z-index:4;">
 
-        @Html.Action("MainMenu", "Menu")
-
-    </div>
     <div class="container">
 
         @RenderSection("Subheader", false)
 
     </div>
-    <div class="container body-content">
+    <div class="container body-content" style="margin-top:70px;">
         <div class="row">
             @if (IsSectionDefined("LeftMenu"))
             {
