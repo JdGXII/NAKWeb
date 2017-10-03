@@ -734,6 +734,11 @@ namespace AKAWeb_v01.Controllers
                 if (model != null)
                 {
                     ViewData["BackendPages"] = getBackendPages();
+                    if(TempData["EditSuccess"] != null)
+                    {
+                        ViewBag.EditSuccess = TempData["EditSuccess"].ToString();
+                    }
+                    
                     return View(model);
                 }
                 else
@@ -779,15 +784,25 @@ namespace AKAWeb_v01.Controllers
                     }
                     catch (Exception ex)
                     {
-                        ViewBag.Message = "ERROR:" + ex.Message.ToString();
+                        //ViewBag.Message = "ERROR:" + ex.Message.ToString();
+                        TempData["EditSuccess"] = "Something went wrong. Page was not saved.";
                     }
 
             }
             
-            testconn.WriteToTest(query);
+            bool success = testconn.WriteToTest(query);
+            if (success)
+            {
+                TempData["EditSuccess"] = "Page succesfully edited.";
+            }
+            else
+            {
+                TempData["EditSuccess"] = "Something went wrong. Page was not saved.";
+            }
+
             testconn.CloseConnection();
 
-            return RedirectToAction("ListPages", "Backend");
+            return RedirectToAction("EditPage", new { id = id});
 
         }
 
