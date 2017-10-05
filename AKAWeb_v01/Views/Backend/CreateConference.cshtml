@@ -57,18 +57,18 @@ en: {
         <div class="col-md-6">
             <h2>Conference Information</h2>
             @Html.Label("Title:")
-            <input type="text" name="title" class="form-control" form="conference_form" />
+            <input type="text" name="conference.title" class="form-control" form="conference_form" />
             @Html.Label("Theme/Tagline:")
-            <input type="text" name="tagline" class="form-control" form="conference_form" />
+            <input type="text" name="conference.tagline" class="form-control" form="conference_form" />
             @Html.Label("External URL:")
-            <input type="text" name="ext_url" class="form-control" form="conference_form" />
+            <input type="text" name="conference.external_url" class="form-control" form="conference_form" />
         </div>
         <div class="col-md-6">
             <h2>Conference Dates</h2>
             @Html.Label("Start Date:")<br />
-            <input type="date" name="start_date" class="form-control" form="conference_form" /><br />
+            <input type="date" name="conference.start_date" class="form-control" form="conference_form" /><br />
             @Html.Label("End Date:")<br />
-            <input type="date" name="end_date" class="form-control" form="conference_form" />
+            <input type="date" name="conference.end_date" class="form-control" form="conference_form" />
 
 
         </div>
@@ -78,22 +78,22 @@ en: {
         <div class="col-md-6">
             <h2>Conference Location</h2>
             @Html.Label("City:")
-            <input type="text" name="city" class="form-control" form="conference_form" />
+            <input type="text" name="location.city" class="form-control" form="conference_form" />
             @Html.Label("State:")
-            <input type="text" name="state" class="form-control" form="conference_form" />
+            <input type="text" name="location.state" class="form-control" form="conference_form" />
             @Html.Label("Street Address:")
-            <input type="text" name="street_address" class="form-control" form="conference_form" />
+            <input type="text" name="location.street_address" class="form-control" form="conference_form" />
             @Html.Label("Zip:")
-            <input type="text" name="zip" class="form-control" form="conference_form" />
+            <input type="text" name="location.zip" class="form-control" form="conference_form" />
         </div>
         <div class="col-md-6">
             <h2>Conference Items</h2>
             @Html.Label("Processing Fee (as a percentage:")
-            <input value="0" type="text" name="proc_fee" class="form-control" form="conference_form" />
+            <input value="0" type="text" name="conference.processing_fee" class="form-control" form="conference_form" />
             @Html.Label("Max Attendees:")
-            <input value="100" type="text" name="max_attendees" class="form-control" form="conference_form" />
+            <input value="100" type="text" name="conference.max_attendees" class="form-control" form="conference_form" />
             @Html.Label("Is this a members-only conference?")
-            <select class="form-control" name="members_only" form="conference_form">
+            <select class="form-control" name="conference.members_only" form="conference_form">
                 <option value="0">No</option>
                 <option value="1">Yes</option>
             </select>

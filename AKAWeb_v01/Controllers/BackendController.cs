@@ -1895,12 +1895,40 @@ namespace AKAWeb_v01.Controllers
 
         }*/
 
+        //creates conference from form in CreateConference view
         [HttpPost]
-        public ActionResult CreateConference(ICollection<string> addon, ICollection<ProductModel> tickets)
+        public ActionResult CreateConference(ICollection<string> addon, ICollection<ProductModel> tickets, ConferenceModel conference, AddressModel location)
         {
+            storeNewConference(conference);
             return RedirectToAction("CreateConference");
         }
 
+        //Creates/saves a new conference in the Conference DB
+        //Step 1 of properly configuring a new conference
+        private bool storeNewConference(ConferenceModel conference)
+        {
+            int members_only = 0;
+            if (conference.members_only)
+            {
+                members_only = 1;
+            }
+            DBConnection testconn = new DBConnection();
+            string query = "INSERT INTO Conference(title, tagline, external_url, start_date, end_date, processing_fee, max_attendees, attendees, members_only, isLive)" +
+                "VALUES('" + conference.title + "','" + conference.tagline + "','" + conference.external_url + "','" + conference.start_date + "','" + conference.end_date + "','" + conference.processing_fee + "'," + conference.max_attendees + ", 0," + members_only + ", 1)";
+            bool success = testconn.WriteToTest(query);
+            if(success)
+            {
+                ///
+                
+            }
+            else
+            {
+                //
+            }
+            return success;
+        }
+
+        //This action gets called asynchronously from the CreateConference View to create a new ticket type product from that page
         [HttpPost]
         public string CreateTicketConference(string cost, string description, string details, string duration)
         {

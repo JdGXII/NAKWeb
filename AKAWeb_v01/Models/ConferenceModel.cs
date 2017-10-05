@@ -18,6 +18,7 @@ namespace AKAWeb_v01.Models
         public int attendees { get; set; }
         public bool members_only { get; set; }
         public bool isLive { get; set; }
+        public List<ProductModel> tickets { get; set; }
 
         public ConferenceModel()
         {
@@ -35,6 +36,20 @@ namespace AKAWeb_v01.Models
 
         }
 
+        public ConferenceModel(string title, string tagline, string external_url, string start_date, string end_date, string processing_fee, int max_attendees, bool members_only)
+        {
+
+            this.title = title;
+            this.tagline = tagline;
+            this.external_url = external_url;
+            this.start_date = start_date;
+            this.end_date = end_date;
+            this.processing_fee = processing_fee;
+            this.max_attendees = max_attendees;
+            this.members_only = members_only;
+
+        }
+
         public ConferenceModel(int id, string title, string tagline, string external_url, string start_date, string end_date, string processing_fee, int max_attendees, int attendees, bool members_only, bool isLive)
         {
             this.id = id;
@@ -48,6 +63,22 @@ namespace AKAWeb_v01.Models
             this.attendees = attendees;
             this.members_only = members_only;
             this.isLive = isLive;
+        }
+
+        public ConferenceModel(int id, string title, string tagline, string external_url, string start_date, string end_date, string processing_fee, int max_attendees, int attendees, bool members_only, bool isLive, List<ProductModel> tickets)
+        {
+            this.id = id;
+            this.title = title;
+            this.tagline = tagline;
+            this.external_url = external_url;
+            this.start_date = start_date;
+            this.end_date = end_date;
+            this.processing_fee = processing_fee;
+            this.max_attendees = max_attendees;
+            this.attendees = attendees;
+            this.members_only = members_only;
+            this.isLive = isLive;
+            this.tickets = tickets;
         }
 
     }
