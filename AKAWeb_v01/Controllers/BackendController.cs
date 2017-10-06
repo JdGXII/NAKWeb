@@ -1899,33 +1899,92 @@ namespace AKAWeb_v01.Controllers
         [HttpPost]
         public ActionResult CreateConference(ICollection<string> addon, ICollection<ProductModel> tickets, ConferenceModel conference, AddressModel location)
         {
-            storeNewConference(conference);
+            int conference_code = storeNewConference(conference);
+            if(conference_code != -1)
+            {
+                bool tickets_success = bindTicketsToConference(conference_code, addon);
+                bool location_success = bindAddressToConference(conference_code, location);
+
+                if(tickets_success && location_success)
+                {
+                    //return positive feedback
+                }
+                else
+                {
+                    //delete entries from all conference tables having the conference_code and return negative feedback.
+                }
+            }
+
             return RedirectToAction("CreateConference");
         }
 
         //Creates/saves a new conference in the Conference DB
         //Step 1 of properly configuring a new conference
-        private bool storeNewConference(ConferenceModel conference)
+        //returns the conference code or -1 if the the creation process failed
+        private int storeNewConference(ConferenceModel conference)
         {
             int members_only = 0;
+            Random rnd = new Random();
+            int conference_code = rnd.Next();
             if (conference.members_only)
             {
                 members_only = 1;
             }
             DBConnection testconn = new DBConnection();
-            string query = "INSERT INTO Conference(title, tagline, external_url, start_date, end_date, processing_fee, max_attendees, attendees, members_only, isLive)" +
-                "VALUES('" + conference.title + "','" + conference.tagline + "','" + conference.external_url + "','" + conference.start_date + "','" + conference.end_date + "','" + conference.processing_fee + "'," + conference.max_attendees + ", 0," + members_only + ", 1)";
+            string query = "INSERT INTO Conference(title, tagline, external_url, start_date, end_date, processing_fee, max_attendees, attendees, members_only, isLive, conference_code)" +
+                "VALUES('" + conference.title + "','" + conference.tagline + "','" + conference.external_url + "','" + conference.start_date + "','" + conference.end_date + "','" + conference.processing_fee + "'," + conference.max_attendees + ", 0," + members_only + ", 1, "+conference_code+")";
             bool success = testconn.WriteToTest(query);
-            if(success)
+            testconn.CloseConnection();
+
+            if (success)
             {
-                ///
-                
+                return conference_code;
             }
             else
             {
-                //
+                return -1;
+
             }
+  
+     
+        }
+
+        //takes in the code of a conference a collection of ticket/product ids and saves them to Conference_Has_Product
+        private bool bindTicketsToConference(int conference_code, ICollection<string> ticket_ids)
+        {
+            bool success = true;
+            DBConnection testconn = new DBConnection();
+            foreach(string ticket_id in ticket_ids)
+            {
+                string query = "INSERT INTO Conference_Has_Product(conference_code, product_id)" +
+                "VALUES("+ conference_code + ","+ticket_id+")";
+                success = testconn.WriteToTest(query);
+                if (!success)
+                {
+                    testconn.CloseConnection();
+                    return success;
+                }
+            }
+
+            testconn.CloseConnection();
             return success;
+            
+            
+
+        }
+
+        private bool bindAddressToConference(int conference_code, AddressModel address)
+        {
+            DBConnection testconn = new DBConnection();
+            string query = "INSERT INTO Conference_Has_Location(state, city, street_address, zip, conference_code) VALUES('" + address.state + "'," +
+"'" + address.city + "','" + address.street_address + "', '" + address.zip + "', " + conference_code + ")";
+            bool success = testconn.WriteToTest(query);
+            
+            testconn.CloseConnection();
+
+            return success;
+
+
         }
 
         //This action gets called asynchronously from the CreateConference View to create a new ticket type product from that page
