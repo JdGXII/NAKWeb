@@ -1875,7 +1875,10 @@ namespace AKAWeb_v01.Controllers
         [HttpGet]
         public async Task<ActionResult> CreateConference()
         {
-
+            if (TempData["ConferenceCreationSuccess"] != null)
+            {
+                ViewBag.ConferenceCreationFeedback = TempData["ConferenceCreationSuccess"].ToString();
+            }
             return View();
         }
 
@@ -1907,15 +1910,23 @@ namespace AKAWeb_v01.Controllers
 
                 if(tickets_success && location_success)
                 {
-                    //return positive feedback
+                    TempData["ConferenceCreationSuccess"] = "Conference succesfully created";
+                    return RedirectToAction("ListConferences");
                 }
                 else
                 {
-                    //delete entries from all conference tables having the conference_code and return negative feedback.
+                    bool deletion_success = revertConferenceCreation(conference_code);
+                    TempData["ConferenceCreationSuccess"] = "Something went wrong. Conference could not be created.";
+                    return RedirectToAction("CreateConference");
                 }
             }
+            else
+            {
+                TempData["ConferenceCreationSuccess"] = "Something went wrong. Conference could not be created.";
+                return RedirectToAction("CreateConference");
+            }
 
-            return RedirectToAction("CreateConference");
+            
         }
 
         //Creates/saves a new conference in the Conference DB
@@ -1935,6 +1946,7 @@ namespace AKAWeb_v01.Controllers
                 "VALUES('" + conference.title + "','" + conference.tagline + "','" + conference.external_url + "','" + conference.start_date + "','" + conference.end_date + "','" + conference.processing_fee + "'," + conference.max_attendees + ", 0," + members_only + ", 1, "+conference_code+")";
             bool success = testconn.WriteToTest(query);
             testconn.CloseConnection();
+         
 
             if (success)
             {
@@ -1947,6 +1959,23 @@ namespace AKAWeb_v01.Controllers
             }
   
      
+        }
+
+        //If anything goes wrong with the multiple database write operations this function is called and deletes the records
+        //takes in the failed inserted conference  conference_code
+        private bool revertConferenceCreation(int conference_code)
+        {
+            DBConnection testconn = new DBConnection();
+            string delete_location = "DELETE FROM Conference_Has_Location WHERE conference_code = " + conference_code.ToString();
+            string delete_products = "DELETE FROM Conference_Has_Product WHERE conference_code = " + conference_code.ToString();
+            string delete_conference = "DELETE FROM Conference WHERE conference_code = " + conference_code.ToString();
+
+            bool success_location = testconn.WriteToTest(delete_location);
+            bool success_products = testconn.WriteToTest(delete_products);
+            bool success_conference = testconn.WriteToTest(delete_conference);
+
+            testconn.CloseConnection();
+            return success_conference && success_location && success_products;
         }
 
         //takes in the code of a conference a collection of ticket/product ids and saves them to Conference_Has_Product
@@ -1973,6 +2002,7 @@ namespace AKAWeb_v01.Controllers
 
         }
 
+        //sets conference location
         private bool bindAddressToConference(int conference_code, AddressModel address)
         {
             DBConnection testconn = new DBConnection();
@@ -2006,10 +2036,107 @@ namespace AKAWeb_v01.Controllers
                 return "Fail";
             }
 
+        }
 
+        public ActionResult ListConferences()
+        {
+            
+            if (TempData["ConferenceCreationSuccess"] != null)
+            {
+                ViewBag.ConferenceCreationFeedback = TempData["ConferenceCreationSuccess"].ToString();
+            }
 
+            var model = getConferences();
+            return View(model);
+        }
+
+        private List<ConferenceModel> getConferences()
+        {
+            DBConnection testconn = new DBConnection();
+            string query = "SELECT title, start_date, end_date, isLive, conference_code FROM Conference";
+            SqlDataReader dataReader = testconn.ReadFromTest(query);
+            List<ConferenceModel> conferences = new List<ConferenceModel>();
+            if (dataReader.HasRows)
+            {
+
+                while (dataReader.Read()) { 
+              
+                    string title = dataReader.GetValue(0).ToString();
+                    string start_date = dataReader.GetValue(1).ToString();
+                    string end_date = dataReader.GetValue(2).ToString();
+                    bool isLive = (bool)dataReader.GetValue(3);
+                    int conference_code = Int32.Parse(dataReader.GetValue(4).ToString());
+
+                    ConferenceModel conference = new ConferenceModel(title, start_date, end_date, isLive, conference_code);
+                    conferences.Add(conference);
+
+                }
+
+            }
+            testconn.CloseDataReader();
+            testconn.CloseConnection();
+            return conferences;
+        }
+
+        //get a specific conference from conference code
+        private ConferenceModel getConference(int conference_code)
+        {
+            //do stuff
+            return new ConferenceModel();
+        }
+
+        public ActionResult ToggleIsLiveConference(int id)
+        {
+            /*if (System.Web.HttpContext.Current.Session["username"] != null)
+            {
+                DBConnection testconn = new DBConnection();
+                //see what is the current state of the product if it's alive or not
+                string query = "SELECT isLive from Conference where id =" + id.ToString();
+                //this query will set a product isAlive to 0 
+                string query2 = "UPDATE Conference SET isLive = 0 WHERE id =" + id.ToString();
+                SqlDataReader dataReader = testconn.ReadFromTest(query);
+                dataReader.Read();
+                //if the product is NOT live, change the query and turn the product to live
+                if (!(bool)dataReader.GetValue(0))
+                {
+                    query2 = "UPDATE Conference SET isLive = 1 WHERE id =" + id;
+                }
+                testconn.WriteToTest(query2);
+                testconn.CloseDataReader();
+                testconn.CloseConnection();
+                return RedirectToAction("ListConference", "Backend");
+            }
+            else
+            {
+                return RedirectToAction("MyProfile");
+            }*/
+
+            DBConnection testconn = new DBConnection();
+            //see what is the current state of the product if it's alive or not
+            string query = "SELECT isLive from Conference where conference_code =" + id.ToString();
+            //this query will set a product isAlive to 0 
+            string query2 = "UPDATE Conference SET isLive = 0 WHERE conference_code =" + id.ToString();
+            SqlDataReader dataReader = testconn.ReadFromTest(query);
+            dataReader.Read();
+            //if the product is NOT live, change the query and turn the product to live
+            if (!(bool)dataReader.GetValue(0))
+            {
+                query2 = "UPDATE Conference SET isLive = 1 WHERE conference_code =" + id.ToString();
+            }
+            testconn.WriteToTest(query2);
+            testconn.CloseDataReader();
+            testconn.CloseConnection();
+            return RedirectToAction("ListConference", "Backend");
 
         }
+
+        public ActionResult EditConference(int id)
+        {
+            //fill mofel with getConference
+            return View();
+        }
+
+
 
         public ActionResult Test()
         {

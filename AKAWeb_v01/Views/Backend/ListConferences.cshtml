@@ -1,0 +1,73 @@
+﻿@model IEnumerable<AKAWeb_v01.Models.ConferenceModel>
+
+@{
+    ViewBag.Title = "List Conferences";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>List Conferences</h2>
+<p class="page-feedback">@ViewBag.ConferenceCreationFeedback</p>
+<p>
+    @Html.ActionLink("Create New", "CreateConference")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.title)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.start_date)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.end_date)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.conference_code)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.isLive)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.title)
+        </td>
+
+        <td>
+            @Html.DisplayFor(modelItem => item.start_date)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.end_date)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.conference_code)
+        </td>
+
+            @if (item.isLive == true)
+            {
+            <td>Yes</td>
+            }
+            else
+            {
+
+              <td>No</td>
+            }
+        <td>
+            @Html.ActionLink("Edit", "EditConference", new { id=item.conference_code }) |
+            @if (item.isLive == true)
+                {
+                @Html.ActionLink("Disable", "ToggleIsLiveConference", new { id = item.conference_code });
+                }
+                else
+                {
+                @Html.ActionLink("Enable", "ToggleIsLiveConference", new { id = item.conference_code });
+
+                }
+        </td>
+    </tr>
+}
+
+</table>
