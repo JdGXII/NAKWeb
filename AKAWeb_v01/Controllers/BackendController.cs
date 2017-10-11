@@ -2218,6 +2218,14 @@ namespace AKAWeb_v01.Controllers
             return View(model);
         }
 
+        /*[HttpPost]
+        public ActionResult EditConference(int conference_code, ICollection<string> addon, ICollection<ProductModel> tickets, ConferenceModel conference, AddressModel location)
+        {
+            //check if a ticket that was previously checked is no longer checked and delete from db
+            //add any new checked tickets to db
+            //post conference to db
+        }*/
+
 
 
         public ActionResult Test()
