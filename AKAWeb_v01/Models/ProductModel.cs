@@ -6,7 +6,7 @@ using System.Web.Mvc;
 
 namespace AKAWeb_v01.Models
 {
-    public class ProductModel
+    public class ProductModel : IEquatable<ProductModel>
     {
         public int id { get; set; }
         public int cost { get; set; }
@@ -18,6 +18,18 @@ namespace AKAWeb_v01.Models
         public string image { get; set; }
         public List<SelectListItem>  dropdown { get; set; }
         public int stock { get; set; }
+
+        public bool Equals(ProductModel other)
+        {
+            if (this.id == other.id)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
 
         public ProductModel() {
 

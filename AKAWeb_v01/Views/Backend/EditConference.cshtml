@@ -1,0 +1,135 @@
+﻿@model AKAWeb_v01.Models.ConferenceModel
+
+@{
+    ViewBag.Title = "EditConference";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Edit Conference</h2>
+
+@section Head{
+    <script type="text/javascript" src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script src="//cdn.jsdelivr.net/webshim/1.14.5/polyfiller.js"></script>
+    <script>
+webshims.setOptions('forms-ext', {types: 'date'});
+webshims.polyfill('forms forms-ext');
+$.webshims.formcfg = {
+en: {
+    dFormat: '-',
+    dateSigns: '-',
+    patterns: {
+        d: "yy-mm-dd"
+    }
+}
+};
+    </script>
+
+    <script type="text/javascript">
+
+    $(document).ready(function () {
+        $("#createNew").click(function () {
+            var url = "/Backend/CreateTicketConference";
+            var cost = $('#ticket_cost').val();
+            var description = $('#ticket_description').val();
+            var details = $('#ticket_details').val();
+            var duration = $('#ticket_duration').val();
+            //var stock = $('#ticket_stock').val();
+
+            $.post(url, { cost, description, details, duration }, function (data) {
+                window.alert(data);
+                //window.location.reload()
+
+                $("#dvCategoryResults").load('@Url.Action("GetTicketsForConferencePartialViewEdit", "Backend", new { conference_code = Model.conference_code})');
+            });
+
+    });
+    });
+    </script>
+}
+
+
+
+
+<h2>Edit Conference</h2>
+<p class="page-feedback">@ViewBag.ConferenceCreationFeedback</p>
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <h2>Conference Information</h2>
+            @Html.Label("Title:")
+            <input type="text" name="conference.title" class="form-control" form="conference_form" value="@Model.title" />
+            @Html.Label("Theme/Tagline:")
+            <input type="text" name="conference.tagline" class="form-control" form="conference_form" value="@Model.tagline" />
+            @Html.Label("External URL:")
+            <input type="text" name="conference.external_url" class="form-control" form="conference_form" value="@Model.external_url" />
+        </div>
+        <div class="col-md-6">
+            <h2>Conference Dates</h2>
+            @Html.Label("Start Date:")<br />
+            <input type="date" name="conference.start_date" class="form-control" form="conference_form" value="@Model.start_date" /><br />
+            @Html.Label("End Date:")<br />
+            <input type="date" name="conference.end_date" class="form-control" form="conference_form" value="@Model.end_date" />
+
+
+        </div>
+
+    </div>
+    <div class="row" style="border-bottom:solid;">
+        <div class="col-md-6">
+            <h2>Conference Location</h2>
+            @Html.Label("City:")
+            <input type="text" name="location.city" class="form-control" form="conference_form" value="@Model.location.city" />
+            @Html.Label("State:")
+            <input type="text" name="location.state" class="form-control" form="conference_form" value="@Model.location.state" />
+            @Html.Label("Street Address:")
+            <input type="text" name="location.street_address" class="form-control" form="conference_form" value="@Model.location.street_address" />
+            @Html.Label("Zip:")
+            <input type="text" name="location.zip" class="form-control" form="conference_form" value="@Model.location.zip" />
+        </div>
+        <div class="col-md-6">
+            <h2>Conference Items</h2>
+            @Html.Label("Processing Fee (as a percentage:")
+            <input value="@Model.processing_fee" type="text" name="conference.processing_fee" class="form-control" form="conference_form" />
+            @Html.Label("Max Attendees:")
+            <input value="@Model.max_attendees" type="text" name="conference.max_attendees" class="form-control" form="conference_form" />
+            @Html.Label("Is this a members-only conference?")
+            <select class="form-control" name="conference.members_only" form="conference_form">
+                @if (Model.members_only)
+                {
+                    <option value="0">No</option>
+                    <option selected value="1">Yes</option>
+                }
+                else
+                {
+                    <option selected value="0">No</option>
+                    <option selected value="1">Yes</option>
+                }
+
+            </select>
+
+
+
+        </div>
+
+    </div>
+
+
+    <div class="row">
+        <div class="col-md-12">
+            <h2>Conference Ticketing</h2>
+            <h3 style="color:red;">Edit and select which existing products to associate to this conference or create new ones.</h3>
+
+            <div id="dvCategoryResults">@Html.Action("GetTicketsForConferencePartialViewEdit", "Backend", new { conference_code = Model.conference_code })</div>
+
+        </div>
+
+
+    </div>
+
+    @using (Html.BeginForm("EditConference", "Backend", FormMethod.Post, new { id = "conference_form" }))
+    {
+
+        <button type="submit" form="conference_form" class="btn btn-default">Save Changes</button>
+    }
+
+</div>

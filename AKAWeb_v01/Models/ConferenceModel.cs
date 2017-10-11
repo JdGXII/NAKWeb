@@ -27,6 +27,7 @@ namespace AKAWeb_v01.Models
         public List<ProductModel> tickets { get; set; }
         [Display(Name = "Conference Code")]
         public int conference_code { get; set; }
+        public AddressModel location { get; set; }
 
         public ConferenceModel()
         {
@@ -113,6 +114,24 @@ namespace AKAWeb_v01.Models
             this.isLive = isLive;
             this.tickets = tickets;
             this.conference_code = conference_code;
+        }
+
+        public ConferenceModel(int id, string title, string tagline, string external_url, string start_date, string end_date, string processing_fee, int max_attendees, int attendees, bool members_only, bool isLive, List<ProductModel> tickets, int conference_code, AddressModel location)
+        {
+            this.id = id;
+            this.title = title;
+            this.tagline = tagline;
+            this.external_url = external_url;
+            this.start_date = start_date;
+            this.end_date = end_date;
+            this.processing_fee = processing_fee;
+            this.max_attendees = max_attendees;
+            this.attendees = attendees;
+            this.members_only = members_only;
+            this.isLive = isLive;
+            this.tickets = tickets;
+            this.conference_code = conference_code;
+            this.location = location;
         }
 
     }

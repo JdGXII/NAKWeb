@@ -1410,11 +1410,12 @@ namespace AKAWeb_v01.Controllers
         private ProductModel getProduct(string product_id)
         {
             DBConnection testconn = new DBConnection();
-            string query = "SELECT id, type, cost, description, length, details FROM Products WHERE isLive = 1 AND id = "+ product_id;
+            string query = "SELECT id, type, cost, description, length, details FROM Products WHERE id = "+ product_id;
             SqlDataReader dataReader = testconn.ReadFromTest(query);
             ProductModel product = new ProductModel();
-            while (dataReader.Read())
+            if (dataReader.HasRows)
             {
+                dataReader.Read();
                 int id = Int32.Parse(dataReader.GetValue(0).ToString());
                 string type = dataReader.GetValue(1).ToString();
                 int cost = Int32.Parse(dataReader.GetValue(2).ToString());
@@ -1886,6 +1887,16 @@ namespace AKAWeb_v01.Controllers
         public async Task<ActionResult> GetTicketsForConferencePartialView()
         {
             var model = await product_service.getTickets();
+            
+            return PartialView("_AsyncTickets", model);
+
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> GetTicketsForConferencePartialViewEdit(int conference_code)
+        {
+            var model = await product_service.getTickets();
+            ViewBag.AlreadyBoundTickets = getAssociatedTickets(conference_code);
             return PartialView("_AsyncTickets", model);
 
         }
@@ -2078,38 +2089,107 @@ namespace AKAWeb_v01.Controllers
             return conferences;
         }
 
+        //get the associated tickets/products associated to a conference
+        private List<ProductModel> getAssociatedTickets(int conference_code)
+        {
+            DBConnection testconn = new DBConnection();
+            List<ProductModel> tickets = new List<ProductModel>();
+            string conference_tickets = "SELECT product_id from Conference_Has_Product WHERE conference_code = " + conference_code.ToString();
+            SqlDataReader dataReader = testconn.ReadFromTest(conference_tickets);
+
+            if (dataReader.HasRows)
+            {
+                while (dataReader.Read())
+                {
+                    int product_id = Int32.Parse(dataReader.GetValue(0).ToString());
+                    ProductModel ticket = getProduct(product_id.ToString());
+                    tickets.Add(ticket);
+
+
+                }
+
+            }
+
+            testconn.CloseDataReader();
+            testconn.CloseConnection();
+            return tickets;
+
+        }
+
+        //get the location associated to a conference
+        private AddressModel getAssociatedLocation(int conference_code)
+        {
+            DBConnection testconn = new DBConnection();
+            AddressModel location = new AddressModel(); 
+            string conference_location = "SELECT city, state, zip, street_address FROM Conference_Has_Location WHERE conference_code = " + conference_code.ToString();
+            SqlDataReader dataReader = testconn.ReadFromTest(conference_location);
+
+            dataReader = testconn.ReadFromTest(conference_location);
+
+            if (dataReader.HasRows)
+            {
+                dataReader.Read();
+                string city = dataReader.GetValue(0).ToString();
+                string state = dataReader.GetValue(1).ToString();
+                string zip = dataReader.GetValue(2).ToString();
+                string street_address = dataReader.GetValue(3).ToString();
+
+                location = new AddressModel(" ", state, city, zip, street_address);
+            }
+
+            testconn.CloseDataReader();
+            testconn.CloseConnection();
+            return location;
+
+        }
+
+
+
         //get a specific conference from conference code
         private ConferenceModel getConference(int conference_code)
         {
-            //do stuff
-            return new ConferenceModel();
+            ConferenceModel conference = new ConferenceModel();
+            List<ProductModel> tickets = getAssociatedTickets(conference_code);
+            AddressModel location = getAssociatedLocation(conference_code);
+            DBConnection testconn = new DBConnection();
+            string conference_info = "SELECT id, title, tagline, external_url, start_date, end_date, processing_fee, max_attendees, attendees, members_only, isLive, conference_code FROM Conference WHERE conference_code =" + conference_code.ToString();
+ 
+
+            SqlDataReader dataReader = testconn.ReadFromTest(conference_info);
+
+            if (dataReader.HasRows)
+            {
+                //id, title, tagline, external_url, start_date, end_date, processing_fee, max_attendees, attendees, members_only, isLive, conference_code
+                dataReader.Read();
+                int id = Int32.Parse(dataReader.GetValue(0).ToString());
+                string title = dataReader.GetValue(1).ToString();
+                string tagline = dataReader.GetValue(2).ToString();
+                string external_url = dataReader.GetValue(3).ToString();
+                string start_date = dataReader.GetValue(4).ToString();
+                string end_date = dataReader.GetValue(5).ToString();
+                string processing_fee = dataReader.GetValue(6).ToString();
+                int max_attendees = Int32.Parse(dataReader.GetValue(7).ToString());
+                int attendees = Int32.Parse(dataReader.GetValue(8).ToString());
+                bool members_only = (bool)dataReader.GetValue(9);
+                bool isLive = (bool)dataReader.GetValue(10);
+                int conf_code = Int32.Parse(dataReader.GetValue(11).ToString());
+
+                conference = new ConferenceModel(id, title, tagline, external_url, start_date, end_date, processing_fee, max_attendees, attendees, members_only, isLive, tickets, conf_code, location);
+
+
+
+            }
+
+
+            testconn.CloseDataReader();
+            testconn.CloseConnection();
+            return conference;
+            
         }
 
         public ActionResult ToggleIsLiveConference(int id)
         {
-            /*if (System.Web.HttpContext.Current.Session["username"] != null)
-            {
-                DBConnection testconn = new DBConnection();
-                //see what is the current state of the product if it's alive or not
-                string query = "SELECT isLive from Conference where id =" + id.ToString();
-                //this query will set a product isAlive to 0 
-                string query2 = "UPDATE Conference SET isLive = 0 WHERE id =" + id.ToString();
-                SqlDataReader dataReader = testconn.ReadFromTest(query);
-                dataReader.Read();
-                //if the product is NOT live, change the query and turn the product to live
-                if (!(bool)dataReader.GetValue(0))
-                {
-                    query2 = "UPDATE Conference SET isLive = 1 WHERE id =" + id;
-                }
-                testconn.WriteToTest(query2);
-                testconn.CloseDataReader();
-                testconn.CloseConnection();
-                return RedirectToAction("ListConference", "Backend");
-            }
-            else
-            {
-                return RedirectToAction("MyProfile");
-            }*/
+
 
             DBConnection testconn = new DBConnection();
             //see what is the current state of the product if it's alive or not
@@ -2126,14 +2206,16 @@ namespace AKAWeb_v01.Controllers
             testconn.WriteToTest(query2);
             testconn.CloseDataReader();
             testconn.CloseConnection();
-            return RedirectToAction("ListConference", "Backend");
+            return RedirectToAction("ListConferences", "Backend");
+
+            
 
         }
 
         public ActionResult EditConference(int id)
         {
-            //fill mofel with getConference
-            return View();
+            var model = getConference(id);
+            return View(model);
         }
 
 

@@ -1,5 +1,6 @@
 ﻿@model IEnumerable<AKAWeb_v01.Models.ProductModel>
 
+
 <table class="table">
     <tr>
         <th></th>
@@ -26,7 +27,25 @@
 
         <tr>
             <td>
-                <input type="checkbox" value="@ticket.id" name="addon" class="form-control" form="conference_form" />
+                @if (ViewBag.AlreadyBoundTickets != null)
+                {
+                    List<AKAWeb_v01.Models.ProductModel> bound_tickets = ViewBag.AlreadyBoundTickets as List<AKAWeb_v01.Models.ProductModel>;
+                    if(bound_tickets.Contains(ticket)){
+
+                        <input type="checkbox" value="@ticket.id" name="addon" class="form-control" form="conference_form" checked/>
+
+                    }
+                    else
+                    {
+                        <input type="checkbox" value="@ticket.id" name="addon" class="form-control" form="conference_form" />
+                    }
+
+                }
+                else
+                {
+                    <input type="checkbox" value="@ticket.id" name="addon" class="form-control" form="conference_form" />
+                }
+                
             </td>
             <td>
 
