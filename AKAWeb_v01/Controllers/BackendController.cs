@@ -1916,7 +1916,7 @@ namespace AKAWeb_v01.Controllers
             int conference_code = storeNewConference(conference);
             if(conference_code != -1)
             {
-                bool tickets_success = bindTicketsToConference(conference_code, addon);
+                bool tickets_success = bindTicketsToConference(conference_code, addon, tickets);
                 bool location_success = bindAddressToConference(conference_code, location);
 
                 if(tickets_success && location_success)
@@ -1990,20 +1990,32 @@ namespace AKAWeb_v01.Controllers
         }
 
         //takes in the code of a conference a collection of ticket/product ids and saves them to Conference_Has_Product
-        private bool bindTicketsToConference(int conference_code, ICollection<string> ticket_ids)
+        //also sets isLive to true on Products table and updates the tickets
+        private bool bindTicketsToConference(int conference_code, ICollection<string> ticket_ids, ICollection<ProductModel> tickets)
         {
+            bool success_insert = true;
+            bool success_update = updateTicketsFromConference(ticket_ids, tickets);
             bool success = true;
             DBConnection testconn = new DBConnection();
-            foreach(string ticket_id in ticket_ids)
+            //first delete tickets (in case the function is called from an edit) then insert the selected tickets
+            string delete_query = "DELETE FROM Conference_Has_Product WHERE conference_code = " + conference_code.ToString();
+            testconn.WriteToTest(delete_query);
+
+            foreach (string ticket_id in ticket_ids)
             {
-                string query = "INSERT INTO Conference_Has_Product(conference_code, product_id)" +
-                "VALUES("+ conference_code + ","+ticket_id+")";
-                success = testconn.WriteToTest(query);
+                string insert = "INSERT INTO Conference_Has_Product(conference_code, product_id)" +
+                "VALUES(" + conference_code + "," + ticket_id + ")";
+                
+                success_insert = testconn.WriteToTest(insert);
+               
+                success = (success_update && success_insert);
                 if (!success)
                 {
+
                     testconn.CloseConnection();
                     return success;
                 }
+                
             }
 
             testconn.CloseConnection();
@@ -2214,18 +2226,99 @@ namespace AKAWeb_v01.Controllers
 
         public ActionResult EditConference(int id)
         {
+            if (TempData["ConferenceUpdateSuccess"] != null)
+            {
+                ViewBag.EdiSuccess = TempData["ConferenceUpdateSuccess"].ToString();
+            }
             var model = getConference(id);
             return View(model);
         }
 
-        /*[HttpPost]
-        public ActionResult EditConference(int conference_code, ICollection<string> addon, ICollection<ProductModel> tickets, ConferenceModel conference, AddressModel location)
+        [HttpPost]
+        public ActionResult EditConference(ICollection<string> addon, ICollection<ProductModel> tickets, ConferenceModel conference, AddressModel location)
         {
-            //check if a ticket that was previously checked is no longer checked and delete from db
-            //add any new checked tickets to db
-            //post conference to db
-        }*/
+            bool update_conference_success = updateConference(conference);
+            bool tickets_success = bindTicketsToConference(conference.conference_code, addon, tickets);
+            bool location_success = bindAddressToConference(conference.conference_code, location);
+            if (tickets_success && location_success && update_conference_success)
+            {
+                TempData["ConferenceUpdateSuccess"] = "Conference succesfully edited";
+                return RedirectToAction("EditConference", conference.conference_code);
 
+            }
+            else
+            {
+                TempData["ConferenceUpdateSuccess"] = "Something went wrong. Conference could not be updated.";
+                return RedirectToAction("EditConference", conference.conference_code); 
+            }
+
+        }
+
+        private bool updateConference(ConferenceModel conference)
+        {
+            DBConnection testconn = new DBConnection();
+            int members_only = 0;
+            if (conference.members_only)
+            {
+                members_only = 1;
+            }
+            string query = "UPDATE Conference SET title = '" + conference.title + "', tagline = '" + conference.tagline + "', external_url = '" + conference.external_url + "',start_date= '" + conference.start_date + "', end_date = '" + conference.end_date + "', processing_fee= '" + conference.processing_fee + "', max_attendees =" + conference.max_attendees + ", members_only =" + members_only.ToString()+" WHERE conference_code = "+conference.conference_code.ToString();
+            bool success = testconn.WriteToTest(query);
+
+            testconn.CloseConnection();
+            return success;
+
+
+        }
+
+        private bool updateConferenceLocation(int conference_code, AddressModel address)
+        {
+            DBConnection testconn = new DBConnection();
+            string query = "UPDATE Conference_Has_Location SET state = '" + address.state + "', city = '" + address.city + "', street_address = '" + address.street_address + "', zip = '" + address.zip + "' WHERE conference_code = " + conference_code;
+            bool success = testconn.WriteToTest(query);
+
+            testconn.CloseConnection();
+
+            return success;
+
+        }
+
+        //addon represents a collection with the ids of products/tickets that were marked to be associated/bound to a conference
+        //since the conference tool allows for the update of old tickets or creation of new ones it needs to handle that
+        //so this function takes the list of selected tickets in addon and updates to the DB the tickets in the tickets Collection that have the same id
+        //it also always changes isLive to 1
+        private bool updateTicketsFromConference(ICollection<string> addon, ICollection<ProductModel> tickets)
+        {
+            DBConnection testconn = new DBConnection();
+            List<ProductModel> shell_tickets = new List<ProductModel>();
+            bool success = true;
+            foreach (string id in addon)
+            {
+                ProductModel shell_ticket = new ProductModel();
+                shell_ticket.id = Int32.Parse(id);
+                shell_tickets.Add(shell_ticket);
+                
+            }
+
+            foreach(ProductModel ticket in tickets)
+            {
+                if (shell_tickets.Contains(ticket))
+                {
+                    string update_ticket = "UPDATE Products SET description = '" + ticket.description + "', details = '" + ticket.details + "', cost = '" + ticket.cost + "', isLive = 1 WHERE id = " + ticket.id.ToString();
+                    success = testconn.WriteToTest(update_ticket);
+
+                    if (!success)
+                    {
+                        testconn.CloseConnection();
+                        return false;
+                    }
+                }
+            }
+
+            testconn.CloseConnection();
+            return success;
+
+        }
 
 
         public ActionResult Test()
