@@ -9,9 +9,12 @@ using AKAWeb_v01.Models;
 
 namespace AKAWeb_v01.Controllers
 {
+    
+
     public class ProductsController : Controller
     {
-        
+        private ProductService product_service = new ProductService();
+
         // GET: Products
         public ActionResult ListProducts(string type)
         {
@@ -21,6 +24,12 @@ namespace AKAWeb_v01.Controllers
         public ActionResult Memberships()
         {
             var model = getMemberships();
+            return View(model);
+        }
+
+        public ActionResult Conferences()
+        {
+            var model = product_service.getConferences();
             return View(model);
         }
 

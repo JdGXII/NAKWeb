@@ -1,0 +1,89 @@
+﻿@model IEnumerable<AKAWeb_v01.Models.ConferenceModel>
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conferences</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+
+    <link type="text/css" rel="~/Content/Site.css" />
+</head>
+<body>
+
+    <table class="table">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.tagline)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.start_date)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.end_date)
+            </th>
+         
+        </tr>
+    
+    @foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.title)
+                <br />
+                <a class="menu-link" href="#@item.conference_code" data-toggle="collapse">See pricing</a>
+                <div id="@item.conference_code" class="collapse">
+                    <table class="">
+                        <tr>
+                            <th>Description</th>
+                            <th>Details</th>
+                            <th>Price</th>
+                            <th></th>
+                        </tr>
+                        @foreach (AKAWeb_v01.Models.ProductModel ticket in item.tickets)
+                        {
+                            <tr>
+                                <td>@ticket.description</td>
+                                <td>@ticket.details</td>
+                                <td>$@ticket.cost</td>
+                                <td>
+                                    @using (Html.BeginForm("AddToCart", "ShoppingCart", FormMethod.Post, new { @class = "form-group", target = "_top" }))
+                    {
+                                        <button type="submit" class="btn btn-default">Add to cart <span class="glyphicon glyphicon-shopping-cart"></span></button>
+                                        <input type="hidden" value="@item.id" name="product_id" />
+                                    }
+                                </td>
+                            </tr>
+
+                        }
+                    </table>
+
+                </div>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.tagline)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.start_date)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.end_date)
+            </td>
+
+        </tr>
+    }
+    
+    </table>
+</body>
+</html>

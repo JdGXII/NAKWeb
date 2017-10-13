@@ -285,6 +285,7 @@
     <Content Include="Views\Backend\_AsyncAddOns.cshtml" />
     <Content Include="Views\Backend\ListConferences.cshtml" />
     <Content Include="Views\Backend\EditConference.cshtml" />
+    <Content Include="Views\Products\Conferences.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

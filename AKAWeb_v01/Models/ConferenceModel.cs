@@ -12,6 +12,7 @@ namespace AKAWeb_v01.Models
         public int id { get; set; }
         [Display(Name = "Title")]
         public string title { get; set; }
+        [Display(Name = "Tagline")]
         public string tagline { get; set; }
         public string external_url { get; set; }
         [Display(Name = "Start Date")]
