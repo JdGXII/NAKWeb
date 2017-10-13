@@ -29,6 +29,9 @@
                 @Html.DisplayNameFor(model => model.tagline)
             </th>
             <th>
+                Location
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.start_date)
             </th>
             <th>
@@ -60,7 +63,7 @@
                                 <td>
                                     @using (Html.BeginForm("AddToCart", "ShoppingCart", FormMethod.Post, new { @class = "form-group", target = "_top" }))
                     {
-                                        <button type="submit" class="btn btn-default">Add to cart <span class="glyphicon glyphicon-shopping-cart"></span></button>
+                                        <button type="submit" class="btn btn-default">Register for Conference<span class="glyphicon glyphicon-shopping-cart"></span></button>
                                         <input type="hidden" value="@item.id" name="product_id" />
                                     }
                                 </td>
@@ -73,6 +76,9 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.tagline)
+            </td>
+            <td>
+                @item.location.city, @item.location.state
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.start_date)
