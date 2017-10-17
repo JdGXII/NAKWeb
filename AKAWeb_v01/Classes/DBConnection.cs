@@ -40,6 +40,33 @@ namespace AKAWeb_v01.Classes
             }
         }
 
+        public int WriteToTestReturnID(string query)
+        {
+
+            cnn = new SqlConnection(testString);
+            SqlCommand command;
+
+
+            try
+            {
+                cnn.Open();
+                command = cnn.CreateCommand();
+                command.CommandText = query + "; SELECT SCOPE_IDENTITY();";
+                int id = Int32.Parse(command.ExecuteScalar().ToString());
+                command.Dispose();
+
+                cnn.Close();
+
+                return id; 
+
+            }
+            catch (Exception e)
+            {
+                System.Web.HttpContext.Current.Session["exception"] = e.ToString();
+                return -1;
+            }
+        }
+
         public SqlDataReader ReadFromTest(string query)
         {
 

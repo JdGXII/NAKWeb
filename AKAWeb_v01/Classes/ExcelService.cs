@@ -14,7 +14,7 @@ namespace AKAWeb_v01.Classes
         HashService hash_service = new HashService();
         public ExcelService()
         {
-            string filePath = "C:\\MembershipData7-19-17.xlsx";
+            string filePath = "C:\\InstitutionalListing 9-21-17.xlsx";
             var stream = File.Open(filePath, FileMode.Open, FileAccess.Read);
             var reader = ExcelReaderFactory.CreateReader(stream);
             reader.Read();
@@ -37,7 +37,7 @@ namespace AKAWeb_v01.Classes
 
                      UserModel user = new UserModel(0, name, email, password, access, address);
 
-                     CreateUser(user);*/
+                     CreateUser(user);
                     string email = reader.GetString(16);
                     string price = reader.GetDouble(23).ToString();
                     //string date = reader.GetString(26);
@@ -48,13 +48,107 @@ namespace AKAWeb_v01.Classes
                     int user_id = GetUserIdByEmail(email);
 
                     
-                    AddProductToUser(user_id, product_id, end_date);
+                    AddProductToUser(user_id, product_id, end_date);*/
+
+                    /*string institution = reader.GetString(5);
+                    string inst_url = reader.GetString(7);
+                    int bach = changeYNTo10(reader.GetString(11));
+                    int ms = changeYNTo10(reader.GetString(12));
+                    int phd = changeYNTo10(reader.GetString(13));
+                    int asc = changeYNTo10(reader.GetString(10));
+
                     
+
+                    int inst_id =addInstitution(institution, inst_url, bach, ms, phd, asc);
+
+                    string department = reader.GetString(8);
+                    string dept_website = reader.GetString(9);
+
+                    int dept_id = addDepartment(department, dept_website);
+
+                    int state_id = getStateIDFromText(reader.GetString(4));
+
+                   bool success = addInstitutionHasDeptHasState(inst_id, dept_id, state_id);*/
 
 
 
                 }
             } while (reader.NextResult());
+        }
+
+        private bool addInstitutionHasDeptHasState(int inst_id, int dept_id, int state_id)
+        {
+            DBConnection testconn = new DBConnection();
+            string query = "INSERT INTO Institution_Has_State_Has_Department(institution_id, department_id, state_id) " +
+                "VALUES(" + inst_id + ", " + dept_id + ","+state_id+")";
+            bool success = testconn.WriteToTest(query);
+            testconn.CloseConnection();
+            return success;
+        }
+
+        private int getStateIDFromText(string state)
+        {
+            DBConnection testconn = new DBConnection();
+            string query = "SELECT id from States WHERE state_acronym = '" + state + "' OR state_name = '" + state + "'";
+            SqlDataReader dataReader = testconn.ReadFromTest(query);
+            int id = 0; 
+            if (dataReader.HasRows)
+            {
+                dataReader.Read();
+
+                id = Int32.Parse(dataReader.GetValue(0).ToString());
+            }
+            testconn.CloseDataReader();
+            testconn.CloseConnection();
+            return id;
+        }
+
+        private int addDepartment(string department, string dept_website)
+        {
+            DBConnection testconn = new DBConnection();
+            string query = "INSERT INTO Departments(department, department_website) " +
+                "VALUES('" + department + "', '" + dept_website + "')";
+            int id = testconn.WriteToTestReturnID(query);
+            testconn.CloseConnection();
+            return id;
+        }
+
+        private int addInstitution(string institution, string inst_url, int bach, int ms, int phd, int asc)
+        {
+
+            DBConnection testconn = new DBConnection();
+            string query = "INSERT INTO Institutions(institution, institution_website, bachelors, masters, doctoral, associates) " +
+                "VALUES('" + institution + "', '" + inst_url + "', "+bach+","+ms+","+phd+","+asc+")";
+            int id = testconn.WriteToTestReturnID(query);
+            testconn.CloseConnection();
+            return id;
+        }
+
+        private int changeYNTo10(string YN)
+        {
+            if (YN == "Yes" || YN == "YES" || YN == "yes" || YN == "y" || YN == "Y")
+            {
+                return 1;
+            }
+            else if (YN == "No" || YN == "NO" || YN == "no" || YN == "n" || YN == "N" || YN=="" || YN == " ")
+            {
+                return 0;
+            }
+            else
+            {
+                return -1;
+            }
+        }
+
+        private bool addState(string acronym, string name)
+        {
+            DBConnection testconn = new DBConnection();
+            string query = "INSERT INTO States(state_acronym, state_name) VALUES('" + acronym + "', '"+name+"')";
+            bool result = testconn.WriteToTest(query);
+            testconn.CloseConnection();
+            return result;
+
+
         }
 
         private bool CreateUser(UserModel user)
