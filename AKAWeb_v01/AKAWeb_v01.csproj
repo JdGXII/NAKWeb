@@ -174,8 +174,10 @@
     <Compile Include="Models\CartViewModel.cs" />
     <Compile Include="Models\AddressModel.cs" />
     <Compile Include="Models\ConferenceModel.cs" />
+    <Compile Include="Models\DepartmentModel.cs" />
     <Compile Include="Models\ImageModel.cs" />
     <Compile Include="Models\ImagePair.cs" />
+    <Compile Include="Models\InstitutionModel.cs" />
     <Compile Include="Models\MembershipModel.cs" />
     <Compile Include="Models\ProductModel.cs" />
     <Compile Include="Models\ProductTypeModel.cs" />
@@ -286,6 +288,7 @@
     <Content Include="Views\Backend\ListConferences.cshtml" />
     <Content Include="Views\Backend\EditConference.cshtml" />
     <Content Include="Views\Products\Conferences.cshtml" />
+    <Content Include="Views\SubPages\Institutions.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

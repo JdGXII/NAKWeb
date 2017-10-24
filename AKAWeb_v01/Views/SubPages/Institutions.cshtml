@@ -1,0 +1,93 @@
+﻿@model IEnumerable<AKAWeb_v01.Models.InstitutionModel>
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Institutions</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+</head>
+<body>
+
+    @using(Html.BeginForm("InstitutionFilter", "SubPages", FormMethod.Post))
+    {
+
+    
+    <div class="row form-group">
+        <div class="col-md-3">
+            @Html.Label("State")
+            @Html.DropDownList("state_filter", ViewData["state_filter"] as SelectList, new { @class = "form-control" })
+        </div>
+        <div class="col-md-3">
+            @Html.Label("Institution")
+            @Html.DropDownList("institution_filter", ViewData["institution_filter"] as SelectList, new { @class = "form-control" })
+        </div>
+        <div class="col-md-3">
+            @Html.Label("Department")
+            @Html.DropDownList("department_filter", ViewData["department_filter"] as SelectList, new { @class = "form-control" })
+        </div>
+        <div class="col-md-3">
+            
+            <button type="submit" class="btn btn-default" style="margin-top:25px;">Go</button>
+        </div>
+
+    </div>
+    }
+    <table class="table">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.state.state)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.name)
+            </th>
+            <th>@Html.DisplayNameFor(model => model.department.name)
+            </th>
+            <th>Degrees</th>
+            
+        </tr>
+    
+    @foreach (var item in Model) {
+        <tr>
+            <td>
+                <b>@Html.DisplayFor(modelItem => item.state.state)</b>
+            </td>
+            <td>
+                <a href="@item.website">@item.name</a>
+            </td>
+            <td>
+                <a href="@item.department.website">@item.department.name</a>
+            </td>
+            <th>
+                |
+                @if (item.associates)
+                {
+                    <span>@item.asc_string |</span>
+                }
+                else if (item.bachelors)
+                {
+                    <span>@item.bac_string |</span>
+                }
+                else if (item.masters)
+                {
+                    <span>@item.mas_string |</span>
+                }
+                else if (item.phd)
+                {
+                    <span>@item.phd_string |</span>
+                }
+            </th>
+        </tr>
+    }
+    
+    </table>
+</body>
+</html>
