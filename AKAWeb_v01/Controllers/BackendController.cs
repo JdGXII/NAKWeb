@@ -56,6 +56,7 @@ namespace AKAWeb_v01.Controllers
                         System.Web.HttpContext.Current.Session["userpermission"] = dataReader.GetValue(3).ToString();
                         System.Web.HttpContext.Current.Session["username"] = dataReader.GetValue(0).ToString();
                         System.Web.HttpContext.Current.Session["userid"] = dataReader.GetValue(2).ToString();
+                        System.Web.HttpContext.Current.Session["email"] = dataReader.GetValue(1).ToString();
 
                         //ViewData["sessionString"] = System.Web.HttpContext.Current.Session["userpermission"];
                         testconn.CloseDataReader();

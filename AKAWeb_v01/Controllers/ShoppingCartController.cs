@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using AKAWeb_v01.Classes;
@@ -69,6 +70,7 @@ namespace AKAWeb_v01.Controllers
             DBConnection testconn = new DBConnection();
             string query = "DELETE FROM Cart WHERE id = " + id.ToString();
             testconn.WriteToTest(query);
+            testconn.CloseConnection();
             return RedirectToAction("Cart");
         }
 
@@ -106,6 +108,7 @@ namespace AKAWeb_v01.Controllers
         {
             approveProductsForUser();
             generateInvoice();
+            purchaseEmail();
             updateStock();
             deleteFromCart();
             return "Purchase complete";
@@ -133,7 +136,7 @@ namespace AKAWeb_v01.Controllers
                     success = false;
                 }
             }
-
+            testconn.CloseConnection();
             return success;
         }
 
@@ -143,7 +146,10 @@ namespace AKAWeb_v01.Controllers
             string userid = System.Web.HttpContext.Current.Session["userid"].ToString();
             DBConnection testconn = new DBConnection();
             string query = "DELETE FROM Cart WHERE user_id = " + userid;
-            return testconn.WriteToTest(query);
+            bool success = testconn.WriteToTest(query);
+            testconn.CloseConnection();
+            return success;
+            
 
         }
 
@@ -163,6 +169,7 @@ namespace AKAWeb_v01.Controllers
                 string query = "INSERT INTO User_Has_Product (user_id, product_id, product_start, product_end, isValid) VALUES (" + user_id + ", " + product_id + ", getdate(), dateadd(year,1,getdate()), 1)";
                 testconn.WriteToTest(query);
             }
+            testconn.CloseConnection();
         }
 
         //records sale in invoice table and sends email to buyer with invoice information
@@ -187,6 +194,34 @@ namespace AKAWeb_v01.Controllers
                 string query_for_invoice = "INSERT INTO Invoice_Has_Product (invoice_id, product_id, product_cost) VALUES (" + latest_invoice_id + ", " + item.product_id + ", '" + item.product_cost + "')";
                 testconn.WriteToTest(query_for_invoice);
             }
+            testconn.CloseDataReader();
+            testconn.CloseConnection();
+
+        }
+
+        //send email to confirm purchase
+        private void purchaseEmail()
+        {
+            string sendTo = System.Web.HttpContext.Current.Session["email"].ToString();
+            string subject = "American Kinesiology Purchase Confirmation";
+            StringBuilder message = new StringBuilder("<div>Thank you for your purchase. Below you can find the list of items you purchased: <br><ul>");
+            CartViewModel cartmodel = getModel();
+
+            foreach(CartModel item in cartmodel.cart)
+            {
+                message.Append("<li>");
+                message.Append(item.product_description);
+                message.Append(" price: ");
+                message.Append(item.product_cost);
+                message.Append("</li>");
+                
+            }
+            message.Append("</ul></div>");
+
+            EmailService email = new EmailService(message.ToString(), sendTo, subject, true);
+            bool success = email.sendEmail();
+
+
 
         }
 
