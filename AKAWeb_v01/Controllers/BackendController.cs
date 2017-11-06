@@ -27,6 +27,7 @@ namespace AKAWeb_v01.Controllers
         //private ExcelService excel_service = new ExcelService();
         //this uses product service that does things like check what the low stock level alert number is
         private ProductService product_service = new ProductService();
+       
 
         //perform the actual login steps
         //returns a boolean true if login was a success, false if it was not.
@@ -1147,29 +1148,9 @@ namespace AKAWeb_v01.Controllers
         //function to send email, takes in the message, the email address to mail to and subject
         private void sendEmail(string emailmessage, string mailTo, string subject)
         {
-            try
-            {
-                string password = WebConfigurationManager.AppSettings.Get("emailPassword");
-                MailMessage mail = new MailMessage();
-                SmtpClient SmtpServer = new SmtpClient("smtp.gmail.com");
+            EmailService email = new EmailService(emailmessage, mailTo, subject, false);
+            bool success = email.sendEmail();
 
-                mail.From = new MailAddress("jralzaibar@gmail.com");
-                mail.To.Add(mailTo);
-                mail.Subject = subject;
-                mail.Body = emailmessage;
-
-                SmtpServer.Port = 587;
-                SmtpServer.Credentials = new System.Net.NetworkCredential("jralzaibar", password);
-                SmtpServer.EnableSsl = true;
-
-                SmtpServer.Send(mail);
-               
-            }
-            catch (Exception ex)
-            {
-                //set exception in session for debugging purposes
-                System.Web.HttpContext.Current.Session["mailfail"] = ex;
-            }
         }
 
         //returns View for Account info, can only be accessed if user is logged in

@@ -156,6 +156,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Classes\DBConnection.cs" />
+    <Compile Include="Classes\EmailService.cs" />
     <Compile Include="Classes\ExcelService.cs" />
     <Compile Include="Classes\HashService.cs" />
     <Compile Include="Classes\ProductService.cs" />
