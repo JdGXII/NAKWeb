@@ -189,8 +189,31 @@ textarea {
     
 }
 
-<!-- These styles fix CSE and Bootstrap 3 conflict -->
-<style type="text/css" > .reset-box-sizing, .reset-box-sizing *, .reset-box-sizing *:before, .reset-box-sizing *:after, .gsc-inline-block {
+/* CSS from old site's classes */
+.THT185 {
+
+
+}
+
+.IL {
+    font-size: 16px;
+}
+
+.H185 {
+    font-size: 16px.
+}
+
+.N185 {
+
+  
+}
+
+.header3 {
+
+}
+
+/*END CSS old site's classes*/
+.reset-box-sizing, .reset-box-sizing *, .reset-box-sizing *:before, .reset-box-sizing *:after, .gsc-inline-block {
     -webkit-box-sizing: content-box;
     -moz-box-sizing: content-box;
     box-sizing: content-box;
@@ -201,7 +224,7 @@ input.gsc-input, .gsc-input-box, .gsc-input-box-hover, .gsc-input-box-focus, .gs
     line-height: normal;
 }
 
-</style >
+
 
 
 
