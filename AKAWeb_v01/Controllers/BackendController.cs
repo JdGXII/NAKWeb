@@ -186,6 +186,36 @@ namespace AKAWeb_v01.Controllers
             return list;
         }
 
+        //this receives a sort number of a section, returns a list for a dropdown cotaining
+        //the sort numbers for sections with the
+        //sort number received as the default element
+        private List<SelectListItem> getSectionSort(int sort_number)
+        {
+            DBConnection testconn = new DBConnection();
+            string query = "SELECT section_sortnumber FROM Section_Sorting";
+            SqlDataReader dataReader = testconn.ReadFromTest(query);
+            List<SelectListItem> list = new List<SelectListItem>();
+
+            while (dataReader.Read())
+            {
+                SelectListItem item = new SelectListItem();
+                item.Value = dataReader.GetValue(0).ToString();
+                item.Text = dataReader.GetValue(0).ToString();
+                if (Int32.Parse(dataReader.GetValue(0).ToString()) == sort_number)
+                {
+                    item.Selected = true;
+
+                }
+
+
+                list.Add(item);
+
+            }
+            testconn.CloseDataReader();
+            testconn.CloseConnection();
+            return list;
+        }
+
 
         [HttpPost]
         public ActionResult DeleteImage(int picnum)
@@ -929,14 +959,24 @@ namespace AKAWeb_v01.Controllers
                 int id = Int32.Parse(dataReader.GetValue(0).ToString());
                 string title = dataReader.GetValue(1).ToString();
                 bool isLive = (bool)dataReader.GetValue(2);
-                SectionModel section = new SectionModel(id, title, isLive);
+                //get the sort order from the Section_Sorting table
+                StringBuilder sort_query = new StringBuilder("SELECT section_sortnumber FROM Section_Sorting WHERE section_id = ");
+                sort_query.Append(id);
+                SqlDataReader sortOrderReader = testconn.ReadFromTest(sort_query.ToString());
+                sortOrderReader.Read();
+                int sort_order = Int32.Parse(sortOrderReader.GetValue(0).ToString());
+
+                List<SelectListItem> dropdown = getSectionSort(sort_order);
+                SectionModel section = new SectionModel(id, title, isLive, sort_order, dropdown);
                 sections.Add(section);
 
             }
-
             testconn.CloseDataReader();
             testconn.CloseConnection();
-            return sections;
+
+            //sort sections
+            List<SectionModel> sorted_sections = sections.OrderBy(s => s.sort_order).ToList();
+            return sorted_sections;
         }
 
         //Lists all sections
@@ -962,15 +1002,59 @@ namespace AKAWeb_v01.Controllers
         }
 
         [HttpPost]
-        public ActionResult EditSection(string sectionid, string sectiontitle)
+        public ActionResult EditSection(string sectionid, string sectiontitle, string sort_order)
         {
 
             DBConnection testconn = new DBConnection();
             string query = "UPDATE Sections SET name = '" + sectiontitle + "' WHERE id = " + sectionid;
             testconn.WriteToTest(query);
-
             testconn.CloseConnection();
+            saveSectionSorting(sectionid, sort_order);
             return RedirectToAction("ListSections", "Backend");
+        }
+
+        //takes the id of a section and a sort number to sort the section
+        //if the sort number is the one it already has it does nothing
+        //if it's different it switches the section sort order with that number and
+        private void saveSectionSorting(string sectionid, string sort_order)
+        {
+            DBConnection testconn = new DBConnection();
+            string query = "SELECT section_sortnumber FROM Section_Sorting WHERE section_id = "+sectionid;
+            SqlDataReader dataReader = testconn.ReadFromTest(query);
+            string sort_number = "";
+            if (dataReader.HasRows)
+            {
+                while (dataReader.Read())
+                {
+                    sort_number = dataReader.GetValue(0).ToString();
+
+                }
+            }
+
+            //if the section's current sort number is different, switch the numbers
+            if(sort_number != sort_order)
+            {
+                query = "SELECT section_id FROM Section_Sorting WHERE section_sortnumber = " + sort_order;
+                dataReader = testconn.ReadFromTest(query);
+                if (dataReader.HasRows)
+                {
+                    while (dataReader.Read())
+                    {
+                        string section_tobe_switched_id = dataReader.GetValue(0).ToString();
+                        string first_update = "UPDATE Section_Sorting SET section_sortnumber = " + sort_order + " WHERE section_id = " + sectionid;
+                        string second_update = "UPDATE Section_Sorting SET section_sortnumber = " + sort_number + " WHERE section_id = " + section_tobe_switched_id;
+
+                        bool first_success = testconn.WriteToTest(first_update);
+                        bool second_success = testconn.WriteToTest(second_update);
+
+                    }
+                }
+
+            }
+
+            testconn.CloseDataReader();
+            testconn.CloseConnection();
+
         }
 
         public ActionResult ToggleIsLiveSection(string id)

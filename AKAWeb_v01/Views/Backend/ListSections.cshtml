@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<AKAWeb_v01.Models.SectionModel>
 
 @{
-    ViewBag.Title = "Create Section";
+    ViewBag.Title = "List Sections";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -28,6 +28,9 @@
         <th>
             Is Live
         </th>
+        <th>
+            Sorting Order
+        </th>
         <th></th>
     </tr>
 
@@ -39,7 +42,7 @@
 
                 @using (Html.BeginForm("EditSection", "Backend", FormMethod.Post, new { id = formid }))
                 {
-                    <input class="form-control" type="text" name="sectiontitle" placeholder="@item.title" />
+                    <input class="form-control" type="text" name="sectiontitle" placeholder="@item.title" value="@item.title" />
                     <input type="hidden" value="@item.id" name="sectionid" />
                 }
 
@@ -55,6 +58,10 @@
 
                 <td>No</td>
             }
+
+            <td>
+                @Html.DropDownList("sort_order", item.dropdown, new { form = formid, @class = "form-control" })
+            </td>
 
 
             <td>

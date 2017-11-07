@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Web.Mvc;
 
 namespace AKAWeb_v01.Models
 {
@@ -16,6 +17,8 @@ namespace AKAWeb_v01.Models
         //optional. A list with the pages that belong to the section
         public List<PageModel> pages { get; set; }
         public int sort_order { get; set; }
+        //optional. a list for generating a dropdown element with the section's  sort_order marked as default
+        public List<SelectListItem> dropdown { get; set; }
 
         public SectionModel(int id, string title, bool isLive)
         {
@@ -39,6 +42,15 @@ namespace AKAWeb_v01.Models
             this.isLive = isLive;
             this.pages = pages;
             this.sort_order = sort_order;
+        }
+
+        public SectionModel(int id, string title, bool isLive, int sort_order, List<SelectListItem> dropdown)
+        {
+            this.id = id;
+            this.title = title;
+            this.isLive = isLive;
+            this.sort_order = sort_order;
+            this.dropdown = dropdown;
         }
 
 
