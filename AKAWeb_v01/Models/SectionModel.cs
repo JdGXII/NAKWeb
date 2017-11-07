@@ -15,6 +15,7 @@ namespace AKAWeb_v01.Models
         public bool isLive { get; set; }
         //optional. A list with the pages that belong to the section
         public List<PageModel> pages { get; set; }
+        public int sort_order { get; set; }
 
         public SectionModel(int id, string title, bool isLive)
         {
@@ -30,5 +31,17 @@ namespace AKAWeb_v01.Models
             this.isLive = isLive;
             this.pages = pages;
         }
+
+        public SectionModel(int id, string title, bool isLive, List<PageModel> pages, int sort_order)
+        {
+            this.id = id;
+            this.title = title;
+            this.isLive = isLive;
+            this.pages = pages;
+            this.sort_order = sort_order;
+        }
+
+
+
     }
 }

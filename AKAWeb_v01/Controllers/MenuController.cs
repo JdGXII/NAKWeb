@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using AKAWeb_v01.Classes;
@@ -55,14 +56,22 @@ namespace AKAWeb_v01.Controllers
                 string title = dataReader.GetValue(1).ToString();
                 bool isLive = (bool)dataReader.GetValue(2);
                 List<PageModel> pages = getPages(id);
-                SectionModel section = new SectionModel(id, title, isLive, pages);
+                //get the sort order from the Section_Sorting table
+                StringBuilder sort_query = new StringBuilder("SELECT section_sortnumber FROM Section_Sorting WHERE section_id = ");
+                sort_query.Append(id);
+                SqlDataReader sortOrderReader = testconn.ReadFromTest(sort_query.ToString());
+                sortOrderReader.Read();
+                int sort_order = Int32.Parse(sortOrderReader.GetValue(0).ToString());
+                SectionModel section = new SectionModel(id, title, isLive, pages, sort_order);
                 sections.Add(section);
 
             }
             testconn.CloseDataReader();
             testconn.CloseConnection();
 
-            return sections;
+            //sort sections
+            List<SectionModel> sorted_sections = sections.OrderBy(s => s.sort_order).ToList();
+            return sorted_sections;
         }
 
         [ChildActionOnly]
