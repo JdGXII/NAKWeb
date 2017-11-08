@@ -1102,7 +1102,9 @@ namespace AKAWeb_v01.Controllers
         {
             DBConnection testconn = new DBConnection();
             string query = "INSERT INTO Sections (name, isAlive) VALUES ('" + sectiontitle + "', 1)";
-            testconn.WriteToTest(query);
+            int id = testconn.WriteToTestReturnID(query);
+            query = "INSERT INTO Section_Sorting (section_id, section_sortnumber) VALUES(" + id.ToString() + "," + id.ToString() + ")";
+            bool success = testconn.WriteToTest(query);
             testconn.CloseConnection();
             return RedirectToAction("ListSections", "Backend");
         }
