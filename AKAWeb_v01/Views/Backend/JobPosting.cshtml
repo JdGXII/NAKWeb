@@ -1,0 +1,70 @@
+﻿@model AKAWeb_v01.Models.JobModel
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conferences</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+
+    <link type="text/css" rel="~/Content/Site.css" />
+</head>
+<body>
+    <h2>Job Posting</h2>
+    @if (ViewBag.PermissionDenied != "denied")
+    {
+
+
+        <p class="page-feedback">@ViewBag.Success</p>
+        <div class="form-group">
+            @using (Html.BeginForm("SubmitJobPosting", "Backend", FormMethod.Post))
+            {
+
+                @Html.LabelFor(model => model.senders_name);
+                @Html.TextBoxFor(model => model.senders_name, new { @class = "form-control" });
+
+                @Html.LabelFor(model => model.email);
+                @Html.TextBoxFor(model => model.email, new { @class = "form-control" });
+
+                @Html.LabelFor(model => model.instintution_name);
+                @Html.TextBoxFor(model => model.instintution_name, new { @class = "form-control" });
+
+                @Html.LabelFor(model => model.department_name);
+                @Html.TextBoxFor(model => model.department_name, new { @class = "form-control" });
+
+                @Html.LabelFor(model => model.title_position);
+                @Html.TextBoxFor(model => model.title_position, new { @class = "form-control" });
+
+                @Html.LabelFor(model => model.category);
+                @Html.DropDownListFor(model => model.category, new SelectList(Model.category_options, "Value", "Text"), new { @class = "form-control" });
+
+                @Html.LabelFor(model => model.closing_date);
+                @Html.TextBoxFor(model => model.closing_date, new { @class = "form-control" });
+
+                @Html.LabelFor(model => model.job_url);
+                @Html.TextBoxFor(model => model.job_url, new { @class = "form-control" });
+
+                <button type="submit" class="btn btn-default">Send</button>
+
+
+            }
+        </div>
+    }
+    else
+    {
+
+        <div>
+            <p class="page-feedback">You don't have enough privileges to access this page.</p>
+        </div>
+    }
+</body>
+</html>

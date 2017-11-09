@@ -2388,6 +2388,94 @@ namespace AKAWeb_v01.Controllers
 
         }
 
+        public ActionResult JobPosting()
+        {
+            var model = new JobModel();
+            if (System.Web.HttpContext.Current.Session["userpermission"] != null)
+            {
+                int userpermission = Int32.Parse(System.Web.HttpContext.Current.Session["userpermission"].ToString());
+
+                if(userpermission >= 2)
+                {
+                    if (TempData["success"] != null)
+                    {
+                        ViewBag.Success = TempData["success"].ToString();
+                    }
+
+
+                    ViewBag.PermissionDenied = "approved";
+                    model.category_options = model.getCategoriesList();
+                    return View(model);
+                }
+                else
+                {
+                    ViewBag.PermissionDenied = "denied";
+
+                    return View(model);
+                }
+
+
+            }
+            
+            else
+            {
+                ViewBag.PermissionDenied = "denied";
+                return View(model);
+            }
+            
+
+        }
+
+        [HttpPost]
+        public ActionResult SubmitJobPosting(JobModel model)
+        {
+            if (System.Web.HttpContext.Current.Session["userpermission"] != null)
+            {
+                int userpermission = Int32.Parse(System.Web.HttpContext.Current.Session["userpermission"].ToString());
+
+                if (userpermission >= 2)
+                {
+                    StringBuilder message = new StringBuilder("<div>Job Posted:<br>");
+                    message.Append(model.senders_name);
+                    message.Append("<br>");
+                    message.Append(model.email);
+                    message.Append("<br>");
+                    message.Append(model.instintution_name);
+                    message.Append("<br>");
+                    message.Append(model.department_name);
+                    message.Append("<br>");
+                    message.Append(model.title_position);
+                    message.Append("<br>");
+                    message.Append(model.category);
+                    message.Append("<br>");
+                    message.Append(model.closing_date);
+                    message.Append("<br>");
+                    message.Append(model.job_url);
+                    message.Append("</div>");
+                    EmailService email = new EmailService(message.ToString(), "kims@hkusa.com", "New Job Posting", true);
+                    bool success = email.sendEmail();
+                    if (success)
+                    {
+                        TempData["success"] = "Job succesfully sent for review.";
+                    }
+                    else
+                    {
+                        TempData["success"] = "Something went wrong. Job posting could not be sent for.";
+                    }
+                    
+
+                    return RedirectToAction("JobPosting");
+
+                }
+
+
+
+            }
+
+            return RedirectToAction("JobPosting");
+
+        }
+
 
         public ActionResult Test()
         {
