@@ -105,7 +105,7 @@ namespace AKAWeb_v01.Controllers
             ViewData["state_filter"] = statesSelectList(getStates());
             ViewData["institution_filter"] = InstitutionsSelectList(institutions);
             ViewData["department_filter"] = departmentsSelectList(getDepartments());
-            var model = institutions; ;
+            var model = institutions; 
             if (TempData["model"] != null)                
             {
                  model = TempData["model"] as List<InstitutionModel>;
@@ -343,6 +343,41 @@ namespace AKAWeb_v01.Controllers
             return list;
         }
 
+        //returns job titles as a select list for a dropdown component
+        private List<SelectListItem> JobTitleSelectList(List<JobModel> jobs)
+        {
+            List<SelectListItem> list = new List<SelectListItem>();
+            SelectListItem item = new SelectListItem();
+            item.Value = "ALL";
+            item.Text = "ALL";
+            list.Add(item);
+
+            foreach (JobModel job in jobs)
+            {
+                item = new SelectListItem();
+                item.Value = job.title_position;
+                item.Text = job.title_position;
+
+                list.Add(item);
+
+            }
+
+            return list;
+
+        }
+
+        //returns job categories as a select list for a dropdown component
+        private List<SelectListItem> JobCategorySelectList()
+        {
+
+            JobModel job = new JobModel();
+
+            return job.getCategoriesList();
+
+        }
+
+
+
         private List<SelectListItem> InstitutionsSelectList(List<InstitutionModel> institutions)
         {
             List<SelectListItem> list = new List<SelectListItem>();
@@ -421,6 +456,136 @@ namespace AKAWeb_v01.Controllers
             var model = getInstitutions(final_query);
             TempData["model"] = model;
             return RedirectToAction("Institutions");
+        }
+
+        private List<JobModel> getJobPostings(string query)
+        {
+            DBConnection testconn = new DBConnection();
+            List<JobModel> jobs = new List<JobModel>();
+
+            //deafult query:
+            //query = "SELECT id, title, category, location, close_date, url, submitted_by, email, institution, department FROM Job_Posting";
+            SqlDataReader dataReader = testconn.ReadFromTest(query);
+            if (dataReader.HasRows)
+            {
+                while (dataReader.Read())
+                {
+                    int id = Int32.Parse(dataReader.GetValue(0).ToString());
+                    string title = dataReader.GetValue(1).ToString();
+                    string category = dataReader.GetValue(2).ToString();
+                    string location = dataReader.GetValue(3).ToString();
+                    DateTime close_date = DateTime.Parse(dataReader.GetValue(4).ToString());
+                    string url = dataReader.GetValue(5).ToString();
+                    string submitted_by = dataReader.GetValue(6).ToString();
+                    string email = dataReader.GetValue(7).ToString();
+                    string institution = dataReader.GetValue(8).ToString();
+                    string department = dataReader.GetValue(9).ToString();
+
+                    JobModel job = new JobModel();
+                    job.category = category;
+                    job.instintution_name = institution;
+                    job.title_position = title;
+                    job.job_url = url;
+                    job.closing_date = close_date;
+
+
+
+
+
+
+                    jobs.Add(job);
+
+
+
+                }
+            }
+
+            testconn.CloseDataReader();
+            testconn.CloseConnection();
+            return jobs;
+
+        }
+
+        [HttpPost]
+        public ActionResult JobFilter(string title_filter, string institution_filter, string category_filter)
+        {
+
+            StringBuilder query = new StringBuilder("SELECT id, title, category, location, close_date, url, submitted_by, email, institution, department FROM Job_Posting WHERE ");
+
+            if (title_filter == "ALL" && institution_filter == "ALL" && category_filter == "ALL")
+            {
+                query.Replace(" WHERE ", "");
+            }
+            else
+            {
+                if (title_filter != "ALL" && institution_filter == "ALL" && category_filter == "ALL")
+                {
+                    query.Append("title = '");
+                    query.Append(title_filter);
+                    query.Append("'");
+                }
+                if (title_filter != "ALL" && institution_filter != "ALL" && category_filter == "ALL")
+                {
+                    query.Append("title = '");
+                    query.Append(title_filter);
+                    query.Append("'");
+                    query.Append(" AND institution_id = ");
+                    query.Append(institution_filter);
+                }
+                if (title_filter != "ALL" && institution_filter != "ALL" && category_filter != "ALL")
+                {
+                    query.Append("title = '");
+                    query.Append(title_filter);
+                    query.Append("'");
+                    query.Append(" AND institution_id = ");
+                    query.Append(institution_filter);
+                    query.Append(" AND category = '");
+                    query.Append(category_filter);
+                    query.Append("'");
+                }
+                if (title_filter == "ALL" && institution_filter != "ALL" && category_filter == "ALL")
+                {
+                    query.Append("institution_id = ");
+                    query.Append(institution_filter);
+                }
+                if (title_filter == "ALL" && institution_filter != "ALL" && category_filter != "ALL")
+                {
+                    query.Append("institution_id = ");
+                    query.Append(institution_filter);
+                    query.Append(" AND category = '");
+                    query.Append(category_filter);
+                    query.Append("'");
+                }
+                if (title_filter == "ALL" && institution_filter == "ALL" && category_filter != "ALL")
+                {
+                    query.Append("category = '");
+                    query.Append(category_filter);
+                    query.Append("'");
+                }
+
+
+            }
+
+            string final_query = query.ToString();
+            var model = getJobPostings(final_query);
+            TempData["model"] = model;
+            return RedirectToAction("JobPostings");
+        }
+
+        public ActionResult JobPostings()
+        {
+            var jobs = getJobPostings("SELECT id, title, category, location, close_date, url, submitted_by, email, institution, department FROM Job_Posting");
+            var institutions = getInstitutions("SELECT TOP 100 institution_id, department_id, state_id FROM institution_has_state_has_department");
+            ViewData["category_filter"] = JobCategorySelectList();
+            ViewData["institution_filter"] = InstitutionsSelectList(institutions);
+            ViewData["title_filter"] = JobTitleSelectList(jobs);
+            var model = jobs;
+            if (TempData["model"] != null)
+            {
+                model = TempData["model"] as List<JobModel>;
+            }
+
+            return View(model);
         }
 
 

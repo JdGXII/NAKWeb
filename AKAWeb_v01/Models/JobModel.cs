@@ -32,9 +32,9 @@ namespace AKAWeb_v01.Models
         {
             List<SelectListItem> myList = new List<SelectListItem>();
             var data = new[]{
-                 new SelectListItem{ Value="1",Text="Admin (Chairs/Deans)"},
-                 new SelectListItem{ Value="2",Text="Tenure"},
-                 new SelectListItem{ Value="3",Text="Non Tenure"}
+                 new SelectListItem{ Value="Admin Dean/Chairs",Text="Admin Dean/Chairs"},
+                 new SelectListItem{ Value="Tenure Track",Text="Tenure Track"},
+                 new SelectListItem{ Value="Non Tenure",Text="Non Tenure"}
              };
             myList = data.ToList();
             return myList;
@@ -44,7 +44,6 @@ namespace AKAWeb_v01.Models
         {
 
         }
-
         
     }
 }

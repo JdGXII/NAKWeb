@@ -1,0 +1,90 @@
+﻿@model IEnumerable<AKAWeb_v01.Models.JobModel>
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Job Openings</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+</head>
+<body>
+    @using (Html.BeginForm("JobFilter", "SubPages", FormMethod.Post))
+    {
+
+
+        <div class="row form-group">
+            <div class="col-md-3">
+                @Html.Label("Title")
+                @Html.DropDownList("title_filter", ViewData["title_filter"] as SelectList, new { @class = "form-control" })
+            </div>
+            <div class="col-md-3">
+                @Html.Label("Institution")
+                @Html.DropDownList("institution_filter", ViewData["institution_filter"] as SelectList, new { @class = "form-control" })
+            </div>
+            <div class="col-md-3">
+                @Html.Label("Category")
+                @Html.DropDownList("category_filter", ViewData["category_filter"] as SelectList, new { @class = "form-control" })
+            </div>
+
+            <div class="col-md-3">
+
+                <button type="submit" class="btn btn-default" style="margin-top:25px;">Go</button>
+            </div>
+
+        </div>
+    }
+    <table class="table">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.title_position)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.instintution_name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.category)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.closing_date)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.job_url)
+            </th>
+            
+        </tr>
+    
+    @foreach (var item in Model) {
+        <tr>
+
+            <td>
+                @Html.DisplayFor(modelItem => item.title_position)                
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.instintution_name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.category)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.closing_date)
+            </td>
+            <td>
+                
+                <a href="@item.job_url">@item.job_url</a> 
+                
+            </td>
+
+        </tr>
+    }
+    
+    </table>
+</body>
+</html>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Web;
 using AKAWeb_v01.Models;
 using ExcelDataReader;
@@ -14,7 +15,7 @@ namespace AKAWeb_v01.Classes
         HashService hash_service = new HashService();
         public ExcelService()
         {
-            string filePath = "C:\\InstitutionalListing 9-21-17.xlsx";
+            string filePath = "C:\\AKACareerJobPostingsData2.xlsx";
             var stream = File.Open(filePath, FileMode.Open, FileAccess.Read);
             var reader = ExcelReaderFactory.CreateReader(stream);
             reader.Read();
@@ -69,11 +70,65 @@ namespace AKAWeb_v01.Classes
                     int state_id = getStateIDFromText(reader.GetString(4));
 
                    bool success = addInstitutionHasDeptHasState(inst_id, dept_id, state_id);*/
+                    string title = reader.GetString(0);
+                    string category = reader.GetString(1);
+                    string location = reader.GetString(2);
+                    DateTime end_date = reader.GetDateTime(3);
+                    string url = reader.GetString(4);
+                    string submitted_by = reader.GetString(5);
+                    string email = reader.GetString(6);
+                    string institution = reader.GetString(7);
+                    string department = reader.GetString(8);
+
+                    JobModel job = new JobModel();
+                    job.title_position = title;
+                    job.category = category;
+                    job.closing_date = end_date;
+                    job.job_url = url;
+                    job.senders_name = submitted_by;
+                    job.email = email;
+                    job.instintution_name = institution;
+                    job.department_name = department;
+
+                    addJobPosting(job);
 
 
 
                 }
             } while (reader.NextResult());
+        }
+
+        private bool addJobPosting(JobModel job)
+        {
+            DBConnection testconn = new DBConnection();
+            StringBuilder query = new StringBuilder("INSERT INTO Job_Posting(title, category, location, close_date, url, submitted_by, email, institution, department) VALUES (");
+            query.Append("'");
+            query.Append(job.title_position);
+            query.Append("','");
+            query.Append(job.category);
+            query.Append("','");
+            //location is the same as institution
+            query.Append(job.instintution_name);
+            query.Append("','");
+            query.Append(job.closing_date);
+            query.Append("','");
+            query.Append(job.job_url);
+            query.Append("','");
+            query.Append(job.senders_name);
+            query.Append("','");
+            query.Append(job.email);
+            query.Append("','");
+            query.Append(job.instintution_name);
+            query.Append("','");
+            query.Append(job.department_name);
+            query.Append("'");
+            query.Append(")");
+
+
+
+            bool success = testconn.WriteToTest(query.ToString());
+            testconn.CloseConnection();
+            return success;
         }
 
         private bool addInstitutionHasDeptHasState(int inst_id, int dept_id, int state_id)
