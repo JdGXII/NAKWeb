@@ -40,8 +40,13 @@ namespace AKAWeb_v01.Controllers
             {
                 userid = System.Web.HttpContext.Current.Session["userid"].ToString();
                 DBConnection testconn = new DBConnection();
-                string query = "INSERT INTO Cart(user_id, product_id) VALUES("+userid+","+product_id+")";
-                testconn.WriteToTest(query);
+                string query = "INSERT INTO Cart(user_id, product_id) VALUES(@userId, @productId)";
+
+                Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+                query_params.Add("@userId", userid);
+                query_params.Add("@productid", product_id);
+     
+                testconn.WriteToProduction(query, query_params);
                 testconn.CloseConnection();
 
                 if(TempData["paid"] != null)
@@ -68,9 +73,14 @@ namespace AKAWeb_v01.Controllers
         public ActionResult RemoveFromCart(int id)
         {
             DBConnection testconn = new DBConnection();
-            string query = "DELETE FROM Cart WHERE id = " + id.ToString();
-            testconn.WriteToTest(query);
+            string query = "DELETE FROM Cart WHERE id = @id";
+
+            Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+            query_params.Add("@id", id);            
+
+            testconn.WriteToProduction(query, query_params);
             testconn.CloseConnection();
+
             return RedirectToAction("Cart");
         }
 
@@ -125,11 +135,13 @@ namespace AKAWeb_v01.Controllers
                 string user_id = item.user_id.ToString();
                 string product_id = item.product_id.ToString();
 
-                string query = "UPDATE Products SET stock = ((SELECT stock from Products WHERE id = " + product_id + ") -1) WHERE id = " + product_id;
+                string query = "UPDATE Products SET stock = ((SELECT stock from Products WHERE id = @productId) -1) WHERE id = @productId";
 
+                Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+                query_params.Add("@productId", product_id);
+               
 
-                
-                bool flag = testconn.WriteToTest(query);
+                bool flag = testconn.WriteToProduction(query, query_params);
                 //if flag is false the stock for one of the items was not complete and function will return false
                 if (!flag)
                 {
@@ -145,8 +157,12 @@ namespace AKAWeb_v01.Controllers
         {
             string userid = System.Web.HttpContext.Current.Session["userid"].ToString();
             DBConnection testconn = new DBConnection();
-            string query = "DELETE FROM Cart WHERE user_id = " + userid;
-            bool success = testconn.WriteToTest(query);
+            string query = "DELETE FROM Cart WHERE user_id = @userId";
+
+            Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+            query_params.Add("@userId", userid);            
+
+            bool success = testconn.WriteToProduction(query, query_params);
             testconn.CloseConnection();
             return success;
             
@@ -166,8 +182,13 @@ namespace AKAWeb_v01.Controllers
                 string product_id = item.product_id.ToString();
 
 
-                string query = "INSERT INTO User_Has_Product (user_id, product_id, product_start, product_end, isValid) VALUES (" + user_id + ", " + product_id + ", getdate(), dateadd(year,1,getdate()), 1)";
-                testconn.WriteToTest(query);
+                string query = "INSERT INTO User_Has_Product (user_id, product_id, product_start, product_end, isValid) VALUES (@userId, @productId, getdate(), dateadd(year,1,getdate()), 1)";
+
+                Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+                query_params.Add("@userId", user_id);
+                query_params.Add("@productId", product_id);
+
+                testconn.WriteToProduction(query, query_params);
             }
             testconn.CloseConnection();
         }
@@ -180,8 +201,17 @@ namespace AKAWeb_v01.Controllers
             CartViewModel cartmodel = getModel();
             string total = cartmodel.total;
             string user_id = System.Web.HttpContext.Current.Session["userid"].ToString();
-            string query = "INSERT INTO Invoice (user_id, total, date) VALUES (" + user_id + ", " + total + ", " + " getdate())";
-            testconn.WriteToTest(query);
+            string query = "INSERT INTO Invoice (user_id, total, date) VALUES (@userId, @total, " + " getdate())";
+
+            Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+            query_params.Add("@userId", user_id);
+            query_params.Add("@total", total);
+
+            testconn.WriteToProduction(query, query_params);
+
+            query_params.Remove("@userId");
+            query_params.Remove("@total");
+
             string get_latest_invoice_id = "SELECT IDENT_CURRENT('Invoice')";
             SqlDataReader dataReader = testconn.ReadFromTest(get_latest_invoice_id);
             dataReader.Read();
@@ -189,10 +219,17 @@ namespace AKAWeb_v01.Controllers
 
             string invoice_id = dataReader.GetValue(0).ToString();
 
-            foreach(CartModel item in cartmodel.cart)
+            query_params.Add("@invoiceId", latest_invoice_id);
+            query_params.Add("@productId", 0);
+            query_params.Add("@productCost", 0);
+
+            foreach (CartModel item in cartmodel.cart)
             {
-                string query_for_invoice = "INSERT INTO Invoice_Has_Product (invoice_id, product_id, product_cost) VALUES (" + latest_invoice_id + ", " + item.product_id + ", '" + item.product_cost + "')";
-                testconn.WriteToTest(query_for_invoice);
+                string query_for_invoice = "INSERT INTO Invoice_Has_Product (invoice_id, product_id, product_cost) VALUES (@invoiceId, @productId, @productCost)";
+                query_params["@productId"] = item.product_id;
+                query_params["@productCost"] = item.product_cost;
+
+                testconn.WriteToProduction(query_for_invoice, query_params);
             }
             testconn.CloseDataReader();
             testconn.CloseConnection();
