@@ -43,6 +43,10 @@ namespace AKAWeb_v01.Classes
                 System.Web.HttpContext.Current.Session["exception"] = e.ToString();
                 return false;
             }
+            finally
+            {
+                cnn.Close();
+            }
         }
 
         //safely inserts or updates DB. Receives query with dictionary with name of parameter and its value
@@ -127,6 +131,10 @@ namespace AKAWeb_v01.Classes
                 System.Web.HttpContext.Current.Session["exception"] = e.ToString();
                 return -1;
             }
+            finally
+            {
+                cnn.Close();
+            }
         }
 
         public SqlDataReader ReadFromTest(string query)
@@ -153,7 +161,12 @@ namespace AKAWeb_v01.Classes
             {
                 return dataReader;
             }
-           
+            finally
+            {
+                cnn.Close();
+                dataReader.Close();
+            }
+
         }
 
         //Read safely from DB. Dictionary with parameters have key = param name and value = value of the param
@@ -175,6 +188,11 @@ namespace AKAWeb_v01.Classes
             catch (Exception e)
             {
                 return dataReader;
+            }
+            finally
+            {
+                dataReader.Close();
+                cnn.Close();
             }
 
 
