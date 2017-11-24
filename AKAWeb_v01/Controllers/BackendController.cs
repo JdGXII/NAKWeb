@@ -380,11 +380,12 @@ namespace AKAWeb_v01.Controllers
         private void UpdateLinks(string url, int picnum)
         {
             DBConnection testconn = new DBConnection();
-            string query = "Update carousel_links set link" + picnum.ToString() + " = '" + url + "' where id = 1";
-
-
+            string query = "Update carousel_links set link" + picnum.ToString() + " = @url where id = 1";
+            Dictionary<string, Object> query_params = new Dictionary<string, object>();
+            query_params.Add("@url",url);
+            testconn.WriteToProduction(query, query_params);
             testconn.CloseConnection();
-            testconn.WriteToTest(query);
+            
             
         }
 
@@ -534,8 +535,13 @@ namespace AKAWeb_v01.Controllers
                     //hash password before inserting in db
                     string hashed_password = hash_service.HashPassword(password);
                     DBConnection testconn = new DBConnection();
-                    string query = "INSERT INTO Users (name, email, password, access) VALUES ('" + name + "', '" + email + "', '" + hashed_password + "',  1)";
-                    testconn.WriteToTest(query);
+                    string query = "INSERT INTO Users (name, email, password, access) VALUES (@name, @email, @password, @access)";
+                    Dictionary<string, Object> query_params = new Dictionary<string, object>();
+                    query_params.Add("@name", name);
+                    query_params.Add("@email", email);
+                    query_params.Add("@password", password);
+                    query_params.Add("@access", 1);
+                    testconn.WriteToProduction(query, query_params);
                     testconn.CloseConnection();
 
                     //email message
@@ -753,8 +759,12 @@ namespace AKAWeb_v01.Controllers
         public ActionResult ChangePageSection(string SectionList, string page_id)
         {
             DBConnection testconn = new DBConnection();
-            string query = "UPDATE Pages SET section=" + SectionList + " WHERE id =" + page_id;
-            bool t = testconn.WriteToTest(query);
+            string query = "UPDATE Pages SET section= @sectionList WHERE id = @pageId";
+            Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+            query_params.Add("@sectionList", SectionList);
+            query_params.Add("@pageId", page_id);
+            bool t = testconn.WriteToProduction(query, query_params);
+            //bool t = testconn.WriteToTest(query);
 
 
             testconn.CloseConnection();
@@ -802,8 +812,12 @@ namespace AKAWeb_v01.Controllers
             //System.Web.HttpContext.Current.Session["debug"] = Request.Files.Count;
             
             DBConnection testconn = new DBConnection();
+            Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+            query_params.Add("@content", content);
+            query_params.Add("@title", title);
+            query_params.Add("@id", id);
             //original query to be executed. It will change if an image is being updated
-            string query = "UPDATE Pages SET content ='" + content + "', title = '"+title+"' where id =" + id;
+            string query = "UPDATE Pages SET content = @content, title = @title where id = @id";
             //check if user is updating the page's subheader image by looking for the file in the request
             //if he is, this will change the query to be executed
             if (Request.Files.Count > 0)
@@ -817,7 +831,8 @@ namespace AKAWeb_v01.Controllers
                         var path = Path.Combine(Server.MapPath("~/Content/Images/Subheaders"), fileName);
                         file.SaveAs(path);
                         string pathForDB = "~/Content/Images/Subheaders/" + fileName.ToString(); 
-                        query = "UPDATE Pages SET content ='" + content + "', subheader_image ='"+ pathForDB + "', title = '" + title + "' where id =" + id;
+                        query = "UPDATE Pages SET content = @content, subheader_image = @subheaderImage, title = @title where id = @id";
+                        query_params.Add("@subheaderImage", pathForDB);
                         
                         
 
@@ -830,7 +845,7 @@ namespace AKAWeb_v01.Controllers
 
             }
             
-            bool success = testconn.WriteToTest(query);
+            bool success = testconn.WriteToProduction(query, query_params);
             if (success)
             {
                 TempData["EditSuccess"] = "Page succesfully edited.";
@@ -874,9 +889,13 @@ namespace AKAWeb_v01.Controllers
             //System.Web.HttpContext.Current.Session["debug"] = Request.Files.Count;
 
             DBConnection testconn = new DBConnection();
+            Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+            query_params.Add("@title", title);
+            query_params.Add("@content", content);
+            query_params.Add("@section", SectionList);
             //original query to be executed. It will change if an image is being updated
             string query = "INSERT into Pages (title, subheader_image, content, created_at, modified_at, section, isAlive)" +
-                "VALUES ('" + title + "', ' ', '" + content + "', " + "(select getdate()), (select getdate()), " + SectionList + ", 1)";
+                "VALUES (@title, ' ', @content, (select getdate()), (select getdate()), @section, 1)";
             //check if user is updating the page's subheader image by looking for the file in the request
             //if he is, this will change the query to be executed
             if (Request.Files.Count > 0)
@@ -891,8 +910,9 @@ namespace AKAWeb_v01.Controllers
                         file.SaveAs(path);
                         string pathForDB = "~/Content/Images/Subheaders/" + fileName.ToString();
                         //query = "INSERT into Pages (title, subheader_image, content, created_at, modified_at, section) VALUES (" + title + ", " + pathForDB + ", " + content + ", getdate(), getdate(), " + SectionList + ")";
-                        query = "INSERT into Pages(title, subheader_image, content, created_at, modified_at, section, isAlive) VALUES('" + title + "', '" + pathForDB + "', '" + content + "', getdate(), getdate(), " + SectionList + ", 1)";
+                        query = "INSERT into Pages(title, subheader_image, content, created_at, modified_at, section, isAlive) VALUES(@title, @subheaderImage, @content, getdate(), getdate(), @section, 1)";
                         ViewBag.Message = "File uploaded successfully";
+                        query_params.Add("@subheaderImage", pathForDB);
 
 
                     }
@@ -903,7 +923,7 @@ namespace AKAWeb_v01.Controllers
 
             }
 
-            bool success = testconn.WriteToTest(query);
+            bool success = testconn.WriteToProduction(query, query_params);
 
             if (success)
             {
@@ -926,15 +946,17 @@ namespace AKAWeb_v01.Controllers
             //see what is the current state of the page if it's alive or not
             string query = "SELECT isAlive from Pages where id =" + id;
             //this query will set a page isAlive to 0 
-            string query2 = "UPDATE Pages SET isAlive = 0 WHERE id =" + id;
+            string query2 = "UPDATE Pages SET isAlive = 0 WHERE id = @id";
+            Dictionary<string, Object> update_params = new Dictionary<string, Object>();
+            update_params.Add("@id", id);
             SqlDataReader dataReader = testconn.ReadFromTest(query);
             dataReader.Read();
             //if the page is NOT live, change the query and turn the page to live
             if (!(bool)dataReader.GetValue(0))
             {
-                query2 = "UPDATE Pages SET isAlive = 1 WHERE id =" + id;
+                query2 = "UPDATE Pages SET isAlive = 1 WHERE id = @id";
             }
-            testconn.WriteToTest(query2);
+            testconn.WriteToProduction(query2, update_params);
 
  
             testconn.CloseConnection();
@@ -1006,9 +1028,15 @@ namespace AKAWeb_v01.Controllers
         {
 
             DBConnection testconn = new DBConnection();
-            string query = "UPDATE Sections SET name = '" + sectiontitle + "' WHERE id = " + sectionid;
-            testconn.WriteToTest(query);
+            string query = "UPDATE Sections SET name = @sectionTitle WHERE id = @sectionId";
+
+            Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+            query_params.Add("@sectionTitle", sectiontitle);
+            query_params.Add("@sectionId", sectionid);
+
+            testconn.WriteToProduction(query, query_params);
             testconn.CloseConnection();
+
             saveSectionSorting(sectionid, sort_order);
             return RedirectToAction("ListSections", "Backend");
         }
@@ -1041,11 +1069,18 @@ namespace AKAWeb_v01.Controllers
                     while (dataReader.Read())
                     {
                         string section_tobe_switched_id = dataReader.GetValue(0).ToString();
-                        string first_update = "UPDATE Section_Sorting SET section_sortnumber = " + sort_order + " WHERE section_id = " + sectionid;
-                        string second_update = "UPDATE Section_Sorting SET section_sortnumber = " + sort_number + " WHERE section_id = " + section_tobe_switched_id;
+                        Dictionary<string, Object> update_params = new Dictionary<string, Object>();
+                        update_params.Add("@sortOrder", sort_order);
+                        update_params.Add("@sectionId", sectionid);
 
-                        bool first_success = testconn.WriteToTest(first_update);
-                        bool second_success = testconn.WriteToTest(second_update);
+                        string query_update = "UPDATE Section_Sorting SET section_sortnumber = @sortOrder WHERE section_id = @sectionId";
+
+                        bool first_success = testconn.WriteToProduction(query_update,update_params);
+                                              
+                        update_params["@sortOrder"] = sort_number;
+                        update_params["@sectionId"] = section_tobe_switched_id;
+                        
+                        bool second_success = testconn.WriteToProduction(query_update, update_params);
 
                     }
                 }
@@ -1063,15 +1098,17 @@ namespace AKAWeb_v01.Controllers
             //see what is the current state of the section if it's alive or not
             string query = "SELECT isAlive from Sections where id =" + id;
             //this query will set a section isAlive to 0 
-            string query2 = "UPDATE Sections SET isAlive = 0 WHERE id =" + id;
+            string query2 = "UPDATE Sections SET isAlive = 0 WHERE id = @id";
+            Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+            query_params.Add("@id", id);
             SqlDataReader dataReader = testconn.ReadFromTest(query);
             dataReader.Read();
             //if the section is NOT live, change the query and turn the page to live
             if (!(bool)dataReader.GetValue(0))
             {
-                query2 = "UPDATE Sections SET isAlive = 1 WHERE id =" + id;
+                query2 = "UPDATE Sections SET isAlive = 1 WHERE id = @id";
             }
-            testconn.WriteToTest(query2);
+            testconn.WriteToProduction(query2, query_params);
 
             testconn.CloseDataReader();
             testconn.CloseConnection();
@@ -1101,10 +1138,17 @@ namespace AKAWeb_v01.Controllers
         public ActionResult CreateSection(string sectiontitle)
         {
             DBConnection testconn = new DBConnection();
-            string query = "INSERT INTO Sections (name, isAlive) VALUES ('" + sectiontitle + "', 1)";
-            int id = testconn.WriteToTestReturnID(query);
-            query = "INSERT INTO Section_Sorting (section_id, section_sortnumber) VALUES(" + id.ToString() + "," + id.ToString() + ")";
-            bool success = testconn.WriteToTest(query);
+            string query = "INSERT INTO Sections (name, isAlive) VALUES (@sectionTitle, 1)";
+            Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+            query_params.Add("@sectionTitle", sectiontitle);
+            int id = testconn.WriteToProductionReturnID(query, query_params);
+
+            query = "INSERT INTO Section_Sorting (section_id, section_sortnumber) VALUES(@sectionId, @sectionSort)";
+            query_params.Remove("@sectionTitle");
+            query_params.Add("@sectionId", id);
+            query_params.Add("@sectionSort", id);
+
+            bool success = testconn.WriteToProduction(query, query_params);
             testconn.CloseConnection();
             return RedirectToAction("ListSections", "Backend");
         }
@@ -1207,9 +1251,12 @@ namespace AKAWeb_v01.Controllers
             string password = Membership.GeneratePassword(8, 3);
             string hashedPassword = hash_service.HashPassword(password);
             DBConnection testconn = new DBConnection();
-            string query = "UPDATE Users SET password = '" + hashedPassword + "' WHERE id = " + id;
+            string query = "UPDATE Users SET password = @password WHERE id = @id";
+            Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+            query_params.Add("@password", hashedPassword);
+            query_params.Add("@id", id);
 
-            testconn.WriteToTest(query);
+            testconn.WriteToProduction(query, query_params);
             testconn.CloseConnection();
             return password;
         }
@@ -1350,8 +1397,12 @@ namespace AKAWeb_v01.Controllers
         private bool UpdateUserInfo(string name, string email, string user_id)
         {
             DBConnection testconn = new DBConnection();
-            string query = "UPDATE Users SET name = '" + name + "', email = '" + email + "' WHERE id = " + user_id;
-            bool result = testconn.WriteToTest(query);
+            string query = "UPDATE Users SET name = @name, email = @email WHERE id = @userId";
+            Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+            query_params.Add("@name", name);
+            query_params.Add("@email", email);
+            query_params.Add("@userId", user_id);
+            bool result = testconn.WriteToProduction(query,query_params);
 
             testconn.CloseConnection();
             return result;
@@ -1363,20 +1414,28 @@ namespace AKAWeb_v01.Controllers
             DBConnection testconn = new DBConnection();
             string check_user_exists = "SELECT user_id FROM User_Has_Address  WHERE user_id = " + user_id;
             SqlDataReader dataReader = testconn.ReadFromTest(check_user_exists);
+
+            Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+            query_params.Add("@country", country);
+            query_params.Add("@state", state);
+            query_params.Add("@city", city);
+            query_params.Add("@streetAddress", street_address);
+            query_params.Add("@zip", zip);
+            query_params.Add("@userId", user_id);
+
             string query = "";
             if (dataReader.Read())
             {
-                query = "UPDATE User_Has_Address SET country = '" + country + "', state = '" + state + "'," +
-    "city = '" + city + "', street_address = '" + street_address + "', zip = '" + zip + "' WHERE user_id = " + user_id;
+                query = "UPDATE User_Has_Address SET country = @country, state = @state, city = @city, street_address = @streetAddress, zip = @zip WHERE user_id = @userId";
+
             }
             else
             {
-                query = "INSERT INTO User_Has_Address (country, state, city, street_address, zip, user_id) VALUES('" + country + "', '" + state + "'," +
-"'" + city + "','" + street_address + "', '" + zip + "', " + user_id+")";
+                query = "INSERT INTO User_Has_Address (country, state, city, street_address, zip, user_id) VALUES(@country, @state, @city, @streetAddress, @zip, @userId)";
             }
 
 
-            bool result = testconn.WriteToTest(query);
+            bool result = testconn.WriteToProduction(query,query_params);
 
             testconn.CloseDataReader();
             testconn.CloseConnection();
@@ -1465,10 +1524,14 @@ namespace AKAWeb_v01.Controllers
             //hashes new password
             string hashNewPassword = hash_service.HashPassword(new_password);
             //saved hashed password to db
-            string query = "UPDATE Users SET password = '" + hashNewPassword + "' WHERE id = " + user_id;
+            string query = "UPDATE Users SET password = @password WHERE id = @userId";
+            Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+            query_params.Add("@password", hashNewPassword);
+            query_params.Add("@userId", user_id);
+      
 
             //if the Write function was succesful returns true, false if otherwise
-            bool result = testconn.WriteToTest(query);
+            bool result = testconn.WriteToProduction(query, query_params);
 
             testconn.CloseConnection();
             return result;
@@ -1653,9 +1716,12 @@ namespace AKAWeb_v01.Controllers
                         file.SaveAs(path);
                         string pathForDB = "~/Content/Images/SubPagesUploads/" + fileName.ToString();
                         DBConnection testconn = new DBConnection();
-                        string query = "INSERT INTO SubPages_Images(title, url) VALUES('" + title + "', '" + pathForDB + "')";
-
-                        testconn.WriteToTest(query);
+                        string query = "INSERT INTO SubPages_Images(title, url) VALUES(@title, @url)";
+                        Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+                        query_params.Add("@title", title);
+                        query_params.Add("@url", pathForDB);
+    
+                        testconn.WriteToProduction(query,query_params);
                         testconn.CloseConnection();
                         TempData["imageUploadSuccess"] = "Image uploaded succesfully!";
                         
@@ -1682,8 +1748,12 @@ namespace AKAWeb_v01.Controllers
         public ActionResult EditSubPageImageTitle(string imageid, string imagetitle)
         {
             DBConnection testconn = new DBConnection();
-            string query = "UPDATE SubPages_Images SET title = '"+ imagetitle + "' WHERE id = " + imageid;
-            if (testconn.WriteToTest(query))
+            string query = "UPDATE SubPages_Images SET title = @imageTitle WHERE id = @imageId";
+            Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+            query_params.Add("@imageTitle", imagetitle);
+            query_params.Add("@imageId", imageid);
+           
+            if (testconn.WriteToProduction(query, query_params))
             {
                 TempData["imageUploadSuccess"] = "Image title succesfully edited.";
             }
@@ -1815,8 +1885,18 @@ namespace AKAWeb_v01.Controllers
             if (System.Web.HttpContext.Current.Session["username"] != null)
             {
                 DBConnection testconn = new DBConnection();
-                string query = "UPDATE Products SET cost = '" + cost + "', type= '" + type + "', description = '" + description + "', length = '" + length + "', details = '" + details + "', stock = "+stock+" WHERE id = " + productid;
-                if (testconn.WriteToTest(query))
+                string query = "UPDATE Products SET cost = @cost, type= @type, description = @description, length = @length, details = @details, stock = @stock WHERE id = @productId";
+
+                Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+                query_params.Add("@cost", cost);
+                query_params.Add("@type", type);
+                query_params.Add("@description", description);
+                query_params.Add("@length", length);
+                query_params.Add("@details", details);
+                query_params.Add("@stock", stock);
+                query_params.Add("@productId", productid);
+
+                if (testconn.WriteToProduction(query, query_params))
                 {
                     TempData["productEditSuccess"] = "Product edited succesfully.";
 
@@ -1845,15 +1925,19 @@ namespace AKAWeb_v01.Controllers
                 //see what is the current state of the product if it's alive or not
                 string query = "SELECT islive from Products where id =" + id;
                 //this query will set a product isAlive to 0 
-                string query2 = "UPDATE Products SET islive = 0 WHERE id =" + id;
+                string query2 = "UPDATE Products SET islive = 0 WHERE id = @id";
+
+                Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+                query_params.Add("@id", id);
+
                 SqlDataReader dataReader = testconn.ReadFromTest(query);
                 dataReader.Read();
                 //if the product is NOT live, change the query and turn the product to live
                 if (!(bool)dataReader.GetValue(0))
                 {
-                    query2 = "UPDATE Products SET islive = 1 WHERE id =" + id;
+                    query2 = "UPDATE Products SET islive = 1 WHERE id = @id";
                 }
-                testconn.WriteToTest(query2);
+                testconn.WriteToProduction(query2, query_params);
                 testconn.CloseDataReader();
                 testconn.CloseConnection();
                 return RedirectToAction("ListProducts", "Backend");
@@ -1871,8 +1955,12 @@ namespace AKAWeb_v01.Controllers
             if (System.Web.HttpContext.Current.Session["username"] != null)
             {
                 DBConnection testconn = new DBConnection();
-                string query = "INSERT INTO Product_Type (name) VALUES('" + prodtype + "')";
-                if (testconn.WriteToTest(query))
+                string query = "INSERT INTO Product_Type (name) VALUES(@productType)";
+
+                Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+                query_params.Add("@productType", prodtype);
+
+                if (testconn.WriteToProduction(query, query_params))
                 {
                     TempData["productCreationSuccess"] = "Product Type successfully created!";
                 }
@@ -1896,8 +1984,17 @@ namespace AKAWeb_v01.Controllers
             if (System.Web.HttpContext.Current.Session["username"] != null)
             {
                 DBConnection testconn = new DBConnection();
-                string query = "INSERT INTO Products(cost, type, description, details, length, isLive, stock) VALUES('" + cost + "', '" + ProductTypes + "', '" + description + "', '" + details + "', '" + duration + "', 0, "+stock+")";
-                if (testconn.WriteToTest(query))
+                string query = "INSERT INTO Products(cost, type, description, details, length, isLive, stock) VALUES(@cost, @productType, @description, @details, @duration, 0, @stock)";
+
+                Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+                query_params.Add("@cost", cost);
+                query_params.Add("@productType", ProductTypes);
+                query_params.Add("@description", description);
+                query_params.Add("@details", details);
+                query_params.Add("@duration", duration);
+                query_params.Add("@stock", stock);
+
+                if (testconn.WriteToProduction(query, query_params))
                 {
                     TempData["productCreationSuccess"] = "Product successfully created!";
                 }
@@ -1922,8 +2019,12 @@ namespace AKAWeb_v01.Controllers
             if (System.Web.HttpContext.Current.Session["username"] != null)
             {
                 DBConnection testconn = new DBConnection();
-                string query = "DELETE FROM Pages WHERE id = "+page_id;
-                if (testconn.WriteToTest(query))
+                string query = "DELETE FROM Pages WHERE id = @pageId";
+
+                Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+                query_params.Add("@pageId", page_id);
+           
+                if (testconn.WriteToProduction(query, query_params))
                 {
                     TempData["pageDeletionSuccess"] = "Page has been succesfully deleted";
                 }
@@ -2022,8 +2123,20 @@ namespace AKAWeb_v01.Controllers
             }
             DBConnection testconn = new DBConnection();
             string query = "INSERT INTO Conference(title, tagline, external_url, start_date, end_date, processing_fee, max_attendees, attendees, members_only, isLive, conference_code)" +
-                "VALUES('" + conference.title + "','" + conference.tagline + "','" + conference.external_url + "','" + conference.start_date + "','" + conference.end_date + "','" + conference.processing_fee + "'," + conference.max_attendees + ", 0," + members_only + ", 1, "+conference_code+")";
-            bool success = testconn.WriteToTest(query);
+                "VALUES(@conferenceTitle, @conferenceTagline, @conferenceExternalUrl, @conferenceStartDate, @conferenceEndDate, @conferenceProcFee, @conferenceMaxAttendees, 0, @membersOnly, 1, @conferenceCode)";
+
+            Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+            query_params.Add("@conferenceTitle", conference.title);
+            query_params.Add("@conferenceTagline", conference.tagline);
+            query_params.Add("@conferenceExternalUrl", conference.external_url);
+            query_params.Add("@conferenceStartDate", conference.start_date);
+            query_params.Add("@conferenceEndDate", conference.end_date);
+            query_params.Add("@conferenceProcFee", conference.processing_fee);
+            query_params.Add("@conferenceMaxAttendees", conference.max_attendees);
+            query_params.Add("@membersOnly", members_only);
+            query_params.Add("@conferenceCode", conference_code);
+
+            bool success = testconn.WriteToProduction(query, query_params);
             testconn.CloseConnection();
          
 
@@ -2045,13 +2158,17 @@ namespace AKAWeb_v01.Controllers
         private bool revertConferenceCreation(int conference_code)
         {
             DBConnection testconn = new DBConnection();
-            string delete_location = "DELETE FROM Conference_Has_Location WHERE conference_code = " + conference_code.ToString();
-            string delete_products = "DELETE FROM Conference_Has_Product WHERE conference_code = " + conference_code.ToString();
-            string delete_conference = "DELETE FROM Conference WHERE conference_code = " + conference_code.ToString();
+            string delete_location = "DELETE FROM Conference_Has_Location WHERE conference_code = @conferenceCode";
+            string delete_products = "DELETE FROM Conference_Has_Product WHERE conference_code = @conferenceCode";
+            string delete_conference = "DELETE FROM Conference WHERE conference_code = @conferenceCode";
 
-            bool success_location = testconn.WriteToTest(delete_location);
-            bool success_products = testconn.WriteToTest(delete_products);
-            bool success_conference = testconn.WriteToTest(delete_conference);
+            Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+            query_params.Add("@conferenceCode", conference_code);
+            
+
+            bool success_location = testconn.WriteToProduction(delete_location, query_params);
+            bool success_products = testconn.WriteToProduction(delete_products, query_params);
+            bool success_conference = testconn.WriteToProduction(delete_conference, query_params);
 
             testconn.CloseConnection();
             return success_conference && success_location && success_products;
@@ -2066,15 +2183,21 @@ namespace AKAWeb_v01.Controllers
             bool success = true;
             DBConnection testconn = new DBConnection();
             //first delete tickets (in case the function is called from an edit) then insert the selected tickets
-            string delete_query = "DELETE FROM Conference_Has_Product WHERE conference_code = " + conference_code.ToString();
-            testconn.WriteToTest(delete_query);
+            string delete_query = "DELETE FROM Conference_Has_Product WHERE conference_code = @conferenceCode";
+            Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+            query_params.Add("@conferenceCode", conference_code);
+            
+            testconn.WriteToProduction(delete_query, query_params);
+
+            query_params.Add("@ticketId", 0);
 
             foreach (string ticket_id in ticket_ids)
             {
                 string insert = "INSERT INTO Conference_Has_Product(conference_code, product_id)" +
-                "VALUES(" + conference_code + "," + ticket_id + ")";
-                
-                success_insert = testconn.WriteToTest(insert);
+                "VALUES(@conferenceCode, @ticketId)";
+                query_params["@ticketId"] = ticket_id;
+
+                success_insert = testconn.WriteToProduction(insert, query_params);
                
                 success = (success_update && success_insert);
                 if (!success)
@@ -2097,9 +2220,16 @@ namespace AKAWeb_v01.Controllers
         private bool bindAddressToConference(int conference_code, AddressModel address)
         {
             DBConnection testconn = new DBConnection();
-            string query = "INSERT INTO Conference_Has_Location(state, city, street_address, zip, conference_code) VALUES('" + address.state + "'," +
-"'" + address.city + "','" + address.street_address + "', '" + address.zip + "', " + conference_code + ")";
-            bool success = testconn.WriteToTest(query);
+            string query = "INSERT INTO Conference_Has_Location(state, city, street_address, zip, conference_code) VALUES(@addressState, @addressCity, @addressStreetAddress, @addressZip, @conferenceCode)";
+
+            Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+            query_params.Add("@addressState", address.state);
+            query_params.Add("@addressCity", address.city);
+            query_params.Add("@addressStreetAddress", address.street_address);
+            query_params.Add("@addressZip", address.zip);
+            query_params.Add("@conferenceCode", conference_code);
+
+            bool success = testconn.WriteToProduction(query, query_params);
             
             testconn.CloseConnection();
 
@@ -2113,9 +2243,17 @@ namespace AKAWeb_v01.Controllers
         public string CreateTicketConference(string cost, string description, string details, string duration)
         {
             DBConnection testconn = new DBConnection();
-            string query = "INSERT INTO Products(cost, type, description, details, length, isLive, stock) VALUES('" + cost + "', 'Ticket', '" + description + "', '" + details + "', '" + duration + "', 0, 100000)";
-            bool success = testconn.WriteToTest(query);
+            string query = "INSERT INTO Products(cost, type, description, details, length, isLive, stock) VALUES(@cost, 'Ticket', @description, @details, @duration, 0, 100000)";
+
+            Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+            query_params.Add("@cost", cost);
+            query_params.Add("@description", description);
+            query_params.Add("@details", details);
+            query_params.Add("@duration", duration);
+
+            bool success = testconn.WriteToProduction(query, query_params);
             testconn.CloseConnection();
+
             if (success)
             {
 
@@ -2272,18 +2410,21 @@ namespace AKAWeb_v01.Controllers
 
 
             DBConnection testconn = new DBConnection();
+            Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+            query_params.Add("@id", id);
             //see what is the current state of the product if it's alive or not
             string query = "SELECT isLive from Conference where conference_code =" + id.ToString();
             //this query will set a product isAlive to 0 
-            string query2 = "UPDATE Conference SET isLive = 0 WHERE conference_code =" + id.ToString();
+            string query2 = "UPDATE Conference SET isLive = 0 WHERE conference_code = @id";
             SqlDataReader dataReader = testconn.ReadFromTest(query);
             dataReader.Read();
+            
             //if the product is NOT live, change the query and turn the product to live
             if (!(bool)dataReader.GetValue(0))
             {
-                query2 = "UPDATE Conference SET isLive = 1 WHERE conference_code =" + id.ToString();
+                query2 = "UPDATE Conference SET isLive = 1 WHERE conference_code = @id";
             }
-            testconn.WriteToTest(query2);
+            testconn.WriteToProduction(query2, query_params);
             testconn.CloseDataReader();
             testconn.CloseConnection();
             return RedirectToAction("ListConferences", "Backend");
@@ -2330,8 +2471,20 @@ namespace AKAWeb_v01.Controllers
             {
                 members_only = 1;
             }
-            string query = "UPDATE Conference SET title = '" + conference.title + "', tagline = '" + conference.tagline + "', external_url = '" + conference.external_url + "',start_date= '" + conference.start_date + "', end_date = '" + conference.end_date + "', processing_fee= '" + conference.processing_fee + "', max_attendees =" + conference.max_attendees + ", members_only =" + members_only.ToString()+" WHERE conference_code = "+conference.conference_code.ToString();
-            bool success = testconn.WriteToTest(query);
+            string query = "UPDATE Conference SET title = @conferenceTitle, tagline = @conferenceTagline, external_url = @conferenceUrl ,start_date= @conferenceStartDate, end_date = @conferenceEndDate, processing_fee= @conferenceProcFee, max_attendees = @conferenceMaxAttendees, members_only = @membersOnly WHERE conference_code = @conferenceCode";
+
+            Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+            query_params.Add("@conferenceTitle", conference.title);
+            query_params.Add("@conferenceTagline", conference.tagline);
+            query_params.Add("@conferenceUrl", conference.external_url);
+            query_params.Add("@conferenceStartDate", conference.start_date);
+            query_params.Add("@conferenceEndDate", conference.end_date);
+            query_params.Add("@conferenceProcFee", conference.processing_fee);
+            query_params.Add("@conferenceMaxAttendees", conference.max_attendees);
+            query_params.Add("@membersOnly", members_only);
+            query_params.Add("@conferenceCode", conference.conference_code);
+
+            bool success = testconn.WriteToProduction(query, query_params);
 
             testconn.CloseConnection();
             return success;
@@ -2342,8 +2495,16 @@ namespace AKAWeb_v01.Controllers
         private bool updateConferenceLocation(int conference_code, AddressModel address)
         {
             DBConnection testconn = new DBConnection();
-            string query = "UPDATE Conference_Has_Location SET state = '" + address.state + "', city = '" + address.city + "', street_address = '" + address.street_address + "', zip = '" + address.zip + "' WHERE conference_code = " + conference_code;
-            bool success = testconn.WriteToTest(query);
+            string query = "UPDATE Conference_Has_Location SET state = @addressState, city = @addressCity, street_address = @addressStreetAddress, zip = @addressZip WHERE conference_code = @conferenceCode";
+
+            Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+            query_params.Add("@addressState", address.state);
+            query_params.Add("@addressCity", address.city);
+            query_params.Add("@addressStreetAddress", address.street_address);
+            query_params.Add("@addressZip", address.zip);  
+            query_params.Add("@conferenceCode", conference_code);
+
+            bool success = testconn.WriteToProduction(query, query_params);
 
             testconn.CloseConnection();
 
@@ -2372,8 +2533,15 @@ namespace AKAWeb_v01.Controllers
             {
                 if (shell_tickets.Contains(ticket))
                 {
-                    string update_ticket = "UPDATE Products SET description = '" + ticket.description + "', details = '" + ticket.details + "', cost = '" + ticket.cost + "', isLive = 1 WHERE id = " + ticket.id.ToString();
-                    success = testconn.WriteToTest(update_ticket);
+                    string update_ticket = "UPDATE Products SET description = @ticketDescription, details = @ticketDetails, cost = @ticketCost, isLive = 1 WHERE id = @ticketId";
+
+                    Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+                    query_params.Add("@ticketDescription", ticket.description);
+                    query_params.Add("@ticketDetails", ticket.details);
+                    query_params.Add("@ticketCost", ticket.cost);
+                    query_params.Add("@ticketId", ticket.id);
+
+                    success = testconn.WriteToProduction(update_ticket, query_params);
 
                     if (!success)
                     {
