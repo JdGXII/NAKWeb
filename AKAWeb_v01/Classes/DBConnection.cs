@@ -7,6 +7,11 @@ using System.Web.Configuration;
 
 namespace AKAWeb_v01.Classes
 {
+    //The main difference between the methods that end in "Test" and "Production"
+    //is not the source but whether they validate the inputs or parameters from a query
+    //so basically the "*Test" methods can be used if the query contains no parameters passed to it from the user
+    //or some other function
+    //"*Production" ones should be used to validate params that come from user input or some other unknown source
     public class DBConnection
     {
         private SqlDataReader dataReader = null;

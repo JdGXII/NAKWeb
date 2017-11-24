@@ -36,13 +36,15 @@ namespace AKAWeb_v01.Controllers
             bool login = false;
             DBConnection testconn = new DBConnection();
 
-            string query = "Select name, email, id, access, password from Users Where email ='" + email + "'";
+            string query = "Select name, email, id, access, password from Users Where email = @email";
+            Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+            query_params.Add("@email", email);
 
 
             try
             {
                 SqlDataReader dataReader;
-                dataReader = testconn.ReadFromTest(query);
+                dataReader = testconn.ReadFromProduction(query, query_params);
 
 
                 //if email exists in db
@@ -496,8 +498,12 @@ namespace AKAWeb_v01.Controllers
 
 
                 DBConnection testconn = new DBConnection();
-                string query = "SELECT id FROM Users WHERE email = '" + email + "'";
-                SqlDataReader dataReader = testconn.ReadFromTest(query);
+                string query = "SELECT id FROM Users WHERE email = @email";
+
+                Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+                query_params.Add("@email", email);
+
+                SqlDataReader dataReader = testconn.ReadFromProduction(query, query_params);
                 if (dataReader.Read())
                 {
                     testconn.CloseDataReader();
@@ -689,8 +695,12 @@ namespace AKAWeb_v01.Controllers
         {
             PageModel page = null;
             DBConnection testconn = new DBConnection();
-            string query = "SELECT id, title, subheader_image, content, section, isAlive from Pages WHERE id =" + pageId.ToString();
-            SqlDataReader dataReader = testconn.ReadFromTest(query);
+            string query = "SELECT id, title, subheader_image, content, section, isAlive from Pages WHERE id = @pageId";
+
+            Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+            query_params.Add("@pageId", pageId);
+
+            SqlDataReader dataReader = testconn.ReadFromProduction(query, query_params);
             while (dataReader.Read())
             {
                 int id = Int32.Parse(dataReader.GetValue(0).ToString());
@@ -709,16 +719,26 @@ namespace AKAWeb_v01.Controllers
         }
 
         //gets and individual section from which a page belongs to and returns it as a SectionModel to be used by views
+        //receives a page id and returns a SectionModel object for the section to which the page belongs
         private SectionModel getSection(string id)
         {
             DBConnection testconn = new DBConnection();
-            //get which section
-            string query = "SELECT section from Pages where id = " + id;
-            SqlDataReader dataReader = testconn.ReadFromTest(query);
+            //get which section from a page id
+            string query = "SELECT section from Pages where id = @pageId";
+
+            Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+            query_params.Add("@pageId", id);
+
+            SqlDataReader dataReader = testconn.ReadFromProduction(query, query_params);
             dataReader.Read();
+            int sectionId = Int32.Parse(dataReader.GetValue(0).ToString());
             //change query to get selected sections
-            query = "SELECT id, name, isAlive from Sections where id = " + dataReader.GetValue(0).ToString();
-            dataReader = testconn.ReadFromTest(query);
+            query = "SELECT id, name, isAlive from Sections where id = @sectionId";
+
+            query_params.Add("@sectionId", sectionId);
+            query_params.Remove("@pageId");
+
+            dataReader = testconn.ReadFromProduction(query, query_params);
             dataReader.Read();
 
             int section_id = Int32.Parse(dataReader.GetValue(0).ToString());
@@ -949,7 +969,7 @@ namespace AKAWeb_v01.Controllers
             string query2 = "UPDATE Pages SET isAlive = 0 WHERE id = @id";
             Dictionary<string, Object> update_params = new Dictionary<string, Object>();
             update_params.Add("@id", id);
-            SqlDataReader dataReader = testconn.ReadFromTest(query);
+            SqlDataReader dataReader = testconn.ReadFromProduction(query, update_params);
             dataReader.Read();
             //if the page is NOT live, change the query and turn the page to live
             if (!(bool)dataReader.GetValue(0))
@@ -976,15 +996,23 @@ namespace AKAWeb_v01.Controllers
             string query = "SELECT * from Sections";
             SqlDataReader dataReader = testconn.ReadFromTest(query);
             List<SectionModel> sections = new List<SectionModel>();
+
+            Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+            query_params.Add("@id", 0);
+
+            //get the sort order from the Section_Sorting table
+            StringBuilder sort_query = new StringBuilder("SELECT section_sortnumber FROM Section_Sorting WHERE section_id = ");
+            sort_query.Append("@id");
+
             while (dataReader.Read())
             {
                 int id = Int32.Parse(dataReader.GetValue(0).ToString());
                 string title = dataReader.GetValue(1).ToString();
                 bool isLive = (bool)dataReader.GetValue(2);
-                //get the sort order from the Section_Sorting table
-                StringBuilder sort_query = new StringBuilder("SELECT section_sortnumber FROM Section_Sorting WHERE section_id = ");
-                sort_query.Append(id);
-                SqlDataReader sortOrderReader = testconn.ReadFromTest(sort_query.ToString());
+
+                query_params["@id"] = id;
+
+                SqlDataReader sortOrderReader = testconn.ReadFromProduction(sort_query.ToString(), query_params);
                 sortOrderReader.Read();
                 int sort_order = Int32.Parse(sortOrderReader.GetValue(0).ToString());
 
@@ -1047,8 +1075,13 @@ namespace AKAWeb_v01.Controllers
         private void saveSectionSorting(string sectionid, string sort_order)
         {
             DBConnection testconn = new DBConnection();
-            string query = "SELECT section_sortnumber FROM Section_Sorting WHERE section_id = "+sectionid;
-            SqlDataReader dataReader = testconn.ReadFromTest(query);
+            string query = "SELECT section_sortnumber FROM Section_Sorting WHERE section_id = @sectionId";
+
+            Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+            query_params.Add("@sectionId", sectionid);
+           
+
+            SqlDataReader dataReader = testconn.ReadFromProduction(query, query_params);
             string sort_number = "";
             if (dataReader.HasRows)
             {
@@ -1062,8 +1095,11 @@ namespace AKAWeb_v01.Controllers
             //if the section's current sort number is different, switch the numbers
             if(sort_number != sort_order)
             {
-                query = "SELECT section_id FROM Section_Sorting WHERE section_sortnumber = " + sort_order;
-                dataReader = testconn.ReadFromTest(query);
+                query = "SELECT section_id FROM Section_Sorting WHERE section_sortnumber = @sortOrder";
+                query_params.Remove("@sectionId");
+                query_params.Add("@sortOrder", sort_order);
+
+                dataReader = testconn.ReadFromProduction(query, query_params);
                 if (dataReader.HasRows)
                 {
                     while (dataReader.Read())
@@ -1096,12 +1132,12 @@ namespace AKAWeb_v01.Controllers
         {
             DBConnection testconn = new DBConnection();
             //see what is the current state of the section if it's alive or not
-            string query = "SELECT isAlive from Sections where id =" + id;
+            string query = "SELECT isAlive from Sections where id = @id";
             //this query will set a section isAlive to 0 
             string query2 = "UPDATE Sections SET isAlive = 0 WHERE id = @id";
             Dictionary<string, Object> query_params = new Dictionary<string, Object>();
             query_params.Add("@id", id);
-            SqlDataReader dataReader = testconn.ReadFromTest(query);
+            SqlDataReader dataReader = testconn.ReadFromProduction(query, query_params);
             dataReader.Read();
             //if the section is NOT live, change the query and turn the page to live
             if (!(bool)dataReader.GetValue(0))
@@ -1210,8 +1246,12 @@ namespace AKAWeb_v01.Controllers
         public ActionResult RecoverPassword(string email)
         {
             DBConnection testconn = new DBConnection();
-            string query = "SELECT id, email from Users where email = '" + email+"'";
-            SqlDataReader dataReader = testconn.ReadFromTest(query);
+            string query = "SELECT id, email from Users where email = @email";
+
+            Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+            query_params.Add("@email", email);
+
+            SqlDataReader dataReader = testconn.ReadFromProduction(query, query_params);
             //if email exists
             if (dataReader.Read())
             {
@@ -1319,8 +1359,12 @@ namespace AKAWeb_v01.Controllers
         {
             DBConnection testconn = new DBConnection();
             //get user by id
-            string query = "SELECT id, name, email, password, access FROM Users WHERE id = " + user_id;
-            SqlDataReader dataReader = testconn.ReadFromTest(query);
+            string query = "SELECT id, name, email, password, access FROM Users WHERE id = @userId";
+
+            Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+            query_params.Add("@userId", user_id);
+
+            SqlDataReader dataReader = testconn.ReadFromProduction(query, query_params);
             if (dataReader.Read())
             {
                 int id = Int32.Parse(dataReader.GetValue(0).ToString());
@@ -1347,8 +1391,12 @@ namespace AKAWeb_v01.Controllers
         private AddressModel getAddressModel(string user_id)
         {
             DBConnection testconn = new DBConnection();
-            string query = "SELECT country, state, city, street_address, zip FROM User_has_Address WHERE user_id =" + user_id;
-            SqlDataReader dataReader = testconn.ReadFromTest(query);
+            string query = "SELECT country, state, city, street_address, zip FROM User_has_Address WHERE user_id = @userId";
+
+            Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+            query_params.Add("@userId", user_id);
+
+            SqlDataReader dataReader = testconn.ReadFromProduction(query, query_params);
             if (dataReader.Read())
             {
                 string country = dataReader.GetValue(0).ToString();
@@ -1412,16 +1460,21 @@ namespace AKAWeb_v01.Controllers
         private bool UpdateUserAddress(string country, string state, string city, string street_address, string zip, string user_id)
         {
             DBConnection testconn = new DBConnection();
-            string check_user_exists = "SELECT user_id FROM User_Has_Address  WHERE user_id = " + user_id;
-            SqlDataReader dataReader = testconn.ReadFromTest(check_user_exists);
+
+            string check_user_exists = "SELECT user_id FROM User_Has_Address  WHERE user_id = @userId";
 
             Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+            query_params.Add("@userId", user_id);
+         
+            SqlDataReader dataReader = testconn.ReadFromProduction(check_user_exists, query_params);
+
+            
             query_params.Add("@country", country);
             query_params.Add("@state", state);
             query_params.Add("@city", city);
             query_params.Add("@streetAddress", street_address);
             query_params.Add("@zip", zip);
-            query_params.Add("@userId", user_id);
+            
 
             string query = "";
             if (dataReader.Read())
@@ -1502,8 +1555,12 @@ namespace AKAWeb_v01.Controllers
         {
             bool match = false;
             DBConnection testconn = new DBConnection();
-            string query = "SELECT password from Users WHERE id = " + user_id;
-            SqlDataReader dataReader = testconn.ReadFromTest(query);
+            string query = "SELECT password from Users WHERE id = @userId";
+
+            Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+            query_params.Add("@userId", user_id);
+
+            SqlDataReader dataReader = testconn.ReadFromProduction(query, query_params);
             if (dataReader.Read())
             {
                 string hashedPasswordFromDB = dataReader.GetValue(0).ToString();
@@ -1541,8 +1598,12 @@ namespace AKAWeb_v01.Controllers
         private ProductModel getProduct(string product_id)
         {
             DBConnection testconn = new DBConnection();
-            string query = "SELECT id, type, cost, description, length, details FROM Products WHERE id = "+ product_id;
-            SqlDataReader dataReader = testconn.ReadFromTest(query);
+            string query = "SELECT id, type, cost, description, length, details FROM Products WHERE id = @productId";
+
+            Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+            query_params.Add("@productId", product_id);
+
+            SqlDataReader dataReader = testconn.ReadFromProduction(query, query_params);
             ProductModel product = new ProductModel();
             if (dataReader.HasRows)
             {
@@ -1599,8 +1660,13 @@ namespace AKAWeb_v01.Controllers
         private List<UserHasProductModel> getUserHasProducts(string user_id)
         {
             DBConnection testconn = new DBConnection();
-            string query = "SELECT id, user_id, product_id, product_start, product_end, isValid FROM User_Has_Product WHERE user_id = " + user_id;
-            SqlDataReader dataReader = testconn.ReadFromTest(query);
+            string query = "SELECT id, user_id, product_id, product_start, product_end, isValid FROM User_Has_Product WHERE user_id = @userId";
+
+            Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+            query_params.Add("@userId", user_id);
+
+            SqlDataReader dataReader = testconn.ReadFromProduction(query, query_params);
+
             List<UserHasProductModel> userhasproducts = new List<UserHasProductModel>();
             while (dataReader.Read())
             {
@@ -1923,14 +1989,14 @@ namespace AKAWeb_v01.Controllers
             {
                 DBConnection testconn = new DBConnection();
                 //see what is the current state of the product if it's alive or not
-                string query = "SELECT islive from Products where id =" + id;
+                string query = "SELECT islive from Products where id = @id";
                 //this query will set a product isAlive to 0 
                 string query2 = "UPDATE Products SET islive = 0 WHERE id = @id";
 
                 Dictionary<string, Object> query_params = new Dictionary<string, Object>();
                 query_params.Add("@id", id);
 
-                SqlDataReader dataReader = testconn.ReadFromTest(query);
+                SqlDataReader dataReader = testconn.ReadFromProduction(query, query_params);
                 dataReader.Read();
                 //if the product is NOT live, change the query and turn the product to live
                 if (!(bool)dataReader.GetValue(0))
@@ -2312,8 +2378,12 @@ namespace AKAWeb_v01.Controllers
         {
             DBConnection testconn = new DBConnection();
             List<ProductModel> tickets = new List<ProductModel>();
-            string conference_tickets = "SELECT product_id from Conference_Has_Product WHERE conference_code = " + conference_code.ToString();
-            SqlDataReader dataReader = testconn.ReadFromTest(conference_tickets);
+            string conference_tickets = "SELECT product_id from Conference_Has_Product WHERE conference_code = @conferenceCode";
+
+            Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+            query_params.Add("@conferenceCode", conference_code);
+
+            SqlDataReader dataReader = testconn.ReadFromProduction(conference_tickets, query_params);
 
             if (dataReader.HasRows)
             {
@@ -2339,8 +2409,12 @@ namespace AKAWeb_v01.Controllers
         {
             DBConnection testconn = new DBConnection();
             AddressModel location = new AddressModel(); 
-            string conference_location = "SELECT city, state, zip, street_address FROM Conference_Has_Location WHERE conference_code = " + conference_code.ToString();
-            SqlDataReader dataReader = testconn.ReadFromTest(conference_location);
+            string conference_location = "SELECT city, state, zip, street_address FROM Conference_Has_Location WHERE conference_code = @conferenceCode";
+
+            Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+            query_params.Add("@conferenceCode", conference_code);
+
+            SqlDataReader dataReader = testconn.ReadFromProduction(conference_location, query_params);
 
             dataReader = testconn.ReadFromTest(conference_location);
 
