@@ -29,8 +29,12 @@ namespace AKAWeb_v01.Classes
         private ProductModel getProduct(string product_id)
         {
             DBConnection testconn = new DBConnection();
-            string query = "SELECT id, type, cost, description, length, details FROM Products WHERE id = " + product_id;
-            SqlDataReader dataReader = testconn.ReadFromTest(query);
+            string query = "SELECT id, type, cost, description, length, details FROM Products WHERE id = @productId";
+
+            Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+            query_params.Add("@productId", product_id);
+
+            SqlDataReader dataReader = testconn.ReadFromProduction(query, query_params);
             ProductModel product = new ProductModel();
             if (dataReader.HasRows)
             {
@@ -141,8 +145,12 @@ namespace AKAWeb_v01.Classes
         {
             DBConnection testconn = new DBConnection();
             List<ProductModel> tickets = new List<ProductModel>();
-            string conference_tickets = "SELECT product_id from Conference_Has_Product WHERE conference_code = " + conference_code.ToString();
-            SqlDataReader dataReader = testconn.ReadFromTest(conference_tickets);
+            string conference_tickets = "SELECT product_id from Conference_Has_Product WHERE conference_code = @conferenceCode";
+
+            Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+            query_params.Add("@conferenceCode", conference_code);
+
+            SqlDataReader dataReader = testconn.ReadFromProduction(conference_tickets, query_params);
 
             if (dataReader.HasRows)
             {
@@ -167,10 +175,12 @@ namespace AKAWeb_v01.Classes
         {
             DBConnection testconn = new DBConnection();
             AddressModel location = new AddressModel();
-            string conference_location = "SELECT city, state, zip, street_address FROM Conference_Has_Location WHERE conference_code = " + conference_code.ToString();
-            SqlDataReader dataReader = testconn.ReadFromTest(conference_location);
+            string conference_location = "SELECT city, state, zip, street_address FROM Conference_Has_Location WHERE conference_code = @conferenceCode";
 
-            dataReader = testconn.ReadFromTest(conference_location);
+            Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+            query_params.Add("@conferenceCode", conference_code);
+
+            SqlDataReader dataReader = testconn.ReadFromProduction(conference_location, query_params);
 
             if (dataReader.HasRows)
             {
