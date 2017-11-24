@@ -22,8 +22,12 @@ namespace AKAWeb_v01.Controllers
         {
             List<AKAWeb_v01.Models.PageModel> page_list = new List<PageModel>();
             DBConnection testconn = new DBConnection();
-            string query = "SELECT id, title, subheader_image, content, section, isAlive from Pages WHERE isAlive = 1 AND section = "+section_id.ToString();
-            SqlDataReader dataReader = testconn.ReadFromTest(query);
+            string query = "SELECT id, title, subheader_image, content, section, isAlive from Pages WHERE isAlive = 1 AND section = @sectionId";
+
+            Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+            query_params.Add("@sectionId", section_id);
+
+            SqlDataReader dataReader = testconn.ReadFromProduction(query, query_params);
             //while there are records in the datareader
             while (dataReader.Read())
             {
@@ -77,8 +81,12 @@ namespace AKAWeb_v01.Controllers
             DBConnection testconn = new DBConnection();
             //get the sort order from the Section_Sorting table
             StringBuilder sort_query = new StringBuilder("SELECT section_sortnumber FROM Section_Sorting WHERE section_id = ");
-            sort_query.Append(section_id);
-            SqlDataReader sortOrderReader = testconn.ReadFromTest(sort_query.ToString());
+            sort_query.Append("@sectionId");
+
+            Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+            query_params.Add("@sectionId", section_id);
+
+            SqlDataReader sortOrderReader = testconn.ReadFromProduction(sort_query.ToString(), query_params);
             sortOrderReader.Read();
             int sort_order = Int32.Parse(sortOrderReader.GetValue(0).ToString());
 
