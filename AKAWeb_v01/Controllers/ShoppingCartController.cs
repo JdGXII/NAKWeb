@@ -93,8 +93,12 @@ namespace AKAWeb_v01.Controllers
             string userid = System.Web.HttpContext.Current.Session["userid"].ToString();
             List<CartModel> cart_list = new List<CartModel>();
             DBConnection testconn = new DBConnection();
-            string query = "SELECT c.id, c.user_id, c.product_id, p.description, p.cost from Cart c, Products p WHERE p.id = product_id AND c.user_id = "+userid;
-            SqlDataReader dataReader = testconn.ReadFromTest(query);
+            string query = "SELECT c.id, c.user_id, c.product_id, p.description, p.cost from Cart c, Products p WHERE p.id = product_id AND c.user_id = @userId";
+
+            Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+            query_params.Add("@userId", userid);
+
+            SqlDataReader dataReader = testconn.ReadFromProduction(query, query_params);
             while (dataReader.Read())
             {
                 int id = Int32.Parse(dataReader.GetValue(0).ToString());
