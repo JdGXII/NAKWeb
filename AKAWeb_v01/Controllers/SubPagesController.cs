@@ -43,10 +43,13 @@ namespace AKAWeb_v01.Controllers
             DBConnection testconn = new DBConnection();
             SqlDataReader datareader;
             //this query selects the page to load by title, if it exists i.e. title matches the functions parameters
-            string query = "select id, title, subheader_image, content, section, isAlive from Pages where title ='" + title+"'";
+            string query = "select id, title, subheader_image, content, section, isAlive from Pages where title = @title";
+
+            Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+            query_params.Add("@title", title);
 
             //assign data reader to first query
-            datareader = testconn.ReadFromTest(query);
+            datareader = testconn.ReadFromProduction(query, query_params);
             //check if there are matching pages
             if (datareader.Read())
             {
@@ -151,8 +154,12 @@ namespace AKAWeb_v01.Controllers
         {
             DBConnection testconn = new DBConnection();
             InstitutionModel inst = new InstitutionModel();
-            string institution = "SELECT institution, institution_website, associates, bachelors, masters, doctoral FROM Institutions WHERE id = " +id.ToString();
-            SqlDataReader dataReader = testconn.ReadFromTest(institution);
+            string institution = "SELECT institution, institution_website, associates, bachelors, masters, doctoral FROM Institutions WHERE id = @institutionId";
+
+            Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+            query_params.Add("@institutionId", id);
+
+            SqlDataReader dataReader = testconn.ReadFromProduction(institution, query_params);
             if (dataReader.HasRows)
             {
                 while (dataReader.Read())
@@ -183,8 +190,12 @@ namespace AKAWeb_v01.Controllers
 
             DBConnection testconn = new DBConnection();
             DepartmentModel dept = new DepartmentModel();
-            string institution = "SELECT department, department_website FROM Departments WHERE id = " + id.ToString();
-            SqlDataReader dataReader = testconn.ReadFromTest(institution);
+            string institution = "SELECT department, department_website FROM Departments WHERE id = @deptId";
+
+            Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+            query_params.Add("@deptId", id);
+
+            SqlDataReader dataReader = testconn.ReadFromProduction(institution, query_params);
             if (dataReader.HasRows)
             {
                 while (dataReader.Read())
@@ -215,8 +226,12 @@ namespace AKAWeb_v01.Controllers
 
             DBConnection testconn = new DBConnection();
             AddressModel state = new AddressModel();
-            string institution = "SELECT state_acronym, state_name FROM States WHERE id = " + id.ToString();
-            SqlDataReader dataReader = testconn.ReadFromTest(institution);
+            string institution = "SELECT state_acronym, state_name FROM States WHERE id = @stateId";
+
+            Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+            query_params.Add("@stateId", id);
+
+            SqlDataReader dataReader = testconn.ReadFromProduction(institution, query_params);
             if (dataReader.HasRows)
             {
                 while (dataReader.Read())
