@@ -73,7 +73,7 @@ namespace AKAWeb_v01.Controllers
                 datareader.Read();
                 string leftMenuTitle = datareader.GetValue(0).ToString();
                 //read from first query again
-                datareader = testconn.ReadFromTest(query);
+                datareader = testconn.ReadFromProduction(query, query_params);
                 datareader.Read();
                 PageModel page = new PageModel();
                 page.id = Int32.Parse(datareader.GetValue(0).ToString());

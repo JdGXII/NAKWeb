@@ -161,11 +161,7 @@ namespace AKAWeb_v01.Classes
             {
                 return dataReader;
             }
-            finally
-            {
-                cnn.Close();
-                dataReader.Close();
-            }
+
 
         }
 
@@ -188,11 +184,6 @@ namespace AKAWeb_v01.Classes
             catch (Exception e)
             {
                 return dataReader;
-            }
-            finally
-            {
-                dataReader.Close();
-                cnn.Close();
             }
 
 
