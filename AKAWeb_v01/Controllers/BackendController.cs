@@ -1072,6 +1072,8 @@ namespace AKAWeb_v01.Controllers
         //takes the id of a section and a sort number to sort the section
         //if the sort number is the one it already has it does nothing
         //if it's different it switches the section sort order with that number and
+        //sort_order = new sorting for section
+        //sort_number = current or 'old' sorting for the section
         private void saveSectionSorting(string sectionid, string sort_order)
         {
             DBConnection testconn = new DBConnection();
@@ -1107,16 +1109,28 @@ namespace AKAWeb_v01.Controllers
                         string section_tobe_switched_id = dataReader.GetValue(0).ToString();
                         Dictionary<string, Object> update_params = new Dictionary<string, Object>();
                         update_params.Add("@sortOrder", sort_order);
-                        update_params.Add("@sectionId", sectionid);
+                        //update_params.Add("@sectionId", sectionid);
+                        update_params.Add("@sortNumber", sort_number);
 
+                        //sets the new sortnumber for the section to be changed
                         string query_update = "UPDATE Section_Sorting SET section_sortnumber = @sortOrder WHERE section_id = @sectionId";
 
-                        bool first_success = testconn.WriteToProduction(query_update,update_params);
-                                              
-                        update_params["@sortOrder"] = sort_number;
-                        update_params["@sectionId"] = section_tobe_switched_id;
+                        //all elements below or with a higher sort number than the current element/section to be re-sorted will be pulled up by one
+                        string query_update_pullup = "UPDATE Section_Sorting SET section_sortnumber = section_sortnumber - 1 WHERE section_sortnumber > @sortNumber";
+
+                        string query_update_pushdown = "UPDATE Section_Sorting SET section_sortnumber = section_sortnumber + 1 WHERE section_sortnumber >= @sortOrder";
+
+                        bool first_success = testconn.WriteToProduction(query_update_pullup,update_params);
                         
-                        bool second_success = testconn.WriteToProduction(query_update, update_params);
+                        
+                        //update_params["@sortOrder"] = sort_number;
+                        //update_params["@sectionId"] = section_tobe_switched_id;
+                        
+                        bool second_success = testconn.WriteToProduction(query_update_pushdown, update_params);
+
+                        update_params.Remove("@sortNumber");
+                        update_params.Add("@sectionId", sectionid);
+                        bool third_success = testconn.WriteToProduction(query_update, update_params);
 
                     }
                 }

@@ -19,6 +19,9 @@ namespace AKAWeb_v01.Models
         public bool isLive { get; set; }
         //public DateTime createdAt { get; set; }
         //public DateTime modifiedAt { get; set; }
+        public int sort_order { get; set; }
+        //optional. a list for generating a dropdown element with the section's sort_order marked as default
+        public List<SelectListItem> dropdown { get; set; }
 
         public PageModel()
         {
