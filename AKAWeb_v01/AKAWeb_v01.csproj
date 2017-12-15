@@ -293,6 +293,7 @@
     <Content Include="Views\SubPages\Institutions.cshtml" />
     <Content Include="Views\Backend\JobPosting.cshtml" />
     <Content Include="Views\SubPages\JobPostings.cshtml" />
+    <Content Include="Views\Backend\_AsyncGetPages.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
