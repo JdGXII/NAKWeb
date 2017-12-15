@@ -22,7 +22,7 @@ namespace AKAWeb_v01.Controllers
         {
             List<AKAWeb_v01.Models.PageModel> page_list = new List<PageModel>();
             DBConnection testconn = new DBConnection();
-            string query = "SELECT id, title, subheader_image, content, section, isAlive from Pages WHERE isAlive = 1 AND section = @sectionId";
+            string query = "SELECT id, title, subheader_image, content, section, isAlive, sort_order from Pages WHERE isAlive = 1 AND section = @sectionId";
 
             Dictionary<string, Object> query_params = new Dictionary<string, Object>();
             query_params.Add("@sectionId", section_id);
@@ -37,14 +37,16 @@ namespace AKAWeb_v01.Controllers
                 string pageContent = dataReader.GetValue(3).ToString();
                 int section = Int32.Parse(dataReader.GetValue(4).ToString());
                 bool isAlive = (bool)dataReader.GetValue(5);
-                PageModel page = new PageModel(id, title, subheaderImage, pageContent, section, isAlive);
+                int sort_order = Int32.Parse(dataReader.GetValue(6).ToString());
+                PageModel page = new PageModel(id, title, subheaderImage, pageContent, section, isAlive, sort_order);
                 page_list.Add(page);
 
             }
             testconn.CloseDataReader();
             testconn.CloseConnection();
 
-            return page_list;
+            List<PageModel> sorted_pages = page_list.OrderBy(p => p.sort_order).ToList();
+            return sorted_pages;
 
         }
 

@@ -41,5 +41,19 @@ namespace AKAWeb_v01.Models
 
         }
 
+        public PageModel(int id, string title, string subheaderImage, string pageContent, int section, bool isLive, int sort_order)
+        {
+            this.id = id;
+            this.title = title;
+            this.subheaderImage = subheaderImage;
+            this.pageContent = pageContent;
+            this.section = section;
+            this.isLive = isLive;
+            this.sort_order = sort_order;
+            leftMenu = null;
+            leftMenuTitle = null;
+
+        }
+
     }
 }
