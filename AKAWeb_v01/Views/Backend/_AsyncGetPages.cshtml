@@ -8,7 +8,7 @@
     </script>
 }
 
-<p style="color:red;"><b>@ViewBag.PageAlert</b></p>
+
 <p>
     @Html.ActionLink("Create New Page", "CreatePage") |
     @Html.ActionLink("Create New Section", "ListSections")
@@ -23,6 +23,9 @@
         </th>
         <th>
             Section
+        </th>
+        <th>
+            Sort order
         </th>
 
         <th>
@@ -44,6 +47,9 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.section)
+            </td>
+            <td>
+                @Html.DropDownList("sort_order", item.dropdown, new { @class="form-control"})
             </td>
 
             @if (item.isLive == true)

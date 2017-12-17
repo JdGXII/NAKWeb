@@ -653,9 +653,10 @@ namespace AKAWeb_v01.Controllers
                 }
 
                 ViewData["BackendPages"] = getBackendPages();
-                var model = getPages();
+                //var model = getPages();
 
-                return View(model);
+                ViewData["Sections"] = getSectionsListAsDropdown();
+                return View();
             }
             else
             {
@@ -2141,7 +2142,7 @@ namespace AKAWeb_v01.Controllers
 
         }
 
-        [HttpGet]
+        [HttpPost]
         public async Task<ActionResult> GetTicketsForConferencePartialViewEdit(int conference_code)
         {
             var model = await product_service.getTickets();
@@ -2730,6 +2731,137 @@ namespace AKAWeb_v01.Controllers
 
             return RedirectToAction("JobPosting");
 
+        }
+
+        
+        public ActionResult GetPagesePartialView(int id)
+        {
+            var model = getPages(id);
+
+            return PartialView("_AsyncGetPages", model);
+
+        }
+
+        [HttpPost]
+        public ActionResult GetPagesePartialViewUpdate(int section_id)
+        {
+            var model = getPages(1);
+
+            return PartialView("_AsyncGetPages", model);
+
+        }
+
+        //gets the dropdown for a PageModel containing
+        //the sort order numbers for all the pages belonging to the same section as the page
+        //receives a PageModel
+        private List<SelectListItem> getPageDropDown(PageModel page)
+        {
+            List<SelectListItem> mylist = new List<SelectListItem>();
+          
+
+            DBConnection testconn = new DBConnection();
+            //get the highest sort order number for pages belonging to the same section
+            string query = "SELECT MAX(sort_order) FROM Pages WHERE section = @sectionId";
+            Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+            query_params.Add("@sectionId", page.section);
+            SqlDataReader dataReader = testconn.ReadFromProduction(query, query_params);
+            int max_sort = 0;
+
+            if (dataReader.HasRows)
+            {
+                while (dataReader.Read())
+                {
+                    max_sort = Int32.Parse(dataReader.GetValue(0).ToString());
+                }
+            }
+
+            for(int i = 1; i <= max_sort; i++)
+            {
+    
+                SelectListItem item = new SelectListItem();
+                item.Value = i.ToString();
+                item.Text = i.ToString();
+                if(i == page.sort_order)
+                {
+                    
+                    item.Selected = true;
+                }
+
+                mylist.Add(item);
+            }
+            testconn.CloseDataReader();
+            testconn.CloseConnection();
+            return mylist;
+
+        }
+        
+        //this function returns a list of Pages given a section id
+        //in other words, it returns all the pages belonging to a particular session
+        //returns them sorted
+        private List<AKAWeb_v01.Models.PageModel> getPages(int section_id)
+        {
+            List<AKAWeb_v01.Models.PageModel> page_list = new List<PageModel>();
+            DBConnection testconn = new DBConnection();
+            string query = "SELECT id, title, subheader_image, content, section, isAlive, sort_order from Pages WHERE section = @sectionId";
+
+            Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+            if (section_id == 0)
+            {
+                query = "SELECT id, title, subheader_image, content, section, isAlive, sort_order from Pages";
+                
+            }
+            else
+            {
+                query_params.Add("@sectionId", section_id);
+            }
+     
+            SqlDataReader dataReader = testconn.ReadFromProduction(query, query_params);
+            //while there are records in the datareader
+            while (dataReader.Read())
+            {
+                int id = Int32.Parse(dataReader.GetValue(0).ToString());
+                string title = dataReader.GetValue(1).ToString();
+                string subheaderImage = dataReader.GetValue(2).ToString();
+                string pageContent = dataReader.GetValue(3).ToString();
+                int section = Int32.Parse(dataReader.GetValue(4).ToString());
+                bool isAlive = (bool)dataReader.GetValue(5);
+                int sort_order = Int32.Parse(dataReader.GetValue(6).ToString());
+                PageModel page = new PageModel(id, title, subheaderImage, pageContent, section, isAlive, sort_order);
+                page.dropdown = getPageDropDown(page);
+                page_list.Add(page);
+
+            }
+            testconn.CloseDataReader();
+            testconn.CloseConnection();
+
+            List<PageModel> sorted_pages = page_list.OrderBy(p => p.sort_order).ToList();
+            return sorted_pages;
+
+        }
+
+        private List<SelectListItem> getSectionsListAsDropdown()
+        {
+            List<SelectListItem> myList = new List<SelectListItem>();
+            SelectListItem init_val = new SelectListItem();
+            init_val.Value = "0";
+            init_val.Text = "ALL";
+            myList.Add(init_val);
+
+            List<SectionModel> sections = getSections();
+
+            foreach(SectionModel section in sections)
+            {
+                SelectListItem item = new SelectListItem();
+                item.Value = section.id.ToString();
+                item.Text = section.title;
+
+                myList.Add(item);
+
+            }
+
+            return myList;
+
+           
         }
 
 
