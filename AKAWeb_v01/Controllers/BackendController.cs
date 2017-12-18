@@ -788,20 +788,47 @@ namespace AKAWeb_v01.Controllers
 
         }
 
+        //changes the section of a page
+        //changes sorting order of both sections too
+        //receives the section id (SectionList) and the page id
         [HttpPost]
-        public ActionResult ChangePageSection(string SectionList, string page_id)
+        public ActionResult ChangePageSection(string SectionList, string page_id, string current_section)
         {
-            DBConnection testconn = new DBConnection();
-            string query = "UPDATE Pages SET section= @sectionList WHERE id = @pageId";
-            Dictionary<string, Object> query_params = new Dictionary<string, Object>();
-            query_params.Add("@sectionList", SectionList);
-            query_params.Add("@pageId", page_id);
-            bool t = testconn.WriteToProduction(query, query_params);
-            //bool t = testconn.WriteToTest(query);
+            if (System.Web.HttpContext.Current.Session["userpermission"] != null)
+            {
+
+                if (System.Web.HttpContext.Current.Session["userpermission"].ToString() == "3")
+                {
 
 
-            testconn.CloseConnection();
-            return RedirectToAction("ChangePageSection", new { id = page_id });
+                    DBConnection testconn = new DBConnection();
+                    //query to update the sort order of the pages on the same section as the page to have its section changed
+                    //every element below the sorting order of the page (a bigger sort order number) gets pulled up by one
+                    string query = "UPDATE Pages SET sort_order = sort_order - 1 WHERE sort_order > (SELECT sort_order FROM Pages where id = @pageId) AND section = @currentSection";
+                    Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+                    query_params.Add("@currentSection", current_section);
+                    query_params.Add("@pageId", page_id);
+                    bool t = testconn.WriteToProduction(query, query_params);
+                    //bool t = testconn.WriteToTest(query);
+
+                    //updates the page section and puts the page at the bottom of the sort order of the section it got changed to
+                    query = "UPDATE Pages SET section = @sectionList, sort_order = (SELECT MAX(sort_order) FROM Pages WHERE section = @sectionList) +1 WHERE id = @pageId";
+                    query_params.Add("@sectionList", SectionList);
+                    query_params.Remove("@currentSection");
+                    testconn.WriteToProduction(query, query_params);
+                    testconn.CloseConnection();
+                    return RedirectToAction("ChangePageSection", new { id = page_id });
+                }
+                else
+                {
+                    return RedirectToAction("MyProfile");
+                }
+                
+            }
+            else
+            {
+                return RedirectToAction("MyProfile");
+            }
         }
 
         public ActionResult EditPage(string id)
@@ -843,54 +870,69 @@ namespace AKAWeb_v01.Controllers
         {
             //uncomment the next line to check content being passed through form
             //System.Web.HttpContext.Current.Session["debug"] = Request.Files.Count;
-            
-            DBConnection testconn = new DBConnection();
-            Dictionary<string, Object> query_params = new Dictionary<string, Object>();
-            query_params.Add("@content", content);
-            query_params.Add("@title", title);
-            query_params.Add("@id", id);
-            //original query to be executed. It will change if an image is being updated
-            string query = "UPDATE Pages SET content = @content, title = @title where id = @id";
-            //check if user is updating the page's subheader image by looking for the file in the request
-            //if he is, this will change the query to be executed
-            if (Request.Files.Count > 0)
-            {
-                var file = Request.Files[0];
 
-                if (file != null && file.ContentLength > 0)
-                    try
+            if (System.Web.HttpContext.Current.Session["userpermission"] != null)
+            {
+
+                if (System.Web.HttpContext.Current.Session["userpermission"].ToString() == "3")
+                {
+                    DBConnection testconn = new DBConnection();
+                    Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+                    query_params.Add("@content", content);
+                    query_params.Add("@title", title);
+                    query_params.Add("@id", id);
+                    //original query to be executed. It will change if an image is being updated
+                    string query = "UPDATE Pages SET content = @content, title = @title where id = @id";
+                    //check if user is updating the page's subheader image by looking for the file in the request
+                    //if he is, this will change the query to be executed
+                    if (Request.Files.Count > 0)
                     {
-                        var fileName = file.FileName;
-                        var path = Path.Combine(Server.MapPath("~/Content/Images/Subheaders"), fileName);
-                        file.SaveAs(path);
-                        string pathForDB = "~/Content/Images/Subheaders/" + fileName.ToString(); 
-                        query = "UPDATE Pages SET content = @content, subheader_image = @subheaderImage, title = @title where id = @id";
-                        query_params.Add("@subheaderImage", pathForDB);
-                        
-                        
+                        var file = Request.Files[0];
+
+                        if (file != null && file.ContentLength > 0)
+                            try
+                            {
+                                var fileName = file.FileName;
+                                var path = Path.Combine(Server.MapPath("~/Content/Images/Subheaders"), fileName);
+                                file.SaveAs(path);
+                                string pathForDB = "~/Content/Images/Subheaders/" + fileName.ToString();
+                                query = "UPDATE Pages SET content = @content, subheader_image = @subheaderImage, title = @title where id = @id";
+                                query_params.Add("@subheaderImage", pathForDB);
+
+
+
+                            }
+                            catch (Exception ex)
+                            {
+                                //ViewBag.Message = "ERROR:" + ex.Message.ToString();
+                                TempData["EditSuccess"] = "Something went wrong. Page was not saved.";
+                            }
 
                     }
-                    catch (Exception ex)
+
+                    bool success = testconn.WriteToProduction(query, query_params);
+                    if (success)
                     {
-                        //ViewBag.Message = "ERROR:" + ex.Message.ToString();
+                        TempData["EditSuccess"] = "Page succesfully edited.";
+                    }
+                    else
+                    {
                         TempData["EditSuccess"] = "Something went wrong. Page was not saved.";
                     }
 
-            }
-            
-            bool success = testconn.WriteToProduction(query, query_params);
-            if (success)
-            {
-                TempData["EditSuccess"] = "Page succesfully edited.";
+                    testconn.CloseConnection();
+
+                    return RedirectToAction("EditPage", new { id = id });
+                }
+                else
+                {
+                    return RedirectToAction("MyProfile");
+                }
             }
             else
             {
-                TempData["EditSuccess"] = "Something went wrong. Page was not saved.";
+                return RedirectToAction("MyProfile");
             }
-
-            testconn.CloseConnection();
-
-            return RedirectToAction("EditPage", new { id = id});
 
         }
 
@@ -968,32 +1010,53 @@ namespace AKAWeb_v01.Controllers
             }
 
             testconn.CloseConnection();
-
+            TempData["SectionForDropDown"] = SectionList;
             return RedirectToAction("ListPages", "Backend");
 
         }
 
-        public ActionResult ToggleIsLivePage(string id)
+        //switches a page from published/enabled to unpublished/disabled depending on the current status
+        public ActionResult ToggleIsLivePage(string id, string section_id)
         {
-            DBConnection testconn = new DBConnection();
-            //see what is the current state of the page if it's alive or not
-            string query = "SELECT isAlive from Pages where id =" + id;
-            //this query will set a page isAlive to 0 
-            string query2 = "UPDATE Pages SET isAlive = 0 WHERE id = @id";
-            Dictionary<string, Object> update_params = new Dictionary<string, Object>();
-            update_params.Add("@id", id);
-            SqlDataReader dataReader = testconn.ReadFromProduction(query, update_params);
-            dataReader.Read();
-            //if the page is NOT live, change the query and turn the page to live
-            if (!(bool)dataReader.GetValue(0))
+            if (System.Web.HttpContext.Current.Session["userpermission"] != null)
             {
-                query2 = "UPDATE Pages SET isAlive = 1 WHERE id = @id";
-            }
-            testconn.WriteToProduction(query2, update_params);
+                if (System.Web.HttpContext.Current.Session["userpermission"].ToString() == "3")
+                {
 
- 
-            testconn.CloseConnection();
-            return RedirectToAction("ListPages", "Backend");
+
+                    DBConnection testconn = new DBConnection();
+                    //see what is the current state of the page if it's alive or not
+                    string query = "SELECT isAlive from Pages where id =" + id;
+                    //this query will set a page isAlive to 0 
+                    string query2 = "UPDATE Pages SET isAlive = 0 WHERE id = @id";
+                    TempData["PageCreation"] = "Page is now disabled.";
+                    Dictionary<string, Object> update_params = new Dictionary<string, Object>();
+                    update_params.Add("@id", id);
+                    SqlDataReader dataReader = testconn.ReadFromProduction(query, update_params);
+                    dataReader.Read();
+                    //if the page is NOT live, change the query and turn the page to live
+                    if (!(bool)dataReader.GetValue(0))
+                    {
+                        TempData["PageCreation"] = "Page is now live.";
+                        query2 = "UPDATE Pages SET isAlive = 1 WHERE id = @id";
+                    }
+                    testconn.WriteToProduction(query2, update_params);
+
+
+                    testconn.CloseConnection();
+                    TempData["SectionForDropDown"] = section_id;
+                    
+                    return RedirectToAction("ListPages", "Backend");
+                }
+                else
+                {
+                    return RedirectToAction("MyProfile");
+                }
+            }
+            else
+            {
+                return RedirectToAction("MyProfile");
+            }
         }
         //for now this just redirects to the regular page i.e. SubPages Controller
         //I'm leaving it here in case we want to do something different with previews.
@@ -2111,23 +2174,32 @@ namespace AKAWeb_v01.Controllers
         {
             if (System.Web.HttpContext.Current.Session["username"] != null)
             {
-                DBConnection testconn = new DBConnection();
-                string query = "DELETE FROM Pages WHERE id = @pageId";
-
-                Dictionary<string, Object> query_params = new Dictionary<string, Object>();
-                query_params.Add("@pageId", page_id);
-           
-                if (testconn.WriteToProduction(query, query_params))
+                if (System.Web.HttpContext.Current.Session["userpermission"].ToString() == "3")
                 {
-                    TempData["pageDeletionSuccess"] = "Page has been succesfully deleted";
+
+
+                    DBConnection testconn = new DBConnection();
+                    string query = "DELETE FROM Pages WHERE id = @pageId";
+
+                    Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+                    query_params.Add("@pageId", page_id);
+
+                    if (testconn.WriteToProduction(query, query_params))
+                    {
+                        TempData["pageDeletionSuccess"] = "Page has been succesfully deleted";
+                    }
+                    else
+                    {
+                        TempData["pageDeletionSuccess"] = "Something went wrong. Page wasn't deleted";
+                    }
+                    testconn.CloseDataReader();
+                    testconn.CloseConnection();
+                    return RedirectToAction("ListPages");
                 }
                 else
                 {
-                    TempData["pageDeletionSuccess"] = "Something went wrong. Page wasn't deleted";
+                    return RedirectToAction("MyProfile");
                 }
-                testconn.CloseDataReader();
-                testconn.CloseConnection();
-                return RedirectToAction("ListPages");
             }
             else
             {
@@ -2880,39 +2952,53 @@ namespace AKAWeb_v01.Controllers
         [HttpPost]
         public ActionResult SavePageSorting(ICollection<PageModel> pages, SectionModel section)
         {
-            DBConnection testconn = new DBConnection();
-            string query = "UPDATE Pages SET sort_order = @sortOrder WHERE id = @pageId";
-            Dictionary<string, Object> query_params = new Dictionary<string, Object>();
-            query_params.Add("@sortOrder", "");
-            query_params.Add("@pageId", "");
-
-            bool success = true;
-
-            foreach(PageModel page in pages)
+            if (System.Web.HttpContext.Current.Session["username"] != null)
             {
-                query_params["@sortOrder"] = page.sort_order;
-                query_params["@pageId"] = page.id;
-
-                bool scs = testconn.WriteToProduction(query, query_params);
-                if (!scs)
+                if (System.Web.HttpContext.Current.Session["userpermission"].ToString() == "3")
                 {
-                    success = false;
+                    DBConnection testconn = new DBConnection();
+                    string query = "UPDATE Pages SET sort_order = @sortOrder WHERE id = @pageId";
+                    Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+                    query_params.Add("@sortOrder", "");
+                    query_params.Add("@pageId", "");
+
+                    bool success = true;
+
+                    foreach (PageModel page in pages)
+                    {
+                        query_params["@sortOrder"] = page.sort_order;
+                        query_params["@pageId"] = page.id;
+
+                        bool scs = testconn.WriteToProduction(query, query_params);
+                        if (!scs)
+                        {
+                            success = false;
+                        }
+
+                    }
+
+                    if (success)
+                    {
+                        TempData["sortingSuccess"] = "Sorting was succesful";
+
+                    }
+                    else
+                    {
+                        TempData["sortingSuccess"] = "Something went wrong with sorting. Please try again.";
+                    }
+
+                    TempData["SectionForDropDown"] = section.id;
+                    return RedirectToAction("ListPages");
                 }
-
-             }
-
-            if (success)
-            {
-                TempData["sortingSuccess"] = "Sorting was succesful";
-
+                else
+                {
+                    return RedirectToAction("MyProfile");
+                }
             }
             else
             {
-                TempData["sortingSuccess"] = "Something went wrong with sorting. Please try again.";
+               return RedirectToAction("MyProfile");
             }
-
-            TempData["SectionForDropDown"] = section.id;
-            return RedirectToAction("ListPages");
         }
 
 

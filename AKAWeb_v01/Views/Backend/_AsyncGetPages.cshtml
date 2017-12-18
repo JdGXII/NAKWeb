@@ -73,11 +73,11 @@
                 @Html.ActionLink("View Page", "PreviewPage", new { id = item.title }, new { target = "_blank" }) |
                 @if (item.isLive == true)
                 {
-                    @Html.ActionLink("Disable Page", "ToggleIsLivePage", new { id = item.id });
+                    @Html.ActionLink("Disable Page", "ToggleIsLivePage", new { id = item.id, section_id = item.section });
                 }
                 else
                 {
-                    @Html.ActionLink("Publish Page", "ToggleIsLivePage", new { id = item.id });
+                    @Html.ActionLink("Publish Page", "ToggleIsLivePage", new { id = item.id, section_id = item.section });
 
                     <span>| <a href="#@item.id" data-toggle="modal" data-target="#@item.id">Delete Page</a></span>
 
