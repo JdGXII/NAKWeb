@@ -20,6 +20,11 @@ namespace AKAWeb_v01.Models
         //optional. a list for generating a dropdown element with the section's  sort_order marked as default
         public List<SelectListItem> dropdown { get; set; }
 
+        public SectionModel()
+        {
+
+        }
+
         public SectionModel(int id, string title, bool isLive)
         {
             this.id = id;

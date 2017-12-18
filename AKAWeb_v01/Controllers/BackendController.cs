@@ -651,6 +651,18 @@ namespace AKAWeb_v01.Controllers
                 {
                     ViewBag.PageAlert = TempData["PageCreation"].ToString();
                 }
+                if (TempData["sortingSuccess"] != null)
+                {
+                    ViewBag.PageAlert = TempData["sortingSuccess"].ToString();
+                }
+                if(TempData["SectionForDropDown"] != null)
+                {
+                    ViewBag.SectionToShow = Int32.Parse(TempData["SectionForDropDown"].ToString());
+                }
+                else
+                {
+                    ViewBag.SectionToShow = 0;
+                }
 
                 ViewData["BackendPages"] = getBackendPages();
                 //var model = getPages();
@@ -915,8 +927,8 @@ namespace AKAWeb_v01.Controllers
             query_params.Add("@content", content);
             query_params.Add("@section", SectionList);
             //original query to be executed. It will change if an image is being updated
-            string query = "INSERT into Pages (title, subheader_image, content, created_at, modified_at, section, isAlive)" +
-                "VALUES (@title, ' ', @content, (select getdate()), (select getdate()), @section, 1)";
+            string query = "INSERT into Pages (title, subheader_image, content, created_at, modified_at, section, isAlive, sort_order)" +
+                "VALUES (@title, ' ', @content, (select getdate()), (select getdate()), @section, 1, (SELECT MAX(sort_order) FROM Pages WHERE section = @section)+1) ";
             //check if user is updating the page's subheader image by looking for the file in the request
             //if he is, this will change the query to be executed
             if (Request.Files.Count > 0)
@@ -2862,6 +2874,45 @@ namespace AKAWeb_v01.Controllers
             return myList;
 
            
+        }
+
+        //saves page sorting changed by the user
+        [HttpPost]
+        public ActionResult SavePageSorting(ICollection<PageModel> pages, SectionModel section)
+        {
+            DBConnection testconn = new DBConnection();
+            string query = "UPDATE Pages SET sort_order = @sortOrder WHERE id = @pageId";
+            Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+            query_params.Add("@sortOrder", "");
+            query_params.Add("@pageId", "");
+
+            bool success = true;
+
+            foreach(PageModel page in pages)
+            {
+                query_params["@sortOrder"] = page.sort_order;
+                query_params["@pageId"] = page.id;
+
+                bool scs = testconn.WriteToProduction(query, query_params);
+                if (!scs)
+                {
+                    success = false;
+                }
+
+             }
+
+            if (success)
+            {
+                TempData["sortingSuccess"] = "Sorting was succesful";
+
+            }
+            else
+            {
+                TempData["sortingSuccess"] = "Something went wrong with sorting. Please try again.";
+            }
+
+            TempData["SectionForDropDown"] = section.id;
+            return RedirectToAction("ListPages");
         }
 
 

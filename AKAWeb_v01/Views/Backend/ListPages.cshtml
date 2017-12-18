@@ -8,11 +8,27 @@
 @section Head{
 
 <script type="text/javascript" src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script type="text/javascript">
+        function form_submit(x) {
+            //document.getElementById("delete_form" + x).submit();
+            var url = "/Backend/DeletePage";
+            var page_id = x;
+            $.post(url, { page_id }, function (data) {
+
+                window.alert("Page succesfully deleted");
+                if (!alert("Page succesfully deleted")) { window.location.reload(); }
+            
+            })
+            
+    };
+</script>
 
 <script type="text/javascript">
 
     $(document).ready(function () {
         $("#sectionDropDown").change(function () {
+
+            
 
             var id = $("#sectionDropDown").val();
             //window.alert(id);
@@ -35,6 +51,21 @@
 
     });
 </script>
+    <script>
+        $(document).ready(function () {
+
+            $("#sectionDropDown").val(@ViewBag.SectionToShow).change();
+            if ($("#sectionDropDown").val() == "0") {
+
+                $("#submitSortSave").hide();
+
+            }
+
+
+
+    });
+        
+    </script>
     
     }
 
@@ -51,9 +82,9 @@
 
     </div>
 }
-<p style="color:red;"><b>@ViewBag.PageAlert</b></p>
+<p style="color:red;" class="page-feedback"><b>@ViewBag.PageAlert</b></p>
 
 @Html.Label("Section:")
 <div>@Html.DropDownList("Sections", ViewData["Sections"] as SelectList, new { form = "content_form", @class = "form-control", id = "sectionDropDown" })</div>
-<div id="pagesBySection">@Html.Action("GetPagesePartialView", "Backend", new { id = 0 })</div>
+<div id="pagesBySection">@Html.Action("GetPagesePartialView", "Backend", new { id = ViewBag.SectionToShow })</div>
 
