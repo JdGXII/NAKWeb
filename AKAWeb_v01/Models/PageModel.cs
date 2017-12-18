@@ -11,7 +11,7 @@ namespace AKAWeb_v01.Models
         public int id { get; set; }
         public string title { get; set; }
         public string subheaderImage { get; set; }
-        public List<string> leftMenu { get; set; }
+        public List<PageModel> leftMenu { get; set; }
         public string leftMenuTitle { get; set; }
         [AllowHtml]
         public string pageContent { get; set; }

@@ -56,14 +56,22 @@ namespace AKAWeb_v01.Controllers
                 //this gets the section of the page and stores it in a string to be used multiple times
                 string section = datareader.GetValue(4).ToString();
                 //this query gets all page titles that belong to the same section as the requested page
-                string query2 = "select title from Pages where section = " + section+" AND isAlive = 1";
-                List<string> menu = new List<string>();
+                string query2 = "select title, sort_order from Pages where section = " + section+" AND isAlive = 1";
+                List<PageModel> menu = new List<PageModel>();
                 //read from query2
                 datareader = testconn.ReadFromTest(query2);
                 while (datareader.Read())
                 {
-                    string menutitle = datareader.GetValue(0).ToString();
-                    menu.Add(menutitle);
+                    string pagetitle = datareader.GetValue(0).ToString();
+                    int sort_order = Int32.Parse(datareader.GetValue(1).ToString());
+                    PageModel aux_page = new PageModel();
+                    aux_page.title = pagetitle;
+                    aux_page.sort_order = sort_order;
+                    menu.Add(aux_page);
+
+                    //sort page
+                    menu = menu.OrderBy(p => p.sort_order).ToList();
+
 
                 }
                 //this query gets the title of the section to which the page(s) belong

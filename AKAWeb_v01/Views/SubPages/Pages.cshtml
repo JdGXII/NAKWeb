@@ -30,9 +30,9 @@
     <div class="left-menu-title">@Model.leftMenuTitle </div>
     <div class="left-menu">
     
-        @foreach(string menuitem in Model.leftMenu)
+        @foreach(AKAWeb_v01.Models.PageModel menuitem in Model.leftMenu)
         {
-            <div class="left-menu-item">@Html.ActionLink(menuitem, "Pages", "SubPages", new { id = menuitem }, new { @class = "left-menu-link" })</div>
+            <div class="left-menu-item">@Html.ActionLink(menuitem.title, "Pages", "SubPages", new { id = menuitem }, new { @class = "left-menu-link" })</div>
         }
 
 </div>
