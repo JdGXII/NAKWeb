@@ -24,11 +24,12 @@ textarea {
 }
 
 .navbar-default {
-    background-color: transparent;
-    background: transparent;
-    border-color: transparent;
+    background-color: white;
+    background: white;
+    border-color: white;
 }
-.header{
+
+.header {
     background-image: url('Images/headerBackgroundSlice71px.png');
     height: 120px;
     background-repeat: repeat-x;
@@ -37,17 +38,14 @@ textarea {
 .logo {
     background: url('Images/AKA Logo70px.png');
     width: 100px;
-    
 }
 
 .resizeimg {
-
     max-width: 100%;
 }
 
 .reziseheigt {
-
-    max-height:100%;
+    max-height: 100%;
     padding-top: 50px;
 }
 
@@ -63,7 +61,7 @@ textarea {
 
 .subheader-span {
     font-family: trebuchet ms,geneva;
-    /*font-size: 24pt;*/
+    font-size: 24pt;
     color: #ffffff;
 }
 
@@ -71,8 +69,7 @@ textarea {
     background-color: #019392;
     margin-top: 23px;
     height: 150px;
-    padding: 35px;
-    text-align:center;
+    padding-top: 50px;
 }
 
 .subheader-image {
@@ -84,21 +81,45 @@ textarea {
 }
 
 .left-menu {
-    background-color: #E9F1F3;
+    background-color: #E4E4E4;
     padding: 15px
 }
 
 .left-menu-title {
     margin-top: 29px;
-    background-color: #106D6A;
+    background-color: #424D63;
     padding: 10px;
     color: white;
     font-size: 12pt;
 }
 
-.left-menu-item{
+.left-menu-link {
+    color: #106D94;
+}
 
-    margin-bottom:5px;
+.right-menu {
+    background-color: white;
+    padding: 15px
+}
+
+.right-menu-title {
+    background-color: #E4E4E4;
+    padding: 10px;
+    color: #424D8B;
+    font-size: 12pt;
+    text-align: center;
+}
+
+.right-bottom-title {
+    background-color: #124BBE;
+    padding: 10px;
+    color: white;
+    font-size: 12pt;
+    text-align: center;
+}
+
+.right-menu-link {
+    color: #424D63;
 }
 
 .bold-font {
@@ -118,11 +139,6 @@ textarea {
 }
 
 
-.left-menu-link {
-    color: #106D94;
-    
-}
-
 @media (max-width: 1200px) {
     .navbar-header {
         float: none;
@@ -135,7 +151,7 @@ textarea {
     .navbar-collapse {
         border-top: 1px solid transparent;
         box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
-        background: #E9F1F3;
+        background: #5D6D8C;
     }
 
         .navbar-collapse.collapse {
@@ -158,73 +174,60 @@ textarea {
 }
 
 .menu-link {
-    color: #777777;
+    color: white;
 }
 
-.menu-link:hover {
-    color: black;
+.dropdown-menu > li > a {
+    color: white;
 }
 
-.menu-link:visited {
-        color: black;
-    }
-.menu-link:active {
-        color: black;
-    }
+.menu-link a:hover {
+    color: white;
+}
+
+.menu-link a:visited {
+    color: white;
+}
+
+.menu-link a:active {
+    color: white;
+}
 
 .my-profile-btn {
-    background-color: #106D6A;
-    border-color: #106D6A;
+    background-color: #424D63;
+    border-color: #424D63;
 }
 
     .my-profile-btn:hover {
-        background-color: #019392;
-        border-color: #019392;
+        background-color: #425863;
+        border-color: #425863;
     }
 
-.page-feedback{
-
-    color: red;
-    font-weight:bold;
-    
+.nak-menu {
+    padding-top: 5px;
 }
 
-/* CSS from old site's classes */
-.THT185 {
+    .nak-menu .main-menu-element a:hover {
+        background-color: #5F6F8F;
+        color: white;
+    }
 
+    .nak-menu .main-menu-element a:active {
+        background-color: #5F6F8F;
+    }
 
+    .nak-menu .main-menu-element a:visited {
+        background-color: #5F6F8F;
+    }
+
+.navbar-nav > ul > .dropdown.menu {
+    background-color: #5F6F8F;
 }
 
-.IL {
-   /*font-size: 16px;*/
+.body-content {
+    margin-top: 100px;
 }
 
-.H185 {
-    /*font-size: 16px.*/
+.push-to-menu {
+    margin-top: 40px;
 }
-
-.N185 {
-
-  
-}
-
-.header3 {
-
-}
-
-/*END CSS old site's classes*/
-.reset-box-sizing, .reset-box-sizing *, .reset-box-sizing *:before, .reset-box-sizing *:after, .gsc-inline-block {
-    -webkit-box-sizing: content-box;
-    -moz-box-sizing: content-box;
-    box-sizing: content-box;
-}
-
-input.gsc-input, .gsc-input-box, .gsc-input-box-hover, .gsc-input-box-focus, .gsc-search-button {
-    box-sizing: content-box;
-    line-height: normal;
-}
-
-
-
-
-

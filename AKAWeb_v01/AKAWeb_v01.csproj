@@ -193,12 +193,6 @@
   <ItemGroup>
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
-    <Content Include="Content\Images\AKA Logo1.png" />
-    <Content Include="Content\Images\AKA Logo70px.png" />
-    <Content Include="Content\Images\AKA Logo75.png" />
-    <Content Include="Content\Images\aka-career-center-dev.jpg" />
-    <Content Include="Content\Images\aka-facebook.jpg" />
-    <Content Include="Content\Images\AKA_2017Workshop.jpg" />
     <Content Include="Content\Images\AME Logo 20170426_50px.png" />
     <Content Include="Content\Images\CarouselUploads\carouselpicture1.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -210,13 +204,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\Images\favicon.ico" />
-    <Content Include="Content\Images\feature_Events_and_Services.jpg" />
-    <Content Include="Content\Images\headerBackgroundSlice.png" />
-    <Content Include="Content\Images\headerBackgroundSlice71px.png" />
-    <Content Include="Content\Images\Kinesiology-Today-Graphic.jpg" />
-    <Content Include="Content\Images\Subheaders\banner_about.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <Content Include="Content\Images\HomePage\NAK-2016-FallNews.jpg" />
+    <Content Include="Content\Images\HomePage\NAK-2017-Conference.jpg" />
+    <Content Include="Content\Images\HomePage\NAK-Carousel-2016-About.jpg" />
+    <Content Include="Content\Images\HomePage\NAK-DPE-2016.jpg" />
+    <Content Include="Content\Images\HomePage\nak_logo_banner.png" />
+    <Content Include="Content\Images\nak-carousel-icon-on-2016.png" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -277,7 +270,6 @@
     <Content Include="Views\Menu\_MainMenu.cshtml" />
     <Content Include="Views\Products\Memberships.cshtml" />
     <Content Include="Views\Backend\PasswordRecoveryMessage.cshtml" />
-    <Content Include="email.config" />
     <Content Include="Views\Backend\AccountInfo.cshtml" />
     <Content Include="Views\Backend\PurchaseHistory.cshtml" />
     <Content Include="Views\Backend\UpdatePassword.cshtml" />
@@ -298,7 +290,6 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Content\Documents\" />
-    <Folder Include="Content\Images\SubPagesUploads\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

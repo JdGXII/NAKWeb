@@ -3,158 +3,117 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - American Kinesiology Association</title>
+    <title>@ViewBag.Title - National Academy of Kinesiology</title>
     @if (IsSectionDefined("Head"))
     {
         @RenderSection("Head", false)
     }
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
-    <link type="text/css" rel="~/Content/Site.css"/>
+    <link type="text/css" rel="~/Content/Site.css" />
     <link rel="icon" href="@Url.Content("~/Content/Images/favicon.ico")" />
 </head>
 <body>
-    <div class="navbar navbar-default navbar-fixed-top header" style="max-height: 70px;">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
+    <div class="container">
+        <div class="navbar navbar-default navbar-fixed-top" style="max-height: 70px;">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
 
-                </button>
+                    </button>
 
-                <a class="resizeimg; logo-hide" href="@Url.Action("Index", "Home")" style="float:left; margin-right:50px;">
-                    <img class="resizeimg;" src="~/Content/Images/AKA Logo70px.png" />
-                </a>
-               
-           </div>
-            <div class="navbar-collapse collapse">
-          
-            
-                <ul style="float:right;" class="nav navbar-nav" >
+                    <a class="resizeimg; logo-hide" href="@Url.Action("Index", "Home")" style="float:left; margin-right:50px;">
+                        <img class="resizeimg;" src="~/Content/Images/HomePage/nak_logo_banner.png" />
+                    </a>
 
-                   @if (Session["username"] != null)
-                   {
-                    <li>@Html.ActionLink("Hi "+Session["username"].ToString(), "MyProfile", "Backend")</li>
-                    <li>@Html.ActionLink("Sign Out", "Logout", "Backend")</li>
-                   }
-                   else
-                   {
-                       <li>@Html.ActionLink("Sign In/Register", "Index", "Backend")</li>
-                   }
+                </div>
+                <div class="navbar-collapse collapse" style="background-color:white;">
 
 
+                    <ul style="float:right;" class="nav navbar-nav push-to-menu">
 
-                </ul>
- 
+                        @if (Session["username"] != null)
+                        {
+                            <li>@Html.ActionLink("Hi " + Session["username"].ToString(), "MyProfile", "Backend")</li>
+                            <li>@Html.ActionLink("Sign Out", "Logout", "Backend")</li>
+                        }
+                        else
+                        {
+                            <li>@Html.ActionLink("Sign In/Register", "Index", "Backend")</li>
+                        }
 
-                <div style="padding-top:8px; float:right; margin-left:5px;"><button class="btn btn-default" href="#modalSearch" data-toggle="modal" data-target="#modalSearch"><i class="glyphicon glyphicon-search"></i></button></div>
 
-                <div style="padding-top:15px; float:right;"><a href="@Url.Action("Index", "ShoppingCart")"><span class="glyphicon glyphicon-shopping-cart"></span></a></div>
-                    <div class="container nav-2 text-center" style="color:darkgray; margin-top:70px; position:relative; z-index:4; background-color:white;">
 
-        @Html.Action("MainMenu", "Menu")
+                    </ul>
 
-    </div>
- 
+                    <div class="push-to-menu" style="padding-top:15px; float:right;"><a style="color:#777777;" href="@Url.Action("Index", "ShoppingCart")"><span class="glyphicon glyphicon-shopping-cart"></span> My Cart</a></div>
+
+
+                </div>
+            </div>
+            <div class="container nav-2 text-center navbar-collapse collapse" style="color:darkgray; background-color:#424D63; position:relative; z-index:4;">
+
+                @Html.Action("MainMenu", "Menu")
 
             </div>
         </div>
-    </div>
-
-    <!-- Search Modal -->
-<div id="modalSearch" class="modal fade" role="dialog">
-   <div class="modal-dialog">
-
-       <!-- Modal content-->
-       <div class="modal-content">
-           <div class="modal-header">
-               <button type="button" class="close" data-dismiss="modal">&times;</button>
-               <h4 class="modal-title">Search American Kinesiology</h4>
-           </div>
-           <div class="modal-body">
 
 
-               <script>
-                   (function () {
-                       var cx = '013337687656984343162:nhwyoarmska';
-                       var gcse = document.createElement('script');
-                       gcse.type = 'text/javascript';
-                       gcse.async = true;
-                       gcse.src = 'https://cse.google.com/cse.js?cx=' + cx;
-                       var s = document.getElementsByTagName('script')[0];
-                       s.parentNode.insertBefore(gcse, s);
-                   })();
-               </script>
-               <gcse:search></gcse:search>
-           </div>
-           <div class="modal-footer">
-               <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-           </div>
-       </div>
 
-   </div>
-</div>
-
-
-    <!--<div class="container">
-
-        
-
-    </div>-->
-    <div class="container body-content" style="margin-top:70px;">
-        @RenderSection("Subheader", false)
-        <div class="row">
-            @if (IsSectionDefined("LeftMenu"))
+        <div class="container body-content" style="margin-top:100px;">
+            <div class="row">
+                @RenderSection("Subheader", false)
+                @if (IsSectionDefined("LeftMenu"))
             {
-                <div class="col-md-1"></div>
-                <div class="col-md-2 bold-font mobile-hide">
-                    @RenderSection("LeftMenu", false)
-                </div>
-                <div class="col-md-9">
-                    @RenderBody()
-                </div>
-            }
-            else if (IsSectionDefined("BackMenu"))
-            {
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2 bold-font mobile-hide">
+                        @RenderSection("LeftMenu", false)
+                    </div>
+                    <div class="col-md-9">
+                        @RenderBody()
+                    </div>
+                }
+                else if (IsSectionDefined("BackMenu"))
+                {
 
-                <div class="col-md-2 bold-font">
-                    @RenderSection("BackMenu", false)
-                </div>
-                <div class="col-md-10">
-                    @RenderBody()
-                </div>
-            }
+                    <div class="col-md-2 bold-font">
+                        @RenderSection("BackMenu", false)
+                    </div>
+                    <div class="col-md-10">
+                        @RenderBody()
+                    </div>
+                }
 
-            else
-            {
-                <div class="col-md-12">
-                    @RenderBody()
-                </div>
-            }
-
-        </div>
-        <footer>
-            <div style="border-top: 2px solid maroon; margin-top: 5px;">
-
-                <div style="float:right; padding-top:5px;">
-
-                    <p>
-                        <a style="margin-right:15px;" href="https://www.facebook.com/pages/American-Kinesiology-Association/182330715163194">
-                            <img src="~/Content/Images/aka-facebook.jpg" />
-                        </a>@Html.ActionLink("Contact Us", "Contact", "Home", new { @style = "color:#77777B;" })&nbsp;&nbsp;&nbsp;@Html.ActionLink("Privacy", "Privacy", "Home", new { @style = "color:#77777B;" })
-                        &nbsp;&nbsp;&nbsp;@Html.ActionLink("Terms and Conditions", "TermsConditions", "Home", new { @style = "color:#77777B;" }) &nbsp;&nbsp;&nbsp;&copy; @DateTime.Now.Year
-                    </p>
-                </div>
-                <div style="float:left; padding-top:5px;"><img src="~/Content/Images/AME Logo 20170426_50px.png" /></div>
+                else
+                {
+                    <div class="col-md-12">
+                        @RenderBody()
+                    </div>
+                }
 
             </div>
-        </footer>
-    </div>
+            <footer>
+                <div style="margin-top: 5px;">
+                    <div style="padding:5px; background-color:#424D63; text-align:center;">
 
-    @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/bootstrap")
-    @RenderSection("scripts", required: false)
+                        <p style="color:white; margin-bottom: 0px;">
+                            @Html.ActionLink("Contact Us", "Contact", "Home", new { @style = "color:white;" })&nbsp;&nbsp;&nbsp;@Html.ActionLink("Privacy Policy", "Privacy", "Home", new { @style = "color:white;" })
+                            &nbsp;&nbsp;&nbsp;@Html.ActionLink("Terms and Conditions", "TermsConditions", "Home", new { @style = "color:white;" }) &nbsp;&nbsp;&nbsp;&copy; @DateTime.Now.Year
+                        </p>
+                    </div>
+                    <div style="text-align:center; padding-top:5px;"><img src="~/Content/Images/AME Logo 20170426_50px.png" /></div>
+
+                </div>
+
+            </footer>
+        </div>
+
+        @Scripts.Render("~/bundles/jquery")
+        @Scripts.Render("~/bundles/bootstrap")
+        @RenderSection("scripts", required: false)
+    </div>
 </body>
 </html>
