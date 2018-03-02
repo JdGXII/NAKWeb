@@ -27,7 +27,7 @@ namespace AKAWeb_v01.Controllers
         //private ExcelService excel_service = new ExcelService();
         //this uses product service that does things like check what the low stock level alert number is
         private ProductService product_service = new ProductService();
-       
+
 
         //perform the actual login steps
         //returns a boolean true if login was a success, false if it was not.
@@ -48,12 +48,12 @@ namespace AKAWeb_v01.Controllers
 
 
                 //if email exists in db
-                if (dataReader.Read())  
+                if (dataReader.Read())
                 {
                     //get password from db where it is hashed
                     string hashedPassword = dataReader.GetValue(4).ToString();
                     //if password matches, login is succesful
-                    if(hash_service.VerifyPassword(hashedPassword, password))
+                    if (hash_service.VerifyPassword(hashedPassword, password))
                     {
                         System.Web.HttpContext.Current.Session["userpermission"] = dataReader.GetValue(3).ToString();
                         System.Web.HttpContext.Current.Session["username"] = dataReader.GetValue(0).ToString();
@@ -65,7 +65,7 @@ namespace AKAWeb_v01.Controllers
                         testconn.CloseConnection();
 
                         login = true;
-                      
+
 
                     }
 
@@ -97,20 +97,20 @@ namespace AKAWeb_v01.Controllers
 
             bool login = doLogin(username, password);
 
-                if (login)  //(username == this.username) && (password == this.password))
-                {
+            if (login)  //(username == this.username) && (password == this.password))
+            {
 
-                    return RedirectToAction("MyProfile");
+                return RedirectToAction("MyProfile");
 
-                }
-                else
-                {
+            }
+            else
+            {
 
-                    TempData["failedlogin"] = "Sign in failed. Password or email not recognized.";
-                    return RedirectToAction("Index");
-                }
+                TempData["failedlogin"] = "Sign in failed. Password or email not recognized.";
+                return RedirectToAction("Index");
+            }
 
- 
+
 
         }
 
@@ -122,7 +122,7 @@ namespace AKAWeb_v01.Controllers
             string query = "SELECT * from Sections";
             SqlDataReader dataReader = testconn.ReadFromTest(query);
             List<SelectListItem> list = new List<SelectListItem>();
-            
+
             while (dataReader.Read())
             {
                 SelectListItem item = new SelectListItem();
@@ -173,12 +173,12 @@ namespace AKAWeb_v01.Controllers
                 SelectListItem item = new SelectListItem();
                 item.Value = dataReader.GetValue(1).ToString();
                 item.Text = dataReader.GetValue(1).ToString();
-                if(dataReader.GetValue(1).ToString() == product_type)
+                if (dataReader.GetValue(1).ToString() == product_type)
                 {
                     item.Selected = true;
-                    
+
                 }
-                
+
 
                 list.Add(item);
 
@@ -271,7 +271,7 @@ namespace AKAWeb_v01.Controllers
         public ActionResult EditCarousel()
         {
 
-            
+
             String userpermission = "";
             if (System.Web.HttpContext.Current.Session["userpermission"] != null)
             {
@@ -330,7 +330,7 @@ namespace AKAWeb_v01.Controllers
         public ActionResult Index()
         {
             //check if coming back from a failed login
-            if(TempData["failedlogin"] != null)
+            if (TempData["failedlogin"] != null)
             {
                 ViewBag.LoginFailed = TempData["failedlogin"].ToString();
                 return View();
@@ -339,7 +339,7 @@ namespace AKAWeb_v01.Controllers
             {
                 return View();
             }
-            
+
         }
 
 
@@ -384,18 +384,18 @@ namespace AKAWeb_v01.Controllers
             DBConnection testconn = new DBConnection();
             string query = "Update carousel_links set link" + picnum.ToString() + " = @url where id = 1";
             Dictionary<string, Object> query_params = new Dictionary<string, object>();
-            query_params.Add("@url",url);
+            query_params.Add("@url", url);
             testconn.WriteToProduction(query, query_params);
             testconn.CloseConnection();
-            
-            
+
+
         }
 
 
 
         public ActionResult Register()
         {
-            if(TempData["captchafailed"]  != null)
+            if (TempData["captchafailed"] != null)
             {
                 ViewBag.Captchafail = TempData["captchafailed"].ToString();
                 return View();
@@ -404,7 +404,7 @@ namespace AKAWeb_v01.Controllers
             {
                 return View();
             }
-            
+
         }
 
         //asynchronously validate the register form to enable the register button
@@ -413,7 +413,7 @@ namespace AKAWeb_v01.Controllers
         {
             string form = "false";
             //if name and password are not empty and email return code is true (meaning no problems with email address)
-            if(validateNotEmpty(name) && validateNotEmpty(password) && (validateEmail(email) == 2))
+            if (validateNotEmpty(name) && validateNotEmpty(password) && (validateEmail(email) == 2))
             {
                 //form is true/valid
                 form = "true";
@@ -429,15 +429,15 @@ namespace AKAWeb_v01.Controllers
         {
             int validation = validateEmail(email);
             //if email is valid, don't return an error message
-            if(validation == 2)
+            if (validation == 2)
             {
                 return "";
             }
-            else if(validation == 1)
+            else if (validation == 1)
             {
                 return "already exists. Please try a different email address.";
             }
-            else if(validation == 3)
+            else if (validation == 3)
             {
                 return "format not accepted. Please input a valid email address.";
             }
@@ -480,7 +480,7 @@ namespace AKAWeb_v01.Controllers
         //checks if a string is not empty, returns true if true, false if empty
         private bool validateNotEmpty(string str)
         {
-            if(String.IsNullOrEmpty(str))
+            if (String.IsNullOrEmpty(str))
             {
                 return false;
             }
@@ -536,7 +536,7 @@ namespace AKAWeb_v01.Controllers
         {
             if (captchaValid)
             {
-                if((validateRegisterForm(name, email, password) == "true"))
+                if ((validateRegisterForm(name, email, password) == "true"))
                 {
                     //hash password before inserting in db
                     string hashed_password = hash_service.HashPassword(password);
@@ -545,7 +545,7 @@ namespace AKAWeb_v01.Controllers
                     Dictionary<string, Object> query_params = new Dictionary<string, object>();
                     query_params.Add("@name", name);
                     query_params.Add("@email", email);
-                    query_params.Add("@password", password);
+                    query_params.Add("@password", hashed_password);
                     query_params.Add("@access", 1);
                     testconn.WriteToProduction(query, query_params);
                     testconn.CloseConnection();
@@ -585,9 +585,9 @@ namespace AKAWeb_v01.Controllers
 
         public ActionResult MyProfile()
         {
-            if(System.Web.HttpContext.Current.Session["username"] != null)
+            if (System.Web.HttpContext.Current.Session["username"] != null)
             {
-                if(System.Web.HttpContext.Current.Session["userpermission"].ToString() == "3")
+                if (System.Web.HttpContext.Current.Session["userpermission"].ToString() == "3")
                 {
                     ViewData["BackendPages"] = getBackendPages();
                     ViewBag.LowStock = alertLowStock();
@@ -603,7 +603,7 @@ namespace AKAWeb_v01.Controllers
             {
                 return RedirectToAction("Index");
             }
-            
+
         }
 
         //returns true if there is a live product with low stock, false if no live product has low stock
@@ -612,9 +612,9 @@ namespace AKAWeb_v01.Controllers
         {
             var products = getProducts();
             bool low_stock = false;
-            foreach(ProductModel product in products)
+            foreach (ProductModel product in products)
             {
-                if(product.isLive && product.stock <= product_service.low_stock_alert)
+                if (product.isLive && product.stock <= product_service.low_stock_alert)
                 {
                     low_stock = true;
                 }
@@ -641,13 +641,13 @@ namespace AKAWeb_v01.Controllers
             }
             if (userpermission.Equals("3"))
             {
-                if(TempData["pageDeletionSuccess"] != null)
+                if (TempData["pageDeletionSuccess"] != null)
                 {
                     ViewBag.PageAlert = TempData["pageDeletionSuccess"].ToString();
                 }
 
 
-                if(TempData["PageCreation"] != null)
+                if (TempData["PageCreation"] != null)
                 {
                     ViewBag.PageAlert = TempData["PageCreation"].ToString();
                 }
@@ -655,7 +655,7 @@ namespace AKAWeb_v01.Controllers
                 {
                     ViewBag.PageAlert = TempData["sortingSuccess"].ToString();
                 }
-                if(TempData["SectionForDropDown"] != null)
+                if (TempData["SectionForDropDown"] != null)
                 {
                     ViewBag.SectionToShow = Int32.Parse(TempData["SectionForDropDown"].ToString());
                 }
@@ -693,7 +693,7 @@ namespace AKAWeb_v01.Controllers
                 string pageContent = dataReader.GetValue(3).ToString();
                 int section = Int32.Parse(dataReader.GetValue(4).ToString());
                 bool isAlive = (bool)dataReader.GetValue(5);
-                PageModel page = new PageModel(id, title, subheaderImage, pageContent,section, isAlive);
+                PageModel page = new PageModel(id, title, subheaderImage, pageContent, section, isAlive);
                 page_list.Add(page);
 
             }
@@ -723,7 +723,7 @@ namespace AKAWeb_v01.Controllers
                 int section = Int32.Parse(dataReader.GetValue(4).ToString());
                 bool isAlive = (bool)dataReader.GetValue(5);
                 page = new PageModel(id, title, subheaderImage, pageContent, section, isAlive);
-                
+
             }
 
             testconn.CloseDataReader();
@@ -823,7 +823,7 @@ namespace AKAWeb_v01.Controllers
                 {
                     return RedirectToAction("MyProfile");
                 }
-                
+
             }
             else
             {
@@ -844,11 +844,11 @@ namespace AKAWeb_v01.Controllers
                 if (model != null)
                 {
                     ViewData["BackendPages"] = getBackendPages();
-                    if(TempData["EditSuccess"] != null)
+                    if (TempData["EditSuccess"] != null)
                     {
                         ViewBag.EditSuccess = TempData["EditSuccess"].ToString();
                     }
-                    
+
                     return View(model);
                 }
                 else
@@ -862,10 +862,10 @@ namespace AKAWeb_v01.Controllers
                 return RedirectToAction("MyProfile");
             }
 
-            
+
         }
 
-        [HttpPost, ValidateInput(false)]     
+        [HttpPost, ValidateInput(false)]
         public ActionResult EditPage(string id, string content, string title)
         {
             //uncomment the next line to check content being passed through form
@@ -957,20 +957,57 @@ namespace AKAWeb_v01.Controllers
 
         }
 
+        //retrieves the highest sort order number of pages within a section
+        //receives the section id as a string
+        //returns the highest sort order number belonging to a page in that section as an int
+        //this function is meant to be used from the CreatePage POST Action
+        private int getMaxSortOrderFromSection(string section_id)
+        {
+            int max_sort_order = 0;
+            int sect_id = Int32.Parse(section_id);
+            DBConnection testconn = new DBConnection();
+            string query = "SELECT MAX(sort_order) FROM Pages WHERE section = @sectionId";
+            Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+            query_params.Add("@sectionId", sect_id);
+            SqlDataReader dataReader = testconn.ReadFromProduction(query, query_params);
+            //if the datareader is null it means the section probably doesn't have any pages 
+            //therefore the sort order should be 0
+            if (dataReader != null)
+            {
+                while (dataReader.Read())
+                {
+                    if (dataReader.GetValue(0).ToString() != "")
+                    {
+
+                        max_sort_order = Int32.Parse(dataReader.GetValue(0).ToString());
+                    }
+
+                }
+            }
+
+            testconn.CloseDataReader();
+            testconn.CloseConnection();
+
+            return max_sort_order;
+        }
+
         [HttpPost, ValidateInput(false)]
         public ActionResult CreatePage(string title, string content, string SectionList)
         {
             //uncomment the next line to check content being passed through form
             //System.Web.HttpContext.Current.Session["debug"] = Request.Files.Count;
 
+            int sort_order = getMaxSortOrderFromSection(SectionList) + 1;
             DBConnection testconn = new DBConnection();
             Dictionary<string, Object> query_params = new Dictionary<string, Object>();
             query_params.Add("@title", title);
             query_params.Add("@content", content);
             query_params.Add("@section", SectionList);
+            query_params.Add("@sortOrder", sort_order);
+
             //original query to be executed. It will change if an image is being updated
             string query = "INSERT into Pages (title, subheader_image, content, created_at, modified_at, section, isAlive, sort_order)" +
-                "VALUES (@title, ' ', @content, (select getdate()), (select getdate()), @section, 1, (SELECT MAX(sort_order) FROM Pages WHERE section = @section)+1) ";
+                "VALUES (@title, ' ', @content, (select getdate()), (select getdate()), @section, 1, @sortOrder)";
             //check if user is updating the page's subheader image by looking for the file in the request
             //if he is, this will change the query to be executed
             if (Request.Files.Count > 0)
@@ -985,7 +1022,8 @@ namespace AKAWeb_v01.Controllers
                         file.SaveAs(path);
                         string pathForDB = "~/Content/Images/Subheaders/" + fileName.ToString();
                         //query = "INSERT into Pages (title, subheader_image, content, created_at, modified_at, section) VALUES (" + title + ", " + pathForDB + ", " + content + ", getdate(), getdate(), " + SectionList + ")";
-                        query = "INSERT into Pages(title, subheader_image, content, created_at, modified_at, section, isAlive) VALUES(@title, @subheaderImage, @content, getdate(), getdate(), @section, 1)";
+                        query = "INSERT into Pages (title, subheader_image, content, created_at, modified_at, section, isAlive, sort_order)" +
+                "VALUES (@title, @subheaderImage, @content, (select getdate()), (select getdate()), @section, 1, @sortOrder)";
                         ViewBag.Message = "File uploaded successfully";
                         query_params.Add("@subheaderImage", pathForDB);
 
@@ -1042,10 +1080,10 @@ namespace AKAWeb_v01.Controllers
                     }
                     testconn.WriteToProduction(query2, update_params);
 
-
+                    testconn.CloseDataReader();
                     testconn.CloseConnection();
                     TempData["SectionForDropDown"] = section_id;
-                    
+
                     return RedirectToAction("ListPages", "Backend");
                 }
                 else
@@ -1157,7 +1195,7 @@ namespace AKAWeb_v01.Controllers
 
             Dictionary<string, Object> query_params = new Dictionary<string, Object>();
             query_params.Add("@sectionId", sectionid);
-           
+
 
             SqlDataReader dataReader = testconn.ReadFromProduction(query, query_params);
             string sort_number = "";
@@ -1171,7 +1209,7 @@ namespace AKAWeb_v01.Controllers
             }
 
             //if the section's current sort number is different, switch the numbers
-            if(sort_number != sort_order)
+            if (sort_number != sort_order)
             {
                 query = "SELECT section_id FROM Section_Sorting WHERE section_sortnumber = @sortOrder";
                 query_params.Remove("@sectionId");
@@ -1196,12 +1234,12 @@ namespace AKAWeb_v01.Controllers
 
                         string query_update_pushdown = "UPDATE Section_Sorting SET section_sortnumber = section_sortnumber + 1 WHERE section_sortnumber >= @sortOrder";
 
-                        bool first_success = testconn.WriteToProduction(query_update_pullup,update_params);
-                        
-                        
+                        bool first_success = testconn.WriteToProduction(query_update_pullup, update_params);
+
+
                         //update_params["@sortOrder"] = sort_number;
                         //update_params["@sectionId"] = section_tobe_switched_id;
-                        
+
                         bool second_success = testconn.WriteToProduction(query_update_pushdown, update_params);
 
                         update_params.Remove("@sortNumber");
@@ -1346,7 +1384,7 @@ namespace AKAWeb_v01.Controllers
             if (dataReader.Read())
             {
                 string id = dataReader.GetValue(0).ToString();
-                string mail = dataReader.GetValue(1).ToString(); 
+                string mail = dataReader.GetValue(1).ToString();
                 string password = RandomPassword(id);
                 //message for the website
                 string webmessage = "An email has been sent to " + mail + " with a new temporary password.";
@@ -1355,7 +1393,7 @@ namespace AKAWeb_v01.Controllers
                 string subject = "Password Recovery";
                 //this forwards the webmessage to the view that will display it and can then access it
                 TempData["passwordmessage"] = webmessage;
-                
+
                 //send the email with the new password
                 sendEmail(emailmessage, mail, subject);
 
@@ -1396,7 +1434,7 @@ namespace AKAWeb_v01.Controllers
         {
             ViewBag.Message = TempData["passwordmessage"].ToString();
             return View();
-   
+
         }
 
         //Builds the message for the email containing the random password
@@ -1404,7 +1442,7 @@ namespace AKAWeb_v01.Controllers
         private string setEmailString(string password)
         {
             string message = "Your new temporary password is: " +
-                            password + 
+                            password +
                             " You can set a new password from your MyProfile page after signing in.";
             return message;
         }
@@ -1426,7 +1464,7 @@ namespace AKAWeb_v01.Controllers
                 string user_id = System.Web.HttpContext.Current.Session["userid"].ToString();
                 var model = getUserModel(user_id);
                 //if coming from an update operation and there's a message, set it to viewbag
-                if(TempData["updatedresult"] != null)
+                if (TempData["updatedresult"] != null)
                 {
                     ViewBag.Result = TempData["updatedresult"].ToString();
                 }
@@ -1513,9 +1551,9 @@ namespace AKAWeb_v01.Controllers
         public ActionResult UpdateProfile(string name, string email, string country, string state, string city, string street_address, string zip, string id)
         {
             bool updateUserInfo = UpdateUserInfo(name, email, id);
-            
+
             bool updateUserAddress = UpdateUserAddress(country, state, city, street_address, zip, id);
-            
+
             if (updateUserInfo && updateUserAddress)
             {
                 //set success message before redirecting
@@ -1540,7 +1578,7 @@ namespace AKAWeb_v01.Controllers
             query_params.Add("@name", name);
             query_params.Add("@email", email);
             query_params.Add("@userId", user_id);
-            bool result = testconn.WriteToProduction(query,query_params);
+            bool result = testconn.WriteToProduction(query, query_params);
 
             testconn.CloseConnection();
             return result;
@@ -1555,16 +1593,16 @@ namespace AKAWeb_v01.Controllers
 
             Dictionary<string, Object> query_params = new Dictionary<string, Object>();
             query_params.Add("@userId", user_id);
-         
+
             SqlDataReader dataReader = testconn.ReadFromProduction(check_user_exists, query_params);
 
-            
+
             query_params.Add("@country", country);
             query_params.Add("@state", state);
             query_params.Add("@city", city);
             query_params.Add("@streetAddress", street_address);
             query_params.Add("@zip", zip);
-            
+
 
             string query = "";
             if (dataReader.Read())
@@ -1578,7 +1616,7 @@ namespace AKAWeb_v01.Controllers
             }
 
 
-            bool result = testconn.WriteToProduction(query,query_params);
+            bool result = testconn.WriteToProduction(query, query_params);
 
             testconn.CloseDataReader();
             testconn.CloseConnection();
@@ -1595,7 +1633,7 @@ namespace AKAWeb_v01.Controllers
                 string user_id = System.Web.HttpContext.Current.Session["userid"].ToString();
                 var model = getUserModel(user_id);
                 //if password update message has been set, add it to viewbag
-                if(TempData["passwordupdatemessage"] != null)
+                if (TempData["passwordupdatemessage"] != null)
                 {
                     ViewBag.Result = TempData["passwordupdatemessage"].ToString();
                 }
@@ -1675,7 +1713,7 @@ namespace AKAWeb_v01.Controllers
             Dictionary<string, Object> query_params = new Dictionary<string, Object>();
             query_params.Add("@password", hashNewPassword);
             query_params.Add("@userId", user_id);
-      
+
 
             //if the Write function was succesful returns true, false if otherwise
             bool result = testconn.WriteToProduction(query, query_params);
@@ -1705,7 +1743,7 @@ namespace AKAWeb_v01.Controllers
                 string length = dataReader.GetValue(4).ToString();
                 string details = dataReader.GetValue(5).ToString();
                 product = new ProductModel(id, cost, type, description, length, true, details, null);
-                
+
             }
 
             testconn.CloseDataReader();
@@ -1734,7 +1772,7 @@ namespace AKAWeb_v01.Controllers
                 int stock = Int32.Parse(dataReader.GetValue(8).ToString());
                 ProductModel product = new ProductModel(id, cost, type, description, length, isLive, details, image, dropdown, stock);
                 product_list.Add(product);
-                
+
 
             }
 
@@ -1812,7 +1850,7 @@ namespace AKAWeb_v01.Controllers
                 int id = Int32.Parse(dataReader.GetValue(0).ToString());
                 string title = dataReader.GetValue(1).ToString();
                 string url = dataReader.GetValue(2).ToString();
-           
+
                 ImageModel image = new ImageModel(id, title, url);
                 image_list.Add(image);
 
@@ -1859,7 +1897,7 @@ namespace AKAWeb_v01.Controllers
         public ActionResult UploadSubPageImage(string title)
         {
 
-            
+
             if (Request.Files.Count > 0)
             {
                 var file = Request.Files[0];
@@ -1876,18 +1914,18 @@ namespace AKAWeb_v01.Controllers
                         Dictionary<string, Object> query_params = new Dictionary<string, Object>();
                         query_params.Add("@title", title);
                         query_params.Add("@url", pathForDB);
-    
-                        testconn.WriteToProduction(query,query_params);
+
+                        testconn.WriteToProduction(query, query_params);
                         testconn.CloseConnection();
                         TempData["imageUploadSuccess"] = "Image uploaded succesfully!";
-                        
+
 
 
 
                     }
                     catch (Exception ex)
                     {
-                        
+
                         TempData["imageUploadSuccess"] = "Something went wrong. Image did not upload.";
                         TempData["imageUploadException"] = ex;
                     }
@@ -1908,7 +1946,7 @@ namespace AKAWeb_v01.Controllers
             Dictionary<string, Object> query_params = new Dictionary<string, Object>();
             query_params.Add("@imageTitle", imagetitle);
             query_params.Add("@imageId", imageid);
-           
+
             if (testconn.WriteToProduction(query, query_params))
             {
                 TempData["imageUploadSuccess"] = "Image title succesfully edited.";
@@ -1940,7 +1978,7 @@ namespace AKAWeb_v01.Controllers
                     System.IO.File.Delete(path);
                     //delete from DB
 
-                   
+
                     TempData["imageUploadSuccess"] = "Image succesfully deleted.";
 
 
@@ -1985,6 +2023,12 @@ namespace AKAWeb_v01.Controllers
 
         }
 
+        public JsonResult HyperlinkJsonList()
+        {
+            List<UrlModelPair> list = getHyperLinksForJson();
+            return Json(list, JsonRequestBehavior.AllowGet);
+        }
+
         private List<ImagePair> getImagesForJson()
         {
 
@@ -1995,7 +2039,7 @@ namespace AKAWeb_v01.Controllers
             //while there are records in the datareader
             while (dataReader.Read())
             {
-                
+
                 string title = dataReader.GetValue(0).ToString();
                 string url = dataReader.GetValue(1).ToString();
                 string value = Url.Content(url);
@@ -2007,6 +2051,28 @@ namespace AKAWeb_v01.Controllers
             testconn.CloseConnection();
             return image_list;
 
+        }
+
+        private List<UrlModelPair> getHyperLinksForJson()
+        {
+            List<UrlModelPair> links_list = new List<UrlModelPair>();
+            DBConnection testconn = new DBConnection();
+            string query = "SELECT title, url FROM Hyperlinks";
+            SqlDataReader dataReader = testconn.ReadFromTest(query);
+            //while there are records in the datareader
+            while (dataReader.Read())
+            {
+
+                string title = dataReader.GetValue(0).ToString();
+                string url = dataReader.GetValue(1).ToString();
+
+
+                links_list.Add(new UrlModelPair { title = title, value = url });
+
+            }
+            testconn.CloseDataReader();
+            testconn.CloseConnection();
+            return links_list;
         }
 
         public ActionResult ListProducts()
@@ -2035,8 +2101,134 @@ namespace AKAWeb_v01.Controllers
 
         }
 
+        public ActionResult ListHyperlinks()
+        {
+            if (System.Web.HttpContext.Current.Session["username"] != null)
+            {
+                ViewData["BackendPages"] = getBackendPages();
+                var model = getHyperlinks();
+                if (TempData["success"] != null)
+                {
+                    ViewBag.UploadSuccess = TempData["success"].ToString();
+                }
+                return View(model);
+            }
+            else
+            {
+                return RedirectToAction("Index");
+            }
+        }
+
         [HttpPost]
-        public ActionResult EditProduct (string cost, string type, string description, string length, string details, string productid, string stock)
+        public ActionResult SaveHyperlink(string url, string title)
+        {
+            if (System.Web.HttpContext.Current.Session["username"] != null)
+            {
+                DBConnection testconn = new DBConnection();
+                string query = $"INSERT INTO Hyperlinks(url, title) VALUES('{url}', '{title}')";
+                bool success = testconn.WriteToTest(query);
+                testconn.CloseConnection();
+
+                if (success)
+                {
+                    TempData["success"] = "Hyperlink succesfully created.";
+                }
+                else
+                {
+                    TempData["success"] = "Something went wrong. Hyperlink not created.";
+                }
+                return RedirectToAction("ListHyperlinks");
+            }
+            else
+            {
+                return RedirectToAction("Index");
+            }
+
+        }
+
+        [HttpPost]
+        public ActionResult EditHyperlink(string url, string title, int id)
+        {
+            if (System.Web.HttpContext.Current.Session["username"] != null)
+            {
+                DBConnection testconn = new DBConnection();
+                string query = $"UPDATE Hyperlinks SET url ='{url}', title='{title}' WHERE id = {id}";
+                bool success = testconn.WriteToTest(query);
+                testconn.CloseConnection();
+                if (success)
+                {
+                    TempData["success"] = "Hyperlink succesfully edited.";
+                }
+                else
+                {
+                    TempData["success"] = "Something went wrong. Hyperlink not edited.";
+                }
+                return RedirectToAction("ListHyperlinks");
+            }
+            else
+            {
+                return RedirectToAction("Index");
+            }
+
+        }
+
+        public ActionResult DeleteUrl(int id)
+        {
+            if (System.Web.HttpContext.Current.Session["username"] != null)
+            {
+                DBConnection testconn = new DBConnection();
+                string query = $"DELETE FROM Hyperlinks WHERE id = {id}";
+                bool success = testconn.WriteToTest(query);
+                testconn.CloseConnection();
+
+                if (success)
+                {
+                    TempData["success"] = "Hyperlink succesfully deleted.";
+                }
+                else
+                {
+                    TempData["success"] = "Something went wrong. Hyperlink not deleted.";
+                }
+
+                return RedirectToAction("ListHyperlinks");
+            }
+            else
+            {
+                return RedirectToAction("Index");
+            }
+        }
+
+
+        private List<UrlModel> getHyperlinks()
+        {
+            List<UrlModel> links_list = new List<UrlModel>();
+            DBConnection testconn = new DBConnection();
+            string query = "SELECT title, url, id FROM Hyperlinks";
+            SqlDataReader dataReader = testconn.ReadFromTest(query);
+            //while there are records in the datareader
+            while (dataReader.Read())
+            {
+
+                string title = dataReader.GetValue(0).ToString();
+                string url = dataReader.GetValue(1).ToString();
+                int id = Int32.Parse(dataReader.GetValue(2).ToString());
+
+                UrlModel hyperlink = new UrlModel();
+                hyperlink.title = title;
+                hyperlink.url = url;
+                hyperlink.id = id;
+
+
+                links_list.Add(hyperlink);
+
+            }
+            testconn.CloseDataReader();
+            testconn.CloseConnection();
+            return links_list;
+        }
+
+        [HttpPost]
+        public ActionResult EditProduct(string cost, string type, string description, string length, string details, string productid, string stock)
         {
             if (System.Web.HttpContext.Current.Session["username"] != null)
             {
@@ -2221,7 +2413,7 @@ namespace AKAWeb_v01.Controllers
         public async Task<ActionResult> GetTicketsForConferencePartialView()
         {
             var model = await product_service.getTickets();
-            
+
             return PartialView("_AsyncTickets", model);
 
         }
@@ -2248,12 +2440,12 @@ namespace AKAWeb_v01.Controllers
         public ActionResult CreateConference(ICollection<string> addon, ICollection<ProductModel> tickets, ConferenceModel conference, AddressModel location)
         {
             int conference_code = storeNewConference(conference);
-            if(conference_code != -1)
+            if (conference_code != -1)
             {
                 bool tickets_success = bindTicketsToConference(conference_code, addon, tickets);
                 bool location_success = bindAddressToConference(conference_code, location);
 
-                if(tickets_success && location_success)
+                if (tickets_success && location_success)
                 {
                     TempData["ConferenceCreationSuccess"] = "Conference succesfully created";
                     return RedirectToAction("ListConferences");
@@ -2271,7 +2463,7 @@ namespace AKAWeb_v01.Controllers
                 return RedirectToAction("CreateConference");
             }
 
-            
+
         }
 
         //Creates/saves a new conference in the Conference DB
@@ -2303,7 +2495,7 @@ namespace AKAWeb_v01.Controllers
 
             bool success = testconn.WriteToProduction(query, query_params);
             testconn.CloseConnection();
-         
+
 
             if (success)
             {
@@ -2314,8 +2506,8 @@ namespace AKAWeb_v01.Controllers
                 return -1;
 
             }
-  
-     
+
+
         }
 
         //If anything goes wrong with the multiple database write operations this function is called and deletes the records
@@ -2329,7 +2521,7 @@ namespace AKAWeb_v01.Controllers
 
             Dictionary<string, Object> query_params = new Dictionary<string, Object>();
             query_params.Add("@conferenceCode", conference_code);
-            
+
 
             bool success_location = testconn.WriteToProduction(delete_location, query_params);
             bool success_products = testconn.WriteToProduction(delete_products, query_params);
@@ -2351,7 +2543,7 @@ namespace AKAWeb_v01.Controllers
             string delete_query = "DELETE FROM Conference_Has_Product WHERE conference_code = @conferenceCode";
             Dictionary<string, Object> query_params = new Dictionary<string, Object>();
             query_params.Add("@conferenceCode", conference_code);
-            
+
             testconn.WriteToProduction(delete_query, query_params);
 
             query_params.Add("@ticketId", 0);
@@ -2363,7 +2555,7 @@ namespace AKAWeb_v01.Controllers
                 query_params["@ticketId"] = ticket_id;
 
                 success_insert = testconn.WriteToProduction(insert, query_params);
-               
+
                 success = (success_update && success_insert);
                 if (!success)
                 {
@@ -2371,13 +2563,13 @@ namespace AKAWeb_v01.Controllers
                     testconn.CloseConnection();
                     return success;
                 }
-                
+
             }
 
             testconn.CloseConnection();
             return success;
-            
-            
+
+
 
         }
 
@@ -2395,7 +2587,7 @@ namespace AKAWeb_v01.Controllers
             query_params.Add("@conferenceCode", conference_code);
 
             bool success = testconn.WriteToProduction(query, query_params);
-            
+
             testconn.CloseConnection();
 
             return success;
@@ -2434,7 +2626,7 @@ namespace AKAWeb_v01.Controllers
 
         public ActionResult ListConferences()
         {
-            
+
             if (TempData["ConferenceCreationSuccess"] != null)
             {
                 ViewBag.ConferenceCreationFeedback = TempData["ConferenceCreationSuccess"].ToString();
@@ -2453,8 +2645,9 @@ namespace AKAWeb_v01.Controllers
             if (dataReader.HasRows)
             {
 
-                while (dataReader.Read()) { 
-              
+                while (dataReader.Read())
+                {
+
                     string title = dataReader.GetValue(0).ToString();
                     string start_date = dataReader.GetValue(1).ToString();
                     string end_date = dataReader.GetValue(2).ToString();
@@ -2507,7 +2700,7 @@ namespace AKAWeb_v01.Controllers
         private AddressModel getAssociatedLocation(int conference_code)
         {
             DBConnection testconn = new DBConnection();
-            AddressModel location = new AddressModel(); 
+            AddressModel location = new AddressModel();
             string conference_location = "SELECT city, state, zip, street_address FROM Conference_Has_Location WHERE conference_code = @conferenceCode";
 
             Dictionary<string, Object> query_params = new Dictionary<string, Object>();
@@ -2544,7 +2737,7 @@ namespace AKAWeb_v01.Controllers
             AddressModel location = getAssociatedLocation(conference_code);
             DBConnection testconn = new DBConnection();
             string conference_info = "SELECT id, title, tagline, external_url, start_date, end_date, processing_fee, max_attendees, attendees, members_only, isLive, conference_code FROM Conference WHERE conference_code =" + conference_code.ToString();
- 
+
 
             SqlDataReader dataReader = testconn.ReadFromTest(conference_info);
 
@@ -2575,7 +2768,7 @@ namespace AKAWeb_v01.Controllers
             testconn.CloseDataReader();
             testconn.CloseConnection();
             return conference;
-            
+
         }
 
         public ActionResult ToggleIsLiveConference(int id)
@@ -2591,7 +2784,7 @@ namespace AKAWeb_v01.Controllers
             string query2 = "UPDATE Conference SET isLive = 0 WHERE conference_code = @id";
             SqlDataReader dataReader = testconn.ReadFromTest(query);
             dataReader.Read();
-            
+
             //if the product is NOT live, change the query and turn the product to live
             if (!(bool)dataReader.GetValue(0))
             {
@@ -2602,7 +2795,7 @@ namespace AKAWeb_v01.Controllers
             testconn.CloseConnection();
             return RedirectToAction("ListConferences", "Backend");
 
-            
+
 
         }
 
@@ -2631,7 +2824,7 @@ namespace AKAWeb_v01.Controllers
             else
             {
                 TempData["ConferenceUpdateSuccess"] = "Something went wrong. Conference could not be updated.";
-                return RedirectToAction("EditConference", conference.conference_code); 
+                return RedirectToAction("EditConference", conference.conference_code);
             }
 
         }
@@ -2674,7 +2867,7 @@ namespace AKAWeb_v01.Controllers
             query_params.Add("@addressState", address.state);
             query_params.Add("@addressCity", address.city);
             query_params.Add("@addressStreetAddress", address.street_address);
-            query_params.Add("@addressZip", address.zip);  
+            query_params.Add("@addressZip", address.zip);
             query_params.Add("@conferenceCode", conference_code);
 
             bool success = testconn.WriteToProduction(query, query_params);
@@ -2699,10 +2892,10 @@ namespace AKAWeb_v01.Controllers
                 ProductModel shell_ticket = new ProductModel();
                 shell_ticket.id = Int32.Parse(id);
                 shell_tickets.Add(shell_ticket);
-                
+
             }
 
-            foreach(ProductModel ticket in tickets)
+            foreach (ProductModel ticket in tickets)
             {
                 if (shell_tickets.Contains(ticket))
                 {
@@ -2736,7 +2929,7 @@ namespace AKAWeb_v01.Controllers
             {
                 int userpermission = Int32.Parse(System.Web.HttpContext.Current.Session["userpermission"].ToString());
 
-                if(userpermission >= 2)
+                if (userpermission >= 2)
                 {
                     if (TempData["success"] != null)
                     {
@@ -2757,13 +2950,13 @@ namespace AKAWeb_v01.Controllers
 
 
             }
-            
+
             else
             {
                 ViewBag.PermissionDenied = "denied";
                 return View(model);
             }
-            
+
 
         }
 
@@ -2776,24 +2969,88 @@ namespace AKAWeb_v01.Controllers
 
                 if (userpermission >= 2)
                 {
-                    StringBuilder message = new StringBuilder("<div>Job Posted:<br>");
-                    message.Append(model.senders_name);
-                    message.Append("<br>");
-                    message.Append(model.email);
-                    message.Append("<br>");
-                    message.Append(model.instintution_name);
-                    message.Append("<br>");
-                    message.Append(model.department_name);
-                    message.Append("<br>");
-                    message.Append(model.title_position);
-                    message.Append("<br>");
-                    message.Append(model.category);
-                    message.Append("<br>");
-                    message.Append(model.closing_date);
-                    message.Append("<br>");
-                    message.Append(model.job_url);
-                    message.Append("</div>");
-                    EmailService email = new EmailService(message.ToString(), "kims@hkusa.com", "New Job Posting", true);
+
+                    //Begin Add the job posting to the database
+                    DBConnection testconn = new DBConnection();
+                    string query = "INSERT INTO americ41_admin.Job_Posting (title, category, location, close_date, url, submitted_by, email, institution, department) VALUES " +
+                        "(@title, @category, @location, @closeDate, @url, @submittedBy, @email, @institution, @department)";
+
+                    Dictionary<string, Object> query_params = new Dictionary<string, Object>();
+                    query_params.Add("@title", model.title_position);
+                    query_params.Add("@category", model.category);
+                    query_params.Add("@location", model.instintution_name);
+                    query_params.Add("@closeDate", model.closing_date);
+                    query_params.Add("@url", model.job_url);
+                    query_params.Add("@submittedBy", model.senders_name);
+                    query_params.Add("@email", model.email);
+                    query_params.Add("@institution", model.instintution_name);
+                    query_params.Add("@department", model.department_name);
+
+                    testconn.WriteToProduction(query, query_params);
+                    //End Add Job Posting to Database
+
+                    //Begin Remove expired postings
+                    String currentDate = DateTime.Now.Date.ToString("yyyy-MM-dd");
+                    string query2 = "DELETE FROM americ41_admin.Job_Posting WHERE close_date < @currentDate";
+                    query_params.Add("@currentDate", currentDate);
+                    testconn.WriteToProduction(query2, query_params);
+
+
+                    //End Remove expired postings
+                    testconn.CloseConnection();
+
+                    String closeDateString = model.closing_date.Date.ToString("MM/dd/yyyy");
+                    //Below code builds the email to be sent to the customer
+
+                    StringBuilder message = new StringBuilder("Thanks for submitting a job posting to the American Kinesiology Association." +
+                        " This email confirms that the " + model.title_position + " position you submitted has been received.");
+                    message.AppendLine();
+                    message.AppendLine("Please review the listing at this link for accuracy.");
+                    message.AppendLine();
+                    message.AppendLine("http://www.americankinesiology.org/SubPages/Pages/Current%20Openings");
+                    message.AppendLine();
+                    message.AppendLine("The posting will expire on the closing date you entered or 90 days from entry." +
+                        " If you would like the posting to extend beyond 90 days, you will need to resubmit the posting." +
+                        " If the position has been filled prior to the closing date and you would like it deleted, just let us know and we'll do so upon your request.");
+                    message.AppendLine("If I can be of any further assistance, feel free to let me know.");
+                    message.AppendLine();
+                    message.AppendLine("Best regards,");
+                    message.AppendLine();
+                    message.AppendLine("Kim Scott, Business Manager");
+                    message.AppendLine("American Kinesiology Association");
+                    message.AppendLine("1607 N.Market Street");
+                    message.AppendLine("Champaign, IL 61820");
+                    message.AppendLine("Tel: (217) 403-7545");
+                    message.AppendLine("Fax: (217) 351-2674");
+                    message.AppendLine("Email: kims@hkusa.com");
+                    message.AppendLine("www.AmericanKinesiology.org");
+                    message.AppendLine();
+                    message.AppendLine();
+
+                    //2nd portion of email showing the details of posting request
+
+
+                    message.AppendLine();
+                    message.Append("Title position: ");
+                    message.AppendLine(model.title_position);
+                    message.Append("Category: ");
+                    message.AppendLine(model.category);
+                    message.Append("Institution name: ");
+                    message.AppendLine(model.instintution_name);
+                    message.Append("Closing date: ");
+                    message.AppendLine(closeDateString);
+                    message.Append("Job url: ");
+                    message.AppendLine(model.job_url);
+                    message.Append("Senders name: ");
+                    message.AppendLine(model.senders_name);
+                    message.Append("Email: ");
+                    message.AppendLine(model.email);
+                    message.Append("Department name: ");
+                    message.AppendLine(model.department_name);
+                    message.AppendLine();
+
+                    //Send the email to Kim Scott, myself and the poster's email
+                    EmailService email = new EmailService(message.ToString(), "kims@hkusa.com, " + model.email + ",  gwenm@hkusa.com, jmoore@americankinesiology.org", "New Job Posting", true);
                     bool success = email.sendEmail();
                     if (success)
                     {
@@ -2803,7 +3060,7 @@ namespace AKAWeb_v01.Controllers
                     {
                         TempData["success"] = "Something went wrong. Job posting could not be sent for.";
                     }
-                    
+
 
                     return RedirectToAction("JobPosting");
 
@@ -2817,7 +3074,7 @@ namespace AKAWeb_v01.Controllers
 
         }
 
-        
+
         public ActionResult GetPagesePartialView(int id)
         {
             var model = getPages(id);
@@ -2841,7 +3098,7 @@ namespace AKAWeb_v01.Controllers
         private List<SelectListItem> getPageDropDown(PageModel page)
         {
             List<SelectListItem> mylist = new List<SelectListItem>();
-          
+
 
             DBConnection testconn = new DBConnection();
             //get the highest sort order number for pages belonging to the same section
@@ -2859,15 +3116,15 @@ namespace AKAWeb_v01.Controllers
                 }
             }
 
-            for(int i = 1; i <= max_sort; i++)
+            for (int i = 1; i <= max_sort; i++)
             {
-    
+
                 SelectListItem item = new SelectListItem();
                 item.Value = i.ToString();
                 item.Text = i.ToString();
-                if(i == page.sort_order)
+                if (i == page.sort_order)
                 {
-                    
+
                     item.Selected = true;
                 }
 
@@ -2878,7 +3135,7 @@ namespace AKAWeb_v01.Controllers
             return mylist;
 
         }
-        
+
         //this function returns a list of Pages given a section id
         //in other words, it returns all the pages belonging to a particular session
         //returns them sorted
@@ -2892,13 +3149,13 @@ namespace AKAWeb_v01.Controllers
             if (section_id == 0)
             {
                 query = "SELECT id, title, subheader_image, content, section, isAlive, sort_order from Pages";
-                
+
             }
             else
             {
                 query_params.Add("@sectionId", section_id);
             }
-     
+
             SqlDataReader dataReader = testconn.ReadFromProduction(query, query_params);
             //while there are records in the datareader
             while (dataReader.Read())
@@ -2933,7 +3190,7 @@ namespace AKAWeb_v01.Controllers
 
             List<SectionModel> sections = getSections();
 
-            foreach(SectionModel section in sections)
+            foreach (SectionModel section in sections)
             {
                 SelectListItem item = new SelectListItem();
                 item.Value = section.id.ToString();
@@ -2945,7 +3202,7 @@ namespace AKAWeb_v01.Controllers
 
             return myList;
 
-           
+
         }
 
         //saves page sorting changed by the user
@@ -2976,7 +3233,7 @@ namespace AKAWeb_v01.Controllers
                         }
 
                     }
-
+                    testconn.CloseConnection();
                     if (success)
                     {
                         TempData["sortingSuccess"] = "Sorting was succesful";
@@ -2997,7 +3254,7 @@ namespace AKAWeb_v01.Controllers
             }
             else
             {
-               return RedirectToAction("MyProfile");
+                return RedirectToAction("MyProfile");
             }
         }
 

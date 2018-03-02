@@ -13,31 +13,25 @@
                 <div class="col-md-9">
                     <img class="subheader-image resizeimg" src="@Url.Content(Model.subheaderImage)" />
                 </div>
-                <div class="col-md-3 subheader-span-div">
-                    
-                      <h3 class="subheader-span">@Model.title </h3>  
-                    
-
-                </div>
             </div>
         </div>
 
 
     </div>
-    }
+}
 
 @section LeftMenu{
     <div class="left-menu-title">@Model.leftMenuTitle </div>
     <div class="left-menu">
-    
-        @foreach(AKAWeb_v01.Models.PageModel menuitem in Model.leftMenu)
+
+        @foreach (AKAWeb_v01.Models.PageModel menuitem in Model.leftMenu)
         {
             <div class="left-menu-item">@Html.ActionLink(menuitem.title, "Pages", "SubPages", new { id = menuitem }, new { @class = "left-menu-link" })</div>
         }
 
-</div>
+    </div>
 
-  }
+}
 <div class="pad-right">
     @Html.Raw(Model.pageContent)
 </div>

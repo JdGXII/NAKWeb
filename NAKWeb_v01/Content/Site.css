@@ -81,20 +81,21 @@ textarea {
 }
 
 .left-menu {
-    background-color: #E4E4E4;
-    padding: 15px
+    background-color: #ffffff;
+    padding: 5px
 }
 
 .left-menu-title {
-    margin-top: 29px;
+    margin-top: 20px;
     background-color: #424D63;
-    padding: 10px;
+    padding: 5px;
     color: white;
     font-size: 12pt;
 }
 
 .left-menu-link {
-    color: #106D94;
+    color: #424D63;
+    margin-top: 5px;
 }
 
 .right-menu {
@@ -179,6 +180,7 @@ textarea {
 
 .dropdown-menu > li > a {
     color: white;
+    background-color: #424D63;
 }
 
 .menu-link a:hover {
